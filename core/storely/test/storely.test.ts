@@ -1,6 +1,11 @@
 import { faker } from "@faker-js/faker";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import Storely, { StorelyHooks, StorelyMemoryAdapter, StorelySanitize } from "../src/index.js";
+import Storely, {
+	StorelyEvents,
+	StorelyHooks,
+	StorelyMemoryAdapter,
+	StorelySanitize,
+} from "../src/index.js";
 import { StorelyStats } from "../src/stats.js";
 import { createMockCompression, createStore, delay } from "./test-utils.js";
 
@@ -945,5 +950,42 @@ describe("hookWithDeprecated", () => {
 		});
 		await s.get("missing");
 		expect(calls).toEqual(["deprecated"]);
+	});
+});
+
+describe("emitTelemetry", () => {
+	test("emitTelemetry still records hits/misses/sets when stats are enabled", async () => {
+		const s = new Storely({ stats: true });
+		await s.set("k", "v");
+		await s.get("k");
+		await s.get("missing");
+		expect(s.stats.hits).toBe(1);
+		expect(s.stats.misses).toBe(1);
+		expect(s.stats.sets).toBe(1);
+	});
+
+	test("emitTelemetry still fires events when an external listener is attached", async () => {
+		const s = new Storely();
+		let hits = 0;
+		s.on(StorelyEvents.STAT_HIT, () => {
+			hits++;
+		});
+		await s.set("k", "v");
+		await s.get("k");
+		expect(hits).toBe(1);
+	});
+
+	test("emitTelemetry does not allocate or emit when no listeners are attached", async () => {
+		const s = new Storely();
+		// biome-ignore lint/suspicious/noExplicitAny: spying on private method
+		const emitSpy = vi.spyOn(s as any, "emit");
+		await s.set("k", "v");
+		await s.get("k");
+		await s.get("missing");
+		// Filter to only stat:* emits (the perf-sensitive path).
+		const statEmits = emitSpy.mock.calls.filter(
+			(call) => typeof call[0] === "string" && call[0].startsWith("stat:"),
+		);
+		expect(statEmits).toEqual([]);
 	});
 });

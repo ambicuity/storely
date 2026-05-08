@@ -1123,6 +1123,11 @@ export class Storely<GenericValue = any> extends Hookified {
 	 * @param {string | string[]} [key] the cache key or keys (emits one event per key)
 	 */
 	private emitTelemetry(event: StorelyEvents, key?: string | string[]): void {
+		// Skip object allocation when nobody is listening. Stats subscribes to all
+		// stat:* events when enabled (see StorelyStats), so listenerCount > 0 in
+		// that case and the body still runs.
+		if (this.listenerCount(event) === 0) return;
+
 		if (key === undefined) {
 			this.emit(event, {
 				event: event.replace("stat:", ""),
