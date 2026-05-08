@@ -106,3 +106,44 @@ jobs:
       - name: Stop Docker test services
         if: always()
         run: pnpm test:services:stop
+
+  # ---------------------------------------------------------------------------
+  # Bench gate — runs the competitive benchmark suite and asserts every cell is
+  # within tolerance vs keyv/cache-manager. Long-running; pinned to a timeout.
+  # ---------------------------------------------------------------------------
+  bench-gate:
+    name: Bench gate
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Start Docker test services
+        run: pnpm test:services:start
+
+      - name: Run benchmark sweep
+        run: pnpm --filter @storely/benchmarks bench
+
+      - name: Run regression gate
+        run: pnpm --filter @storely/benchmarks gate
+
+      - name: Stop Docker test services
+        if: always()
+        run: pnpm test:services:stop
