@@ -82,6 +82,14 @@ export class Storely<GenericValue = any> extends Hookified {
 	private _checkExpired = false;
 
 	/**
+	 * When true, the configured pipeline is the trivial one: in-memory store,
+	 * no serialization, compression, encryption, expiry-check, or key sanitization.
+	 * Hot-path operations short-circuit through the storage adapter directly.
+	 * Recomputed whenever any pipeline component changes.
+	 */
+	private _fastPath = false;
+
+	/**
 	 * Storely Constructor
 	 * @param {StorelyStorageAdapter | StorelyOptions | Map<any, any> | any} store  to be provided or just the options
 	 * @param {Omit<StorelyOptions, 'store'>} [options] if you provide the store you can then provide the Storely Options
@@ -128,6 +136,7 @@ export class Storely<GenericValue = any> extends Hookified {
 
 		this.setTtl(mergedOptions.ttl);
 		this._checkExpired = mergedOptions.checkExpired ?? false;
+		this.recomputeFastPath();
 	}
 
 	/**
@@ -160,6 +169,7 @@ export class Storely<GenericValue = any> extends Hookified {
 	 */
 	public set compression(compress: StorelyCompressionAdapter | undefined) {
 		this._compression = compress;
+		this.recomputeFastPath();
 	}
 
 	/**
@@ -176,6 +186,7 @@ export class Storely<GenericValue = any> extends Hookified {
 	 */
 	public set encryption(encryption: StorelyEncryptionAdapter | undefined) {
 		this._encryption = encryption;
+		this.recomputeFastPath();
 	}
 
 	/**
@@ -227,6 +238,7 @@ export class Storely<GenericValue = any> extends Hookified {
 	 */
 	public set serialization(serialization: StorelySerializationAdapter | false | undefined) {
 		this._serialization = serialization === false ? undefined : serialization;
+		this.recomputeFastPath();
 	}
 
 	/**
@@ -268,6 +280,7 @@ export class Storely<GenericValue = any> extends Hookified {
 			this._namespace && this._sanitize.enabled
 				? this._sanitize.cleanNamespace(this._namespace)
 				: this._namespace;
+		this.recomputeFastPath();
 	}
 
 	/**
@@ -346,6 +359,7 @@ export class Storely<GenericValue = any> extends Hookified {
 		}
 
 		this._store.namespace = this._namespace;
+		this.recomputeFastPath();
 	}
 
 	/**
@@ -379,6 +393,25 @@ export class Storely<GenericValue = any> extends Hookified {
 		key = this._sanitize.enabled ? this._sanitize.cleanKey(key as string) : (key as string);
 		if (key === "") {
 			return undefined;
+		}
+
+		if (
+			this._fastPath &&
+			(this.getHooks(StorelyHooks.BEFORE_GET)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.AFTER_GET)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.PRE_GET)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.POST_GET)?.length ?? 0) === 0 &&
+			this.listenerCount(StorelyEvents.STAT_HIT) === 0 &&
+			this.listenerCount(StorelyEvents.STAT_MISS) === 0
+		) {
+			try {
+				const raw = await this._store.get<StorelyValue<Value>>(key as string);
+				if (raw === undefined || raw === null) return undefined;
+				return (raw as StorelyValue<Value>).value as Value;
+			} catch (error) {
+				this.emit(StorelyEvents.ERROR, error);
+				return undefined;
+			}
 		}
 
 		await this.hookWithDeprecated(StorelyHooks.BEFORE_GET, { key });
@@ -584,6 +617,28 @@ export class Storely<GenericValue = any> extends Hookified {
 		key = this._sanitize.enabled ? this._sanitize.cleanKey(key) : key;
 		if (key === "") {
 			return false;
+		}
+
+		if (
+			this._fastPath &&
+			(this.getHooks(StorelyHooks.BEFORE_SET)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.AFTER_SET)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.PRE_SET)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.POST_SET)?.length ?? 0) === 0 &&
+			this.listenerCount(StorelyEvents.STAT_SET) === 0
+		) {
+			if (typeof value === "symbol") {
+				this.emit(StorelyEvents.ERROR, "symbol cannot be serialized");
+				return false;
+			}
+			const resolvedTtl = resolveTtl(ttl, this._ttl);
+			const expires = calculateExpires(resolvedTtl);
+			try {
+				return await this._store.set(key, { value, expires }, resolvedTtl);
+			} catch (error) {
+				this.emit(StorelyEvents.ERROR, error);
+				return false;
+			}
 		}
 
 		const data = { key, value, ttl };
@@ -810,6 +865,22 @@ export class Storely<GenericValue = any> extends Hookified {
 			return false;
 		}
 
+		if (
+			this._fastPath &&
+			(this.getHooks(StorelyHooks.BEFORE_DELETE)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.AFTER_DELETE)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.PRE_DELETE)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.POST_DELETE)?.length ?? 0) === 0 &&
+			this.listenerCount(StorelyEvents.STAT_DELETE) === 0
+		) {
+			try {
+				return await this._store.delete(key as string);
+			} catch (error) {
+				this.emit(StorelyEvents.ERROR, error);
+				return false;
+			}
+		}
+
 		await this.hookWithDeprecated(StorelyHooks.BEFORE_DELETE, { key });
 
 		let result = true;
@@ -880,6 +951,19 @@ export class Storely<GenericValue = any> extends Hookified {
 		key = this._sanitize.enabled ? this._sanitize.cleanKey(key) : key;
 		if (key === "") {
 			return false;
+		}
+
+		if (
+			this._fastPath &&
+			(this.getHooks(StorelyHooks.BEFORE_HAS)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.AFTER_HAS)?.length ?? 0) === 0
+		) {
+			try {
+				return await this._store.has(key as string);
+			} catch (error) {
+				this.emit(StorelyEvents.ERROR, error);
+				return false;
+			}
 		}
 
 		await this.hookWithDeprecated(StorelyHooks.BEFORE_HAS, { key });
@@ -1096,6 +1180,20 @@ export class Storely<GenericValue = any> extends Hookified {
 		await deleteExpiredKeys(keyArray, results, this);
 
 		return results;
+	}
+
+	/**
+	 * Recomputes whether the fast path is active. Fast path requires: in-memory store,
+	 * no serialization, compression, encryption, expiry-check, or key sanitization.
+	 */
+	private recomputeFastPath(): void {
+		this._fastPath =
+			this._serialization === undefined &&
+			this._compression === undefined &&
+			this._encryption === undefined &&
+			this._checkExpired === false &&
+			(this._sanitize?.enabled ?? false) === false &&
+			this._store?.capabilities?.inMemory === true;
 	}
 
 	/**
