@@ -70,3 +70,30 @@ describe("fast path correctness", () => {
 		expect(calls).toContain("postHas");
 	});
 });
+
+describe("getMany/setMany sync branch", () => {
+	test("getMany returns identical results in sync vs async serializer modes", async () => {
+		const sFast = new Storely({ store: new Map() });
+		const sSlow = new Storely({ store: new Map(), serialization: new StorelyJsonSerializer() });
+		await sFast.setMany([
+			{ key: "a", value: 1 },
+			{ key: "b", value: 2 },
+		]);
+		await sSlow.setMany([
+			{ key: "a", value: 1 },
+			{ key: "b", value: 2 },
+		]);
+		expect(await sFast.getMany(["a", "b", "missing"])).toEqual(
+			await sSlow.getMany(["a", "b", "missing"]),
+		);
+	});
+
+	test("setMany rejects symbol values in sync branch (matches slow-path behavior)", async () => {
+		const s = new Storely({ store: new Map() });
+		const errorHandler = vi.fn();
+		s.on("error", errorHandler);
+		const result = await s.setMany([{ key: "k", value: Symbol("x") as unknown as string }]);
+		expect(result).toEqual([false]);
+		expect(errorHandler).toHaveBeenCalledWith("symbol cannot be serialized");
+	});
+});

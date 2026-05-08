@@ -469,13 +469,19 @@ export class Storely<GenericValue = any> extends Hookified {
 		let deserialized: Array<StorelyValue<Value> | undefined>;
 		if (this._checkExpired) {
 			deserialized = await this.decodeWithExpire<Value>(keys, rawData as unknown[]);
+		} else if (this._serialization === undefined) {
+			// Sync fast path: no async decode work; just narrow the rows.
+			const rows = rawData as unknown[];
+			deserialized = new Array(rows.length);
+			for (let i = 0; i < rows.length; i++) {
+				const row = rows[i];
+				deserialized[i] =
+					row === undefined || row === null ? undefined : (row as StorelyValue<Value>);
+			}
 		} else {
 			deserialized = await Promise.all(
 				(rawData as unknown[]).map(async (row) => {
-					if (row === undefined || row === null) {
-						return undefined;
-					}
-
+					if (row === undefined || row === null) return undefined;
 					return typeof row === "string" ? this.decode<Value>(row) : (row as StorelyValue<Value>);
 				}),
 			);
@@ -699,25 +705,42 @@ export class Storely<GenericValue = any> extends Hookified {
 		let results: boolean[] = [];
 
 		try {
-			const serializedEntries = await Promise.all(
-				entries.map(async ({ key, value, ttl }) => {
-					ttl = resolveTtl(ttl, this._ttl);
-
-					/* v8 ignore next -- @preserve */
+			let serializedEntries: Array<{ key: string; value: unknown; ttl?: number }>;
+			if (this._serialization === undefined) {
+				serializedEntries = new Array(entries.length);
+				for (let i = 0; i < entries.length; i++) {
+					const { key, value, ttl: rawTtl } = entries[i];
+					const ttl = resolveTtl(rawTtl, this._ttl);
 					const expires = calculateExpires(ttl);
-
-					/* v8 ignore next -- @preserve */
 					if (typeof value === "symbol") {
 						this.emit(StorelyEvents.ERROR, "symbol cannot be serialized");
 						this.emitTelemetry(StorelyEvents.STAT_ERROR, key);
 						throw new Error("symbol cannot be serialized");
 					}
+					// No serializer: encode is identity; pass {value, expires} envelope directly.
+					serializedEntries[i] = { key, value: { value, expires }, ttl };
+				}
+			} else {
+				serializedEntries = await Promise.all(
+					entries.map(async ({ key, value, ttl }) => {
+						ttl = resolveTtl(ttl, this._ttl);
 
-					const formattedValue = { value, expires };
-					const encodedValue = await this.encode(formattedValue);
-					return { key, value: encodedValue, ttl };
-				}),
-			);
+						/* v8 ignore next -- @preserve */
+						const expires = calculateExpires(ttl);
+
+						/* v8 ignore next -- @preserve */
+						if (typeof value === "symbol") {
+							this.emit(StorelyEvents.ERROR, "symbol cannot be serialized");
+							this.emitTelemetry(StorelyEvents.STAT_ERROR, key);
+							throw new Error("symbol cannot be serialized");
+						}
+
+						const formattedValue = { value, expires };
+						const encodedValue = await this.encode(formattedValue);
+						return { key, value: encodedValue, ttl };
+					}),
+				);
+			}
 			// biome-ignore lint/style/noNonNullAssertion: guaranteed by resolveStore
 			const storeResult = await this._store.setMany!(serializedEntries);
 			/* v8 ignore next -- @preserve */
