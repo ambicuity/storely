@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import Storely, { StorelyMemoryAdapter, StorelySanitize } from "../src/index.js";
+import Storely, { StorelyHooks, StorelyMemoryAdapter, StorelySanitize } from "../src/index.js";
 import { StorelyStats } from "../src/stats.js";
 import { createMockCompression, createStore, delay } from "./test-utils.js";
 
@@ -903,5 +903,28 @@ describe("decodeWithExpire", () => {
 		const result = await storely.decodeWithExpire("key", objectData);
 		expect(result[0]?.value).toBe("test-value");
 		expect(mockCompression.decompress).not.toHaveBeenCalled();
+	});
+});
+
+describe("hookWithDeprecated", () => {
+	test("hookWithDeprecated runs both new and deprecated hooks when both have listeners", async () => {
+		const s = new Storely();
+		const callOrder: string[] = [];
+		s.onHook(StorelyHooks.BEFORE_GET, () => {
+			callOrder.push("new");
+		});
+		s.onHook(StorelyHooks.PRE_GET, () => {
+			callOrder.push("deprecated");
+		});
+		await s.get("missing");
+		expect(callOrder).toEqual(["new", "deprecated"]);
+	});
+
+	test("hookWithDeprecated skips entirely when no listeners are attached", async () => {
+		const s = new Storely();
+		// No listeners. Just exercise the path; we're asserting it doesn't throw and returns
+		// a value identical to the slow path.
+		await s.set("k", "v");
+		expect(await s.get("k")).toBe("v");
 	});
 });

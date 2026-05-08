@@ -1105,11 +1105,12 @@ export class Storely<GenericValue = any> extends Hookified {
 		// biome-ignore lint/suspicious/noExplicitAny: hook data varies
 		...args: any[]
 	): Promise<void> {
-		await this.hook(event, ...args);
-		const deprecated = deprecatedHookAliases.get(event);
-		if (deprecated && this.getHooks(deprecated)?.length) {
-			await this.hook(deprecated, ...args);
-		}
+		const primaryCount = this.getHooks(event)?.length ?? 0;
+		const alias = deprecatedHookAliases.get(event);
+		const aliasCount = alias ? (this.getHooks(alias)?.length ?? 0) : 0;
+		if (primaryCount === 0 && aliasCount === 0) return;
+		if (primaryCount > 0) await this.hook(event, ...args);
+		if (aliasCount > 0) await this.hook(alias as string, ...args);
 	}
 
 	/**
