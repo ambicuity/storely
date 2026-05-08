@@ -796,7 +796,16 @@ Returns a promise which resolves to `true` if the key existed, `false` if not.
 
 ## .deleteMany(keys)
 Deletes multiple entries.
-Returns a promise which resolves to `true` if all keys were deleted successfully, `false` otherwise.
+
+Returns a promise resolving to `boolean[]`, one entry per input key, in the same order as `keys`. Each element is `true` if the key existed and was deleted, `false` if it did not exist. Example:
+
+```js
+await storely.set('a', 1);
+await storely.set('c', 3);
+await storely.deleteMany(['a', 'b', 'c']); // [true, false, true]
+```
+
+**Performance note.** Byte-store adapters (`@storely/redis`, `@storely/mysql`, `@storely/postgres`, `@storely/mongo`, `@storely/sqlite`) implement `deleteMany` as a `SELECT` of existing keys followed by a batched `DELETE`, so the per-key boolean is accurate. That costs roughly 2× the wall-clock of a bulk `DELETE … WHERE id IN (?)` that returns only "how many rows were affected." If you don't need the per-key signal and you're deleting large batches, consider using `clear()` (when scoped via namespace), or calling the underlying adapter's wire-level delete directly. Storely chose this trade because silently returning a single boolean for a batch makes existence-sensitive callers (e.g. cache invalidation pipelines) hard to reason about.
 
 ## .clear()
 
