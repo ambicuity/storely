@@ -48,15 +48,45 @@ Results land in `benchmarks/results/<timestamp>.{json,md}` and (unless `--skip-d
 
 ## Sanity bands
 
-Numbers outside these rough bands likely indicate a harness bug, not a real perf finding:
+Numbers outside these rough bands likely indicate a harness bug, not a real perf finding. Bands reflect benchmark.js deferred async timing against local services — absolute numbers are RTT-bound and lower than a tight synchronous loop:
 
 | Backend | Operation | Expected band |
 |---|---|---|
-| memory | `get` | 1M – 10M ops/s |
-| redis (localhost) | `get` | 10k – 100k ops/s |
-| sqlite (file) | `setMany(1000)` | 100 – 1k ops/s, faster than `set × 1000` |
-| postgres / mysql (localhost) | `get` | 5k – 30k ops/s |
-| mongo (localhost) | `get` | 5k – 30k ops/s |
+| memory | `get` (default + structured fast path) | 3M – 7M ops/s |
+| memory | `get` (json mode) | 600k – 2M ops/s |
+| redis (localhost) | `get` / `set` | 1k – 3k ops/s |
+| sqlite (file) | `get` | 30k – 200k ops/s |
+| sqlite (file) | `setMany(1000)` | 100 – 500 ops/s |
+| postgres (localhost) | `get` | 1k – 4k ops/s |
+| mysql (localhost) | `get` | 1k – 3k ops/s |
+| mongo (localhost) | `get` | 1k – 3k ops/s |
+
+If you see e.g. keyv `set` on redis at 40k+ ops/s, that's the historical
+serialize-disabled bug — confirm `benchmarks/src/libraries/{keyv,cache-manager}.ts`
+is not passing `serialize: undefined`/`deserialize: undefined`. Pre-fix numbers
+were measuring node-redis throwing on a non-string value, caught silently.
+
+## Regression gate
+
+A regression gate at `regression-check.ts` compares the most recent per-run
+JSON in `results/` against a tracked snapshot at `benchmarks/baseline.json`,
+storely cell by storely cell, and fails when the current run's `hz` is more
+than 5% below the baseline AND the RME error bars don't overlap.
+
+- `pnpm --filter @storely/benchmarks gate` — runs the comparison.
+- `pnpm --filter @storely/benchmarks gate -- --promote` — replaces
+  `baseline.json` with the latest run. Use after intentional perf changes
+  (positive or negative). Commit `benchmarks/baseline.json` to record it.
+
+CI runs `pnpm bench` (writes a fresh per-run JSON) then `pnpm gate` (compares
+that fresh JSON to the committed baseline).
+
+The baseline tracks **storely's** numbers only — keyv and cache-manager rows
+in the JSON are kept for context but the gate doesn't enforce against them.
+That avoids holding storely to absolute-perf targets ("be faster than keyv
+on every cell"), which is brittle and conflates "regression" with "we didn't
+win the head-to-head." A real regression is when storely got slower vs its
+own previous self.
 
 ## Adding a backend
 
