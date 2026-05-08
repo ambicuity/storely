@@ -110,7 +110,16 @@ export class StorelyJsonSerializer implements StorelySerializationAdapter {
 			"value" in (object as Record<string, unknown>) &&
 			(object as Record<string, unknown>).expires === undefined
 		) {
-			return `*${JSON.stringify(prepare((object as { value: unknown }).value))}`;
+			const inner = JSON.stringify(prepare((object as { value: unknown }).value));
+			// JSON.stringify can return the literal token `undefined` (not a JSON
+			// string) when the input is `undefined`, a function, or any other
+			// non-serializable value. Storing `*undefined` would later throw
+			// `SyntaxError: "undefined" is not valid JSON` on parse. Fall through
+			// to the envelope encoding instead — `prepare()` will drop the
+			// non-serializable value-key and the round-trip yields `value: undefined`.
+			if (inner !== undefined) {
+				return `*${inner}`;
+			}
 		}
 
 		return JSON.stringify(prepare(object));

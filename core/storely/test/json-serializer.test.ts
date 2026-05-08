@@ -67,6 +67,27 @@ describe("StorelyJsonSerializer", () => {
 		expect(jsonSerializer.stringify(nullObj)).toBe('{"someKey":"value"}');
 	});
 
+	it("round-trips an envelope whose value is undefined", () => {
+		// Regression: the bare-value sentinel optimization (`*${JSON.stringify(prepare(value))}`)
+		// is unsafe when `prepare(value) === undefined` because `JSON.stringify(undefined)`
+		// returns the literal token `undefined` (not a JSON string), which then throws
+		// `SyntaxError: "undefined" is not valid JSON` on parse. set(key, undefined)
+		// must still round-trip — get() returns undefined.
+		const encoded = jsonSerializer.stringify({ value: undefined, expires: undefined });
+		// Whatever the wire format, the round-trip must succeed and yield value=undefined.
+		const decoded = jsonSerializer.parse<{ value: unknown }>(encoded);
+		expect(decoded.value).toBeUndefined();
+	});
+
+	it("round-trips an envelope whose value is a function (prepare-returns-non-stringifiable)", () => {
+		// JSON.stringify(function) also returns undefined — same hazard as above. The
+		// natural lossy round-trip (function in → undefined out) is acceptable; the
+		// silent SyntaxError on parse is not.
+		const encoded = jsonSerializer.stringify({ value: () => 42, expires: undefined });
+		const decoded = jsonSerializer.parse<{ value: unknown }>(encoded);
+		expect(decoded.value).toBeUndefined();
+	});
+
 	it("stringify and parse of Buffer and Uint8Array", () => {
 		const buffer = Buffer.from("hello world", "utf8");
 		expect(jsonSerializer.stringify(buffer)).toBe(
