@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+import { StorelyMemoryAdapter } from "../src/adapters/memory.js";
 import {
 	detectStorely,
 	detectStorelyCompression,
@@ -161,6 +162,7 @@ describe("capabilities", () => {
 					compatible: false,
 					store: "none",
 					methods: allNoneMethods,
+					inMemory: false,
 				});
 			}
 		});
@@ -398,6 +400,63 @@ describe("capabilities", () => {
 
 			const extra = { encrypt: (d: string) => d, decrypt: (d: string) => d, algorithm: "AES" };
 			expect(detectStorelyEncryption(extra).compatible).toBe(true);
+		});
+	});
+
+	describe("inMemory capability flag", () => {
+		test("detectStorelyStorage marks a Map as inMemory", () => {
+			const cap = detectStorelyStorage(new Map());
+			expect(cap.inMemory).toBe(true);
+		});
+
+		test("detectStorelyStorage marks an asyncMap-shaped store as not inMemory", () => {
+			const asyncStore = {
+				async get() {},
+				async set() {},
+				async delete() {
+					return true;
+				},
+				async clear() {},
+			};
+			const cap = detectStorelyStorage(asyncStore);
+			expect(cap.inMemory).toBe(false);
+		});
+
+		test("detectStorelyStorage propagates inMemory from a storelyStorage-shaped store", () => {
+			// Build a fake StorelyStorageAdapter that already exposes capabilities.inMemory: true.
+			const fake = {
+				async get() {},
+				async set() {
+					return true;
+				},
+				async delete() {
+					return true;
+				},
+				async clear() {},
+				async has() {
+					return false;
+				},
+				async getMany() {
+					return [];
+				},
+				async setMany() {
+					return [];
+				},
+				async deleteMany() {
+					return [];
+				},
+				async hasMany() {
+					return [];
+				},
+				capabilities: { inMemory: true, store: "storelyStorage", compatible: true, methods: {} },
+			};
+			const cap = detectStorelyStorage(fake);
+			expect(cap.inMemory).toBe(true);
+		});
+
+		test("StorelyMemoryAdapter always reports inMemory: true", () => {
+			const adapter = new StorelyMemoryAdapter(new Map());
+			expect(adapter.capabilities.inMemory).toBe(true);
 		});
 	});
 });

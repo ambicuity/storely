@@ -90,7 +90,7 @@ export class StorelyMemoryAdapter extends Hookified implements StorelyStorageAda
 	constructor(store: StorelyMapType, options?: StorelyMemoryAdapterOptions) {
 		super({ throwOnHookError: false });
 		this._store = store;
-		this._capabilities = detectStorelyStorage(store);
+		this._capabilities = { ...detectStorelyStorage(store), inMemory: true };
 
 		if (options?.keySeparator) {
 			this._keySeparator = options.keySeparator;

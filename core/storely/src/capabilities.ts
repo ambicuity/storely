@@ -62,6 +62,12 @@ export type StorelyStorageCapability = {
 	compatible: boolean;
 	store: "mapLike" | "storelyStorage" | "asyncMap" | "none";
 	methods: StorelyStorageMethods;
+	/**
+	 * True when the store is fully in-memory (synchronous Map-like or a
+	 * StorelyMemoryAdapter wrapping one). Used by Storely to skip default
+	 * serialization for in-memory stores, matching keyv's behavior.
+	 */
+	inMemory: boolean;
 };
 
 // --- Compression adapter ---
@@ -224,6 +230,7 @@ export function detectStorelyStorage(obj: unknown): StorelyStorageCapability {
 			compatible: false,
 			store: "none",
 			methods: buildMethods<StorelyStorageMethods>(null, storelyStorageMethodNames),
+			inMemory: false,
 		};
 	}
 
@@ -245,7 +252,12 @@ export function detectStorelyStorage(obj: unknown): StorelyStorageCapability {
 	);
 
 	if (isStorelyStorage) {
-		return { compatible: true, store: "storelyStorage", methods };
+		return {
+			compatible: true,
+			store: "storelyStorage",
+			methods,
+			inMemory: (obj as { capabilities?: { inMemory?: boolean } })?.capabilities?.inMemory === true,
+		};
 	}
 
 	// mapLike: get, set, delete, has all synchronous
@@ -255,7 +267,7 @@ export function detectStorelyStorage(obj: unknown): StorelyStorageCapability {
 	);
 
 	if (isMapLike) {
-		return { compatible: true, store: "mapLike", methods };
+		return { compatible: true, store: "mapLike", methods, inMemory: true };
 	}
 
 	// asyncMap: get, set, delete, clear all present (not all sync — that would be mapLike)
@@ -263,10 +275,10 @@ export function detectStorelyStorage(obj: unknown): StorelyStorageCapability {
 	const isAsyncMap = asyncMapMethods.every((m) => methods[m].exists);
 
 	if (isAsyncMap) {
-		return { compatible: true, store: "asyncMap", methods };
+		return { compatible: true, store: "asyncMap", methods, inMemory: false };
 	}
 
-	return { compatible: false, store: "none", methods };
+	return { compatible: false, store: "none", methods, inMemory: false };
 }
 
 /**
