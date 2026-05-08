@@ -7,6 +7,7 @@
 	"scripts": {
 		"bench": "tsx src/runner.ts",
 		"merge": "tsx src/merge.ts",
+		"gate": "tsx regression-check.ts",
 		"clean": "rimraf ./node_modules"
 	},
 	"dependencies": {
