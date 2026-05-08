@@ -462,16 +462,32 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 
 	/**
 	 * Deletes multiple key-value pairs from the store.
-	 * @param key - Array of keys to delete
+	 * Uses a batched SELECT-then-DELETE strategy for efficiency.
+	 * @param keys - Array of keys to delete
 	 * @returns Array of booleans indicating whether each specific key was successfully deleted
 	 */
-	public async deleteMany(key: string[]): Promise<boolean[]> {
-		const results: boolean[] = [];
-		for (const k of key) {
-			results.push(await this.delete(k));
+	public async deleteMany(keys: string[]): Promise<boolean[]> {
+		if (keys.length === 0) return [];
+		const strippedKeys = keys.map((k) => this.removeKeyPrefix(k));
+		const ns = this.getNamespaceValue();
+		const batchSize = 1000;
+		const existed = new Set<string>();
+
+		for (let i = 0; i < strippedKeys.length; i += batchSize) {
+			const batch = strippedKeys.slice(i, i + batchSize);
+
+			// Pre-flight: which keys exist? (per-key boolean accuracy)
+			const selSql = `SELECT id FROM ${escapeIdentifier(this._table)} WHERE id IN (?) AND namespace = ?`;
+			const selFmt = mysql.format(selSql, [batch, ns]);
+			const rows: mysql.RowDataPacket[] = await this.query(selFmt);
+			for (const row of rows) existed.add(row.id as string);
+
+			// Single batched DELETE.
+			const delSql = `DELETE FROM ${escapeIdentifier(this._table)} WHERE id IN (?) AND namespace = ?`;
+			await this.query(mysql.format(delSql, [batch, ns]));
 		}
 
-		return results;
+		return strippedKeys.map((k) => existed.has(k));
 	}
 
 	/**
