@@ -242,11 +242,22 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 		const tableEsc = escapeIdentifier(this._table);
 		const indexName = `\`${(`${this._table}_key_namespace_idx`).replace(/`/g, "``")}\``;
 		const expiresIndexName = `\`${(`${this._table}_expires_idx`).replace(/`/g, "``")}\``;
-		const createTable = `CREATE TABLE IF NOT EXISTS ${tableEsc}(id VARCHAR(${this._keyLength}) NOT NULL, value TEXT, namespace VARCHAR(${this._namespaceLength}) NOT NULL DEFAULT '', expires BIGINT UNSIGNED DEFAULT NULL, UNIQUE INDEX ${indexName} (id, namespace), INDEX ${expiresIndexName} (expires))`;
+		const createTable = `CREATE TABLE IF NOT EXISTS ${tableEsc}(id VARCHAR(${this._keyLength}) NOT NULL, value MEDIUMBLOB, namespace VARCHAR(${this._namespaceLength}) NOT NULL DEFAULT '', expires BIGINT UNSIGNED DEFAULT NULL, UNIQUE INDEX ${indexName} (id, namespace), INDEX ${expiresIndexName} (expires))`;
 
 		/* v8 ignore next -- @preserve */
 		const connected = connection().then(async (query) => {
 			await query(createTable);
+
+			// Migration: legacy TEXT → MEDIUMBLOB. Idempotent and runs once per connection lifetime.
+			const checkSql = mysql.format(
+				`SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = 'value'`,
+				[this._table],
+			);
+			const checkResult: mysql.RowDataPacket = await query(checkSql);
+			const checkRows = Array.isArray(checkResult) ? checkResult : [];
+			if (checkRows[0]?.DATA_TYPE === "text") {
+				await query(`ALTER TABLE ${tableEsc} MODIFY COLUMN value MEDIUMBLOB`);
+			}
 
 			// Migration for existing tables: add namespace column
 			try {
@@ -339,7 +350,8 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 			return undefined as StorelyStorageGetResult<Value>;
 		}
 
-		return row.value as StorelyStorageGetResult<Value>;
+		const v = row.value;
+		return (Buffer.isBuffer(v) ? v.toString("utf8") : v) as StorelyStorageGetResult<Value>;
 	}
 
 	/**
@@ -362,7 +374,11 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 			if (row.expires !== null && row.expires !== undefined && row.expires <= now) {
 				expiredKeys.push(row.id as string);
 			} else {
-				validMap.set(row.id as string, row.value as StorelyStorageGetResult<Value>);
+				const rv = row.value;
+				validMap.set(
+					row.id as string,
+					(Buffer.isBuffer(rv) ? rv.toString("utf8") : rv) as StorelyStorageGetResult<Value>,
+				);
 			}
 		}
 
@@ -535,7 +551,8 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 			}
 
 			for (const entry of entries) {
-				yield [entry.id, entry.value];
+				const iv = entry.value;
+				yield [entry.id, Buffer.isBuffer(iv) ? iv.toString("utf8") : iv];
 			}
 
 			// Update cursor to the last key processed
