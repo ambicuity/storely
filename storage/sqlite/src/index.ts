@@ -531,18 +531,37 @@ export class StorelySqlite extends Hookified implements StorelyStorageAdapter {
 	}
 
 	/**
-	 * Deletes multiple keys from the store by deleting each key individually.
+	 * Deletes multiple keys from the store using batched SELECT-then-DELETE queries.
+	 * More efficient than calling {@link delete} in a loop for bulk operations.
+	 * Preserves per-key boolean accuracy: returns `true` only for keys that existed.
 	 * @param keys - An array of keys to delete.
 	 * @returns An array of booleans in the same order as the input keys,
 	 *   where `true` indicates the key existed and was deleted, `false` indicates it was not found.
 	 */
 	async deleteMany(keys: string[]): Promise<boolean[]> {
-		const results: boolean[] = [];
-		for (const key of keys) {
-			results.push(await this.delete(key));
+		if (keys.length === 0) return [];
+		const strippedKeys = keys.map((k) => this.removeKeyPrefix(k));
+		const ns = this.getNamespaceValue();
+		const batchSize = 998; // 999 max params - 1 for namespace
+		const existed = new Set<string>();
+
+		for (let i = 0; i < strippedKeys.length; i += batchSize) {
+			const batch = strippedKeys.slice(i, i + batchSize);
+			const placeholders = batch.map(() => "?").join(", ");
+
+			// First: discover which keys actually exist (per-key boolean accuracy).
+			const select = `SELECT key FROM ${this.getCleanTableName()} WHERE key IN (${placeholders}) AND namespace = ?`;
+			const rows = await this.query(select, ...batch, ns);
+			for (const row of rows as Array<{ key: string }>) {
+				existed.add(row.key);
+			}
+
+			// Then: single batched DELETE.
+			const del = `DELETE FROM ${this.getCleanTableName()} WHERE key IN (${placeholders}) AND namespace = ?`;
+			await this.query(del, ...batch, ns);
 		}
 
-		return results;
+		return strippedKeys.map((k) => existed.has(k));
 	}
 
 	/**
