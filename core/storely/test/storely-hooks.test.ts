@@ -29,7 +29,8 @@ test.it("AFTER_SET hook", async (t) => {
 	const storely = new Storely({ serialization: new StorelyJsonSerializer() });
 	storely.addHook(StorelyHooks.AFTER_SET, (data) => {
 		t.expect(data.key).toBe("foo");
-		t.expect(data.value).toBe('{"value":"bar"}');
+		// Bare-value encoding: no TTL → '*"bar"' instead of '{"value":"bar"}'
+		t.expect(data.value).toBe('*"bar"');
 	});
 	await storely.set("foo", "bar");
 });

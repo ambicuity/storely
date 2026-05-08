@@ -38,6 +38,14 @@ const cache = new Storely({
 });
 ```
 
+### JSON wire format omits empty envelopes
+
+The `StorelyJsonSerializer` now omits the `{value, expires}` envelope when
+`expires` is undefined, prefixing the bare value with `*` instead. The decoder
+still accepts the legacy `{value, expires}` form, so reading data written by
+older versions continues to work. Code that hand-rolls the wire format
+(uncommon) needs updating.
+
 # Table of Contents
 - [Usage](#usage)
 - [Type-safe Usage](#type-safe-usage)
