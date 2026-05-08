@@ -477,14 +477,45 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 	}
 
 	/**
-	 * Delete multiple keys from the store at once. Each key is deleted individually
-	 * so that per-key success/failure information is preserved.
+	 * Delete multiple keys from the store at once. In standard mode, uses a batched
+	 * find+deleteMany pair to collapse N round-trips into 2 per chunk. In GridFS mode,
+	 * falls back to per-key deletes because each blob has its own file id.
 	 * @param keys - Array of keys to delete.
 	 * @returns Array of booleans indicating whether each key was successfully deleted.
 	 */
 	public async deleteMany(keys: string[]): Promise<boolean[]> {
-		const results = await Promise.all(keys.map(async (key) => this.delete(key)));
-		return results;
+		if (keys.length === 0) return [];
+
+		const conn = await this.connect;
+
+		// GridFS path: bulk-delete is non-trivial because each blob has its own
+		// file id. Fall back to per-key correctness; GridFS is rarely used at scale.
+		if (this._useGridFS || conn.bucket) {
+			const results: boolean[] = [];
+			for (const k of keys) results.push(await this.delete(k));
+			return results;
+		}
+
+		const strippedKeys = keys.map((k) => this.removeKeyPrefix(k));
+		const ns = this.getNamespaceValue();
+		const collection = conn.store;
+		const batchSize = 1000;
+		const existed = new Set<string>();
+
+		for (let i = 0; i < strippedKeys.length; i += batchSize) {
+			const batch = strippedKeys.slice(i, i + batchSize);
+
+			// Pre-flight existence check (per-key boolean contract).
+			const found = await collection
+				.find({ key: { $in: batch }, namespace: { $eq: ns } }, { projection: { _id: 0, key: 1 } })
+				.toArray();
+			for (const doc of found) existed.add(doc.key as string);
+
+			// Single bulk delete for the whole batch.
+			await collection.deleteMany({ key: { $in: batch }, namespace: { $eq: ns } });
+		}
+
+		return strippedKeys.map((k) => existed.has(k));
 	}
 
 	/**
