@@ -455,8 +455,19 @@ export class StorelyPostgres extends Hookified implements StorelyStorageAdapter 
 	 * @returns An array of booleans indicating whether each key was successfully deleted.
 	 */
 	public async deleteMany(keys: string[]): Promise<boolean[]> {
-		const results = await Promise.all(keys.map(async (key) => this.delete(key)));
-		return results;
+		if (keys.length === 0) return [];
+		const strippedKeys = keys.map((k) => this.removeKeyPrefix(k));
+		const ns = this.getNamespaceValue();
+		const deleted = new Set<string>();
+
+		// Postgres RETURNING gives us per-key existence in a single round-trip.
+		const sql = `DELETE FROM ${escapeIdentifier(this._schema)}.${escapeIdentifier(this._table)} WHERE key = ANY($1) AND COALESCE(namespace, '') = COALESCE($2, '') RETURNING key`;
+		const rows = await this.query(sql, [strippedKeys, ns]);
+		for (const row of rows as Array<{ key: string }>) {
+			deleted.add(row.key as string);
+		}
+
+		return strippedKeys.map((k) => deleted.has(k));
 	}
 
 	/**
