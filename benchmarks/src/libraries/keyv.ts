@@ -9,11 +9,22 @@ export interface KeyvAdapterArgs {
 
 export function buildKeyvClient(args: KeyvAdapterArgs): BenchClient {
 	const { mode, store, disconnect } = args;
-	const keyv = new Keyv({
-		store: store as never,
-		serialize: mode === "json" ? JSON.stringify : undefined,
-		deserialize: mode === "json" ? JSON.parse : undefined,
-	});
+	// In "json" mode, override with bare JSON.stringify/parse to make the encode
+	// pipeline directly comparable across libraries. In "defaults" mode, do NOT
+	// pass `serialize`/`deserialize` — letting `undefined` through disables keyv's
+	// built-in `@keyv/serialize` (`serializeData` becomes a no-op), so `keyv.set`
+	// hands the raw `{value, expires}` object to the redis adapter, which throws
+	// inside node-redis (`arguments[2]` must be string|Buffer) and silently
+	// no-ops via the catch path. Earlier baselines were measuring thrown errors,
+	// not real SETs, which produced a misleading 17-50× "gap" vs. storely.
+	const keyv =
+		mode === "json"
+			? new Keyv({
+					store: store as never,
+					serialize: JSON.stringify,
+					deserialize: JSON.parse,
+				})
+			: new Keyv({ store: store as never });
 
 	// Keyv has no native batch set; we emulate via Promise.all of singles.
 	const fallbacks: Operation[] = ["setMany"];

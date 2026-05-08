@@ -10,11 +10,20 @@ export interface CacheManagerAdapterArgs {
 
 export function buildCacheManagerClient(args: CacheManagerAdapterArgs): BenchClient {
 	const { mode, store, disconnect } = args;
-	const keyv = new Keyv({
-		store: store as never,
-		serialize: mode === "json" ? JSON.stringify : undefined,
-		deserialize: mode === "json" ? JSON.parse : undefined,
-	});
+	// In "json" mode, override with bare JSON.stringify/parse to make the encode
+	// pipeline directly comparable. In "defaults" mode, do NOT pass `serialize`/
+	// `deserialize` — passing `undefined` disables keyv's built-in `@keyv/serialize`
+	// (`serializeData` becomes a no-op), so the redis adapter receives a raw object,
+	// node-redis throws, and the catch path swallows it. cache-manager wraps keyv,
+	// so the same bug applied here. See benchmarks/src/libraries/keyv.ts for context.
+	const keyv =
+		mode === "json"
+			? new Keyv({
+					store: store as never,
+					serialize: JSON.stringify,
+					deserialize: JSON.parse,
+				})
+			: new Keyv({ store: store as never });
 	const cache = createCache({ stores: [keyv] });
 
 	// cache-manager has no native has(); we emulate via get() !== null.
