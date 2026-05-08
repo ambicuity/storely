@@ -922,9 +922,28 @@ describe("hookWithDeprecated", () => {
 
 	test("hookWithDeprecated skips entirely when no listeners are attached", async () => {
 		const s = new Storely();
-		// No listeners. Just exercise the path; we're asserting it doesn't throw and returns
-		// a value identical to the slow path.
+		// Round-trips a basic value with no hooks attached.
 		await s.set("k", "v");
 		expect(await s.get("k")).toBe("v");
+	});
+
+	test("hookWithDeprecated does not call this.hook when no listeners are attached", async () => {
+		const s = new Storely();
+		// biome-ignore lint/suspicious/noExplicitAny: spying on private method
+		const hookSpy = vi.spyOn(s as any, "hook");
+		await s.set("k", "v");
+		await s.get("k");
+		expect(hookSpy).not.toHaveBeenCalled();
+		hookSpy.mockRestore();
+	});
+
+	test("hookWithDeprecated runs deprecated alias when only the alias has a listener", async () => {
+		const s = new Storely();
+		const calls: string[] = [];
+		s.onHook(StorelyHooks.PRE_GET, () => {
+			calls.push("deprecated");
+		});
+		await s.get("missing");
+		expect(calls).toEqual(["deprecated"]);
 	});
 });

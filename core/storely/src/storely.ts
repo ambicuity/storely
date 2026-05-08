@@ -1108,6 +1108,10 @@ export class Storely<GenericValue = any> extends Hookified {
 		const primaryCount = this.getHooks(event)?.length ?? 0;
 		const alias = deprecatedHookAliases.get(event);
 		const aliasCount = alias ? (this.getHooks(alias)?.length ?? 0) : 0;
+		// Safe to skip hook() entirely when no listeners are registered: hookified's hook() body only
+		// calls validateHookName() (no-op when enforceBeforeAfter is false) and then iterates
+		// eventHandlers — if the map entry is absent it returns immediately with no side effects.
+		// Verified against hookified@2.2.0 dist/node/index.js lines 745-756.
 		if (primaryCount === 0 && aliasCount === 0) return;
 		if (primaryCount > 0) await this.hook(event, ...args);
 		if (aliasCount > 0) await this.hook(alias as string, ...args);
