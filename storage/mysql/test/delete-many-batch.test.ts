@@ -22,10 +22,13 @@ describe("mysql deleteMany batched", () => {
 		expect(await s.get("a")).toBeUndefined();
 	});
 
-	test("handles 2500 keys", async () => {
+	// Setup uses setMany (~5× faster than serial set) so we exercise the
+	// 2500-key deleteMany batching path within a reasonable timeout instead
+	// of timing out on the populate step.
+	test("handles 2500 keys", { timeout: 30_000 }, async () => {
 		await s.clear();
 		const keys = Array.from({ length: 2500 }, (_, i) => `k${i}`);
-		for (const k of keys) await s.set(k, "v");
+		await s.setMany(keys.map((key) => ({ key, value: "v" })));
 		const result = await s.deleteMany(keys);
 		expect(result.length).toBe(2500);
 		expect(result.every((r) => r === true)).toBe(true);
