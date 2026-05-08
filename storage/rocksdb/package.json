@@ -1,0 +1,64 @@
+{
+	"name": "@storely/rocksdb",
+	"version": "6.0.0-alpha.4",
+	"description": "RocksDB storage adapter for Storely",
+	"type": "module",
+	"main": "./dist/index.mjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
+	"exports": {
+		".": {
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			},
+			"import": {
+				"types": "./dist/index.d.mts",
+				"default": "./dist/index.mjs"
+			}
+		}
+	},
+	"scripts": {
+		"build": "tsdown",
+		"prepublishOnly": "pnpm build",
+		"lint": "biome check --write --error-on-warnings",
+		"lint:ci": "biome check --error-on-warnings",
+		"test": "pnpm lint && vitest run --coverage",
+		"test:ci": "pnpm lint:ci && vitest --run --sequence.setupFiles=list --coverage",
+		"clean": "rimraf ./node_modules ./coverage ./dist ./test/tmp"
+	},
+	"keywords": [
+		"rocksdb",
+		"storely",
+		"storage",
+		"adapter",
+		"key",
+		"value",
+		"store",
+		"cache",
+		"ttl",
+		"embedded"
+	],
+	"author": "Ritesh Rana <contact@riteshrana.engineer>",
+	"license": "MIT",
+	"dependencies": {
+		"@nxtedition/rocksdb": "^15.4.1",
+		"hookified": "^2.0.0"
+	},
+	"peerDependencies": {
+		"storely": "workspace:^"
+	},
+	"devDependencies": {
+		"@storely/test-suite": "workspace:^"
+	},
+	"tsd": {
+		"directory": "test"
+	},
+	"engines": {
+		"node": ">= 18"
+	},
+	"files": [
+		"dist",
+		"LICENSE"
+	]
+}

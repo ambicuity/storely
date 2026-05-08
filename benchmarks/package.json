@@ -1,0 +1,35 @@
+{
+	"name": "@storely/benchmarks",
+	"version": "6.0.0-alpha.4",
+	"description": "Competitive benchmark suite comparing storely against keyv and cache-manager",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"bench": "tsx src/runner.ts",
+		"merge": "tsx src/merge.ts",
+		"clean": "rimraf ./node_modules"
+	},
+	"dependencies": {
+		"@keyv/mongo": "^3.0.1",
+		"@keyv/mysql": "^2.0.1",
+		"@keyv/postgres": "^2.0.1",
+		"@keyv/redis": "^5.1.0",
+		"@keyv/sqlite": "^4.0.4",
+		"@storely/mongo": "workspace:^",
+		"@storely/mysql": "workspace:^",
+		"@storely/postgres": "workspace:^",
+		"@storely/redis": "workspace:^",
+		"@storely/sqlite": "workspace:^",
+		"benchmark": "^2.1.4",
+		"cache-manager": "^7.2.4",
+		"keyv": "^5.5.4",
+		"storely": "workspace:^"
+	},
+	"devDependencies": {
+		"@types/benchmark": "^2.1.5",
+		"@types/node": "^24.10.1",
+		"rimraf": "^6.1.2",
+		"tsx": "^4.21.0",
+		"typescript": "^6.0.2"
+	}
+}

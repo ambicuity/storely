@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+# Cancel in-flight runs for the same branch/PR so we don't waste minutes on
+# stale commits while a newer one is already queued.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Lint — fast feedback before spending time on build/test
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          # Version is read from packageManager field in root package.json
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # --no-write ensures we fail rather than silently auto-fix on CI
+      - name: Biome check
+        run: pnpm exec biome check
+
+  # ---------------------------------------------------------------------------
+  # Build — confirms tsdown compiles every package cleanly
+  # ---------------------------------------------------------------------------
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The root build script already builds storely core first, then the rest
+      - name: Build all packages
+        run: pnpm build
+
+  # ---------------------------------------------------------------------------
+  # Test — needs Docker for storage adapter integration tests
+  # ubuntu-latest runners ship with Docker and support host networking
+  # ---------------------------------------------------------------------------
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Build is a prerequisite: adapters import the compiled storely core at
+      # test time (via peerDependencies resolved from workspace dist/).
+      - name: Build all packages
+        run: pnpm build
+
+      # The start script detects ARM vs x86 and selects the right compose file.
+      # GitHub-hosted ubuntu-latest runners are x86_64.
+      - name: Start Docker test services
+        run: pnpm test:services:start
+
+      # Use test:ci (not bare test) so each package runs lint:ci (read-only
+      # Biome) + vitest in a single pass, with coverage and structured output.
+      - name: Run all tests
+        run: pnpm -r test:ci
+
+      # Always stop containers so they don't linger between retries or reruns.
+      - name: Stop Docker test services
+        if: always()
+        run: pnpm test:services:stop

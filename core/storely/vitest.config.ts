@@ -1,0 +1,20 @@
+import {defineConfig} from 'vitest/config';
+
+export default defineConfig({
+	test: {
+		maxWorkers: 1,
+		fileParallelism: false,
+		include: ['test/**/*.test.ts'],
+		coverage: {
+			reporter: ['json', 'lcov', 'text'],
+			reportOnFailure: true,
+			exclude: [
+				'src/index.ts',
+				'src/types.ts',
+				'vitest.config.ts',
+				'dist',
+				'test'
+			]
+		},
+	},
+});

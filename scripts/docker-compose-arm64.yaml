@@ -1,0 +1,129 @@
+services:
+  storely_postgres:
+    image: postgres:latest
+    command: postgres -c 'max_connections=200'
+    environment:
+      POSTGRES_DB: storely_test
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - 5432:5432/tcp
+  storely_postgres_ssl:
+    build:
+      context: ../storage/postgres
+      dockerfile: Dockerfile.ssl
+    command: postgres -c 'max_connections=200' -c 'ssl=on' -c 'ssl_cert_file=/storely_postgres_ssl/server.crt' -c 'ssl_key_file=/storely_postgres_ssl/server.key' -c 'hba_file=/storely_postgres_ssl/pg_hba.conf' -c "listen_addresses=*"
+    environment:
+      POSTGRES_DB: storely_test
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+    ports:
+      - 5433:5432/tcp
+  storely_mysql:
+    image: mysql/mysql-server:latest
+    command: [ "mysqld",
+               "--character-set-server=utf8mb4",
+               "--collation-server=utf8mb4_unicode_ci",
+               "--bind-address=0.0.0.0",
+               "--default_authentication_plugin=mysql_native_password" ]
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: storely_test
+      MYSQL_USER: mysql
+      MYSQL_ROOT_HOST: '%'
+  storely_mysql_ssl:
+    image: "mysql/mysql-server:latest"
+    command: [ "mysqld",
+               "--character-set-server=utf8mb4",
+               "--collation-server=utf8mb4_unicode_ci",
+               "--require_secure_transport=ON",
+               "--bind-address=0.0.0.0",
+               "--ssl-ca=/etc/certs/ca.pem",
+               "--ssl-cert=/etc/certs/server-cert.pem",
+               "--ssl-key=/etc/certs/server-key.pem",
+               "--default_authentication_plugin=mysql_native_password" ]
+    ports:
+      - "3307:3306"
+    volumes:
+      - type: bind
+        source: ../storage/mysql/test/certs
+        target: /etc/certs/
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      MYSQL_DATABASE: storely_test
+      MYSQL_ROOT_HOST: '%'
+  storely_valkey:
+    image: valkey/valkey:latest
+    command: redis-server --port 6370
+    environment:
+      REDIS_HOST: redis
+    ports:
+      - 6370:6370
+  storely_redis:
+    image: redis:latest
+    environment:
+      REDIS_HOST: redis
+    ports:
+      - 6379:6379
+  storely_redis_tls:
+    image: redis:latest
+    command: redis-server --port 0 --tls-port 6380 --tls-cert-file /tls/redis.crt --tls-key-file /tls/redis.key --tls-ca-cert-file /tls/ca.crt --tls-auth-clients no
+    environment:
+      REDIS_HOST: redis
+    ports:
+      - 6380:6380
+    volumes:
+      - ../storage/redis/tls:/tls
+  storely_keydb:
+    image: eqalpha/keydb:latest
+    environment:
+      KEYDB_HOST: keydb
+    ports:
+      - 6378:6379
+  storely_keydb_tls:
+    image: eqalpha/keydb:latest
+    command: keydb-server --port 0 --tls-port 6379 --tls-cert-file /tls/redis.crt --tls-key-file /tls/redis.key --tls-ca-cert-file /tls/ca.crt --tls-auth-clients no
+    environment:
+      KEYDB_HOST: keydb
+    ports:
+      - 6381:6379
+    volumes:
+      - ../storage/keydb/tls:/tls
+  storely_mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+  storely_memcached:
+    image: memcached:latest
+    ports:
+      - "11211:11211"
+  storely_etcd:
+    image: registry.k8s.io/etcd:3.5.15-0
+    platform: linux/arm64/v8
+    command:
+      - etcd
+      - --listen-client-urls=http://0.0.0.0:2379
+      - --advertise-client-urls=http://0.0.0.0:2379
+    ports:
+      - 2379:2379
+      - 2380:2380
+  storely_dynamo:
+    image: amazon/dynamodb-local:latest
+    ports:
+      - 8000:8000
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'if [ "$(curl -s -o /dev/null -I -w ''%{http_code}'' http://localhost:8000)" == "400" ]; then exit 0; else exit 1; fi',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  

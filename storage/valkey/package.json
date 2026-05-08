@@ -1,0 +1,72 @@
+{
+	"name": "@storely/valkey",
+	"version": "6.0.0-alpha.4",
+	"description": "Valkey storage adapter for Storely",
+	"type": "module",
+	"main": "./dist/index.mjs",
+	"module": "./dist/index.mjs",
+	"types": "./dist/index.d.mts",
+	"exports": {
+		".": {
+			"require": {
+				"types": "./dist/index.d.cts",
+				"default": "./dist/index.cjs"
+			},
+			"import": {
+				"types": "./dist/index.d.mts",
+				"default": "./dist/index.mjs"
+			}
+		}
+	},
+	"scripts": {
+		"build": "tsdown",
+		"prepublishOnly": "pnpm build",
+		"lint": "biome check --write --error-on-warnings",
+		"lint:ci": "biome check --error-on-warnings",
+		"test": "pnpm lint && vitest run --coverage",
+		"test:ci": "pnpm lint:ci && vitest --run --sequence.setupFiles=list --coverage",
+		"clean": "rimraf ./node_modules ./coverage ./dist"
+	},
+	"keywords": [
+		"redis",
+		"valkey",
+		"valkeyio",
+		"ioredis",
+		"storely",
+		"storage",
+		"adapter",
+		"key",
+		"value",
+		"store",
+		"cache",
+		"ttl"
+	],
+	"author": "Ritesh Rana <contact@riteshrana.engineer>",
+	"license": "MIT",
+	"dependencies": {
+		"cluster-key-slot": "^1.1.0",
+		"hookified": "^2.0.0",
+		"iovalkey": "^0.3.3"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.8",
+		"@faker-js/faker": "^10.2.0",
+		"@storely/test-suite": "workspace:^",
+		"@vitest/coverage-v8": "^4.0.15",
+		"storely": "workspace:^",
+		"rimraf": "^6.1.2",
+		"timekeeper": "^2.3.1",
+		"tsd": "^0.33.0",
+		"vitest": "^4.0.15"
+	},
+	"tsd": {
+		"directory": "test"
+	},
+	"engines": {
+		"node": ">= 18"
+	},
+	"files": [
+		"dist",
+		"LICENSE"
+	]
+}

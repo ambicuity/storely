@@ -1,0 +1,23 @@
+{
+  "name": "@storely/website",
+  "version": "6.0.0-alpha.4",
+  "description": "Storely Website",
+  "author": "Ritesh Rana <contact@riteshrana.engineer>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test:ci": "echo 'no tests needed'",
+    "test": "echo 'no tests needed'",
+    "generate-docs": "rimraf ./dist && tsx ./src/docs.ts",
+    "build": "echo 'no build needed'",
+    "website:build": "pnpm generate-docs && docula build",
+    "build-serve": "pnpm clean && pnpm generate-docs && docula serve",
+    "clean": "rimraf ./dist ./docs/compression ./docs/test-suite ./docs/storage-adapters",
+    "website:serve": "docula serve"
+  },
+  "devDependencies": {
+    "docula": "^0.31.1",
+    "rimraf": "^6.1.2",
+    "tsx": "^4.21.0"
+  }
+}

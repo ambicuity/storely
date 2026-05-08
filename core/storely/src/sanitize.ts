@@ -1,0 +1,277 @@
+/**
+ * Which dangerous-pattern categories to detect and strip.
+ * Each defaults to `true` when the parent scope is enabled.
+ */
+export type StorelySanitizePatterns = {
+	/**
+	 * Detect and strip SQL injection patterns: semicolons (`;`), SQL comments (`--` and `/*`).
+	 * @default false
+	 */
+	sql: boolean;
+	/**
+	 * Detect and strip MongoDB operator patterns: leading `$`, `{$` sequences.
+	 * @default false
+	 */
+	mongo: boolean;
+	/**
+	 * Detect and strip dangerous control sequences: null bytes (`\0`), carriage returns (`\r`), newlines (`\n`).
+	 * @default false
+	 */
+	escape: boolean;
+	/**
+	 * Detect and strip path traversal patterns: `../` and `..\\` sequences.
+	 * @default false
+	 */
+	path: boolean;
+};
+
+/**
+ * Options for configuring sanitization pattern categories.
+ * All categories default to `true` when the parent scope is enabled.
+ */
+export type StorelySanitizePatternsOptions = {
+	/**
+	 * Detect and strip SQL injection patterns: semicolons (`;`), SQL comments (`--` and `/*`).
+	 * @default true
+	 */
+	sql?: boolean;
+	/**
+	 * Detect and strip MongoDB operator patterns: leading `$`, `{$` sequences.
+	 * @default true
+	 */
+	mongo?: boolean;
+	/**
+	 * Detect and strip dangerous control sequences: null bytes (`\0`), carriage returns (`\r`), newlines (`\n`).
+	 * @default true
+	 */
+	escape?: boolean;
+	/**
+	 * Detect and strip path traversal patterns: `../` and `..\\` sequences.
+	 * @default true
+	 */
+	path?: boolean;
+};
+
+/**
+ * Controls what gets sanitized and with which patterns.
+ */
+export type StorelySanitizeOptions = {
+	/**
+	 * Sanitize keys. Pass `true` for all pattern categories, `false` to skip,
+	 * or a `StorelySanitizePatternOptions` object for granular control.
+	 * @default false
+	 */
+	keys?: boolean | StorelySanitizePatternsOptions;
+	/**
+	 * Sanitize namespace strings. Pass `true` for all pattern categories, `false` to skip,
+	 * or a `StorelySanitizePatternOptions` object for granular control.
+	 * @default false
+	 */
+	namespace?: boolean | StorelySanitizePatternsOptions;
+};
+
+/**
+ * Adapter interface for key and namespace sanitization.
+ * Implement this to provide custom sanitization logic to Storely.
+ */
+export type StorelySanitizeAdapter = {
+	/** Whether any sanitization is currently enabled. */
+	readonly enabled: boolean;
+	/** The key sanitization pattern configuration. */
+	readonly keys: StorelySanitizePatterns;
+	/** The namespace sanitization pattern configuration. */
+	readonly namespace: StorelySanitizePatterns;
+	/** Sanitize a single key. */
+	cleanKey(key: string): string;
+	/** Sanitize an array of keys. */
+	cleanKeys(keys: string[]): string[];
+	/** Sanitize a namespace string. */
+	cleanNamespace(ns: string): string;
+};
+
+const categoryPatterns: Record<keyof StorelySanitizePatterns, RegExp[]> = {
+	sql: [/;/g, /--/g, /\/\*/g],
+	mongo: [/^\$/g, /\{\s*\$/g],
+	escape: [/\0/g, /\r/g, /\n/g],
+	path: [/\.\.\//g, /\.\.\\/g],
+};
+
+/**
+ * Compile an array of RegExp patterns from the enabled categories.
+ * Returns `undefined` when nothing is enabled.
+ */
+function buildPatterns(options: StorelySanitizePatterns): RegExp[] | undefined {
+	const patterns: RegExp[] = [];
+
+	for (const [category, regexes] of Object.entries(categoryPatterns)) {
+		if (options[category as keyof StorelySanitizePatterns] !== false) {
+			patterns.push(...regexes);
+		}
+	}
+
+	return patterns.length > 0 ? patterns : undefined;
+}
+
+/**
+ * Run all patterns against a string, stripping matched sequences.
+ */
+function applyPatterns(value: string, patterns: RegExp[]): string {
+	for (const pattern of patterns) {
+		pattern.lastIndex = 0;
+		value = value.replace(pattern, "");
+	}
+
+	return value;
+}
+
+const allOn: StorelySanitizePatterns = { escape: true, mongo: true, path: true, sql: true };
+const allOff: StorelySanitizePatterns = { escape: false, mongo: false, path: false, sql: false };
+
+/**
+ * Encapsulates key and namespace sanitization with an LRU result cache.
+ */
+export class StorelySanitize implements StorelySanitizeAdapter {
+	private _keys: StorelySanitizePatterns = { ...allOff };
+	private _namespace: StorelySanitizePatterns = { ...allOff };
+	private _keyPatterns: RegExp[] | undefined;
+	private _namespacePatterns: RegExp[] | undefined;
+	private _enabled = false;
+	private _cacheKeys = new Map<string, string>();
+	private _cacheNamespaces = new Map<string, string>();
+	private _cacheMax = 10_000;
+
+	constructor(options?: StorelySanitizeOptions) {
+		if (options !== undefined) {
+			this.updateOptions(options);
+		}
+	}
+
+	/**
+	 * The key sanitization pattern configuration.
+	 */
+	public get keys(): StorelySanitizePatterns {
+		return this._keys;
+	}
+
+	/**
+	 * Whether any sanitization pattern (keys or namespace) is enabled.
+	 */
+	public get enabled(): boolean {
+		return this._enabled;
+	}
+
+	/**
+	 * The namespace sanitization pattern configuration.
+	 */
+	public get namespace(): StorelySanitizePatterns {
+		return this._namespace;
+	}
+
+	/**
+	 * Update the sanitization configuration. Recompiles patterns and clears the cache.
+	 */
+	public updateOptions(options: StorelySanitizeOptions): void {
+		this._keys = this.resolvePatterns(options.keys);
+		this._namespace = this.resolvePatterns(options.namespace);
+		this._enabled =
+			Object.values(this._keys).some(Boolean) || Object.values(this._namespace).some(Boolean);
+		this._keyPatterns = buildPatterns(this._keys);
+		this._namespacePatterns = buildPatterns(this._namespace);
+		this._cacheKeys.clear();
+		this._cacheNamespaces.clear();
+	}
+
+	/**
+	 * Sanitize a single key. Uses an LRU cache for repeated lookups.
+	 */
+	public cleanKey(key: string): string {
+		if (!this._keyPatterns) {
+			return key;
+		}
+
+		const cached = this._cacheKeys.get(key);
+		if (cached !== undefined) {
+			this._cacheKeys.delete(key);
+			this._cacheKeys.set(key, cached);
+			return cached;
+		}
+
+		const result = applyPatterns(key, this._keyPatterns);
+
+		this._cacheKeys.set(key, result);
+		if (this._cacheKeys.size > this._cacheMax) {
+			const first = this._cacheKeys.keys().next().value;
+			if (first !== undefined) {
+				this._cacheKeys.delete(first);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Sanitize an array of keys.
+	 */
+	public cleanKeys(keys: string[]): string[] {
+		if (!this._keyPatterns) {
+			return keys;
+		}
+
+		return keys.map((k) => this.cleanKey(k));
+	}
+
+	/**
+	 * Sanitize a namespace string. Uses an LRU cache for repeated lookups.
+	 */
+	public cleanNamespace(ns: string): string {
+		if (!this._namespacePatterns) {
+			return ns;
+		}
+
+		const cached = this._cacheNamespaces.get(ns);
+		if (cached !== undefined) {
+			this._cacheNamespaces.delete(ns);
+			this._cacheNamespaces.set(ns, cached);
+			return cached;
+		}
+
+		const result = applyPatterns(ns, this._namespacePatterns);
+
+		this._cacheNamespaces.set(ns, result);
+		if (this._cacheNamespaces.size > this._cacheMax) {
+			const first = this._cacheNamespaces.keys().next().value;
+			if (first !== undefined) {
+				this._cacheNamespaces.delete(first);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Clear the LRU caches.
+	 */
+	public clearCache(): void {
+		this._cacheKeys.clear();
+		this._cacheNamespaces.clear();
+	}
+
+	private resolvePatterns(
+		options?: boolean | StorelySanitizePatterns | StorelySanitizePatternsOptions,
+	): StorelySanitizePatterns {
+		if (options === false || options === undefined) {
+			return { ...allOff };
+		}
+
+		if (options === true) {
+			return { ...allOn };
+		}
+
+		return {
+			sql: options.sql !== false,
+			mongo: options.mongo !== false,
+			escape: options.escape !== false,
+			path: options.path !== false,
+		};
+	}
+}
