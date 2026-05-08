@@ -460,20 +460,15 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 	public async delete(key: string) {
 		const strippedKey = this.removeKeyPrefix(key);
 		const ns = this.getNamespaceValue();
-		const sql = `SELECT * FROM ${escapeIdentifier(this._table)} WHERE id = ? AND namespace = ?`;
-		const select = mysql.format(sql, [strippedKey, ns]);
+		// Single round-trip: DELETE returns affectedRows in its ResultSetHeader,
+		// so we get the existed-or-not signal without a separate SELECT. The
+		// previous SELECT * + DELETE pattern transferred the entire row's value
+		// column over the wire just to check presence — for a 64KB MEDIUMBLOB
+		// row that wire transfer dominated single-key delete latency.
 		const delSql = `DELETE FROM ${escapeIdentifier(this._table)} WHERE id = ? AND namespace = ?`;
 		const del = mysql.format(delSql, [strippedKey, ns]);
-
-		const rows: mysql.RowDataPacket = await this.query(select);
-		const row = rows[0];
-
-		if (row === undefined) {
-			return false;
-		}
-
-		await this.query(del);
-		return true;
+		const result = (await this.query(del)) as unknown as mysql.ResultSetHeader;
+		return result.affectedRows > 0;
 	}
 
 	/**
