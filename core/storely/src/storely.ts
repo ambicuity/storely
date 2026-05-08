@@ -956,7 +956,9 @@ export class Storely<GenericValue = any> extends Hookified {
 		if (
 			this._fastPath &&
 			(this.getHooks(StorelyHooks.BEFORE_HAS)?.length ?? 0) === 0 &&
-			(this.getHooks(StorelyHooks.AFTER_HAS)?.length ?? 0) === 0
+			(this.getHooks(StorelyHooks.AFTER_HAS)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.PRE_HAS)?.length ?? 0) === 0 &&
+			(this.getHooks(StorelyHooks.POST_HAS)?.length ?? 0) === 0
 		) {
 			try {
 				return await this._store.has(key as string);

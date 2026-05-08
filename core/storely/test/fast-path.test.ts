@@ -55,4 +55,18 @@ describe("fast path correctness", () => {
 		await s.delete("k");
 		expect(hookSpy).not.toHaveBeenCalled();
 	});
+
+	test("fast path respects deprecated PRE_HAS / POST_HAS aliases", async () => {
+		const s = new Storely({ store: new Map() });
+		const calls: string[] = [];
+		s.onHook(StorelyHooks.PRE_HAS, () => {
+			calls.push("preHas");
+		});
+		s.onHook(StorelyHooks.POST_HAS, () => {
+			calls.push("postHas");
+		});
+		await s.has("missing");
+		expect(calls).toContain("preHas");
+		expect(calls).toContain("postHas");
+	});
 });

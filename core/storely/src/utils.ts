@@ -106,6 +106,8 @@ export const deprecatedHookAliases = new Map<string, string>([
 	[StorelyHooks.AFTER_DELETE, StorelyHooks.POST_DELETE],
 	[StorelyHooks.BEFORE_DELETE_MANY, StorelyHooks.PRE_DELETE_MANY],
 	[StorelyHooks.AFTER_DELETE_MANY, StorelyHooks.POST_DELETE_MANY],
+	[StorelyHooks.BEFORE_HAS, StorelyHooks.PRE_HAS],
+	[StorelyHooks.AFTER_HAS, StorelyHooks.POST_HAS],
 ]);
 
 /**
@@ -133,5 +135,7 @@ export function buildDeprecatedHooks(): Map<string, string> {
 		["postDelete", "Use StorelyHooks.AFTER_DELETE ('after:delete') instead"],
 		["preDeleteMany", "Use StorelyHooks.BEFORE_DELETE_MANY ('before:deleteMany') instead"],
 		["postDeleteMany", "Use StorelyHooks.AFTER_DELETE_MANY ('after:deleteMany') instead"],
+		["preHas", "Use StorelyHooks.BEFORE_HAS ('before:has') instead"],
+		["postHas", "Use StorelyHooks.AFTER_HAS ('after:has') instead"],
 	]);
 }

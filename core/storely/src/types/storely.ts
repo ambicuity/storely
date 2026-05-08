@@ -95,6 +95,10 @@ export enum StorelyHooks {
 	PRE_DELETE_MANY = "preDeleteMany",
 	/** @deprecated Use AFTER_DELETE_MANY instead */
 	POST_DELETE_MANY = "postDeleteMany",
+	/** @deprecated Use BEFORE_HAS instead */
+	PRE_HAS = "preHas",
+	/** @deprecated Use AFTER_HAS instead */
+	POST_HAS = "postHas",
 
 	BEFORE_SET = "before:set",
 	AFTER_SET = "after:set",
