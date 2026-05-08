@@ -115,14 +115,16 @@ export class Storely<GenericValue = any> extends Hookified {
 		this.deprecatedHooks = buildDeprecatedHooks();
 		this._compression = mergedOptions.compression;
 		this._encryption = mergedOptions.encryption;
-		this.initSerialization(mergedOptions);
 		this.initSanitize(mergedOptions);
 		this.initNamespace(mergedOptions.namespace);
-		this.initStats(mergedOptions);
 
 		if (mergedOptions.store) {
 			this.setStore(mergedOptions.store);
 		}
+
+		// Must run after setStore so we can inspect _store.capabilities.inMemory.
+		this.initSerialization(mergedOptions);
+		this.initStats(mergedOptions);
 
 		this.setTtl(mergedOptions.ttl);
 		this._checkExpired = mergedOptions.checkExpired ?? false;
@@ -1174,9 +1176,19 @@ export class Storely<GenericValue = any> extends Hookified {
 	private initSerialization(options: StorelyOptions): void {
 		if (options.serialization === false) {
 			this._serialization = undefined;
-		} else {
-			this._serialization = options.serialization ?? new StorelyJsonSerializer();
+			return;
 		}
+		if (options.serialization !== undefined) {
+			this._serialization = options.serialization;
+			return;
+		}
+		// No explicit option: default to JSON for non-memory stores; skip for memory stores.
+		// Matches keyv's behavior — keyv's memory store does not serialize.
+		if (this._store?.capabilities?.inMemory === true) {
+			this._serialization = undefined;
+			return;
+		}
+		this._serialization = new StorelyJsonSerializer();
 	}
 
 	/**

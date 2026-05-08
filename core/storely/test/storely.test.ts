@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, test, vi } from "vitest";
 import Storely, {
 	StorelyEvents,
 	StorelyHooks,
+	StorelyJsonSerializer,
 	StorelyMemoryAdapter,
 	StorelySanitize,
 } from "../src/index.js";
@@ -275,6 +276,7 @@ describe("encryption", () => {
 
 	test("encode throws on failure, decode emits error and returns undefined", async () => {
 		const storelyEnc = new Storely({
+			serialization: new StorelyJsonSerializer(),
 			encryption: {
 				encrypt() {
 					throw new Error("encrypt failed");
@@ -289,6 +291,7 @@ describe("encryption", () => {
 		);
 
 		const storelyDec = new Storely({
+			serialization: new StorelyJsonSerializer(),
 			encryption: {
 				async encrypt(data: string) {
 					return data;
@@ -987,5 +990,47 @@ describe("emitTelemetry", () => {
 			(call) => typeof call[0] === "string" && call[0].startsWith("stat:"),
 		);
 		expect(statEmits).toEqual([]);
+	});
+});
+
+describe("default serialization behavior", () => {
+	test("Storely with default options + Map store skips serialization", () => {
+		const s = new Storely({ store: new Map() });
+		expect(s.serialization).toBeUndefined();
+	});
+
+	test("Storely with no args (default memory adapter) skips serialization", () => {
+		const s = new Storely();
+		expect(s.serialization).toBeUndefined();
+	});
+
+	test("Storely with default options + asyncMap store still defaults to JSON serializer", () => {
+		const asyncStore = {
+			async get() {},
+			async set() {},
+			async delete() {
+				return true;
+			},
+			async clear() {},
+		};
+		const s = new Storely({ store: asyncStore });
+		expect(s.serialization).toBeInstanceOf(StorelyJsonSerializer);
+	});
+
+	test("Storely with explicit serialization respects it for memory stores", () => {
+		const s = new Storely({ store: new Map(), serialization: new StorelyJsonSerializer() });
+		expect(s.serialization).toBeInstanceOf(StorelyJsonSerializer);
+	});
+
+	test("Storely with serialization: false still disables serialization", () => {
+		const s = new Storely({ store: new Map(), serialization: false });
+		expect(s.serialization).toBeUndefined();
+	});
+
+	test("memory + default: round-trips a 64KB string without serialization corruption", async () => {
+		const s = new Storely({ store: new Map() });
+		const big = "x".repeat(64 * 1024);
+		await s.set("k", big);
+		expect(await s.get("k")).toBe(big);
 	});
 });

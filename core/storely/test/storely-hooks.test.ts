@@ -1,6 +1,6 @@
 import { faker } from "@faker-js/faker";
 import * as test from "vitest";
-import Storely, { StorelyHooks } from "../src/index.js";
+import Storely, { StorelyHooks, StorelyJsonSerializer } from "../src/index.js";
 import { createStore, delay } from "./test-utils.js";
 
 test.it("BEFORE_SET hook", async (t) => {
@@ -26,7 +26,7 @@ test.it("BEFORE_SET hook with manipulation", async (t) => {
 });
 
 test.it("AFTER_SET hook", async (t) => {
-	const storely = new Storely();
+	const storely = new Storely({ serialization: new StorelyJsonSerializer() });
 	storely.addHook(StorelyHooks.AFTER_SET, (data) => {
 		t.expect(data.key).toBe("foo");
 		t.expect(data.value).toBe('{"value":"bar"}');

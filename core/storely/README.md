@@ -19,6 +19,25 @@ There are a few existing modules similar to Storely, however Storely is differen
 - Connection errors are passed through (db failures won't kill your app)
 - Supports the current active LTS version of Node.js or higher
 
+## Breaking changes
+
+### Default serialization for in-memory stores is now off
+
+When constructed with an in-memory store (a `Map`, a `StorelyMemoryAdapter`, or
+no store argument at all) and no explicit `serialization` option, `Storely` no
+longer installs the default JSON serializer. This matches the behavior of `keyv`'s
+in-memory store and removes 4–80× per-op overhead.
+
+To restore the previous behavior, pass an explicit serializer:
+
+```ts
+import { Storely, StorelyJsonSerializer } from "storely";
+const cache = new Storely({
+    store: new Map(),
+    serialization: new StorelyJsonSerializer(),
+});
+```
+
 # Table of Contents
 - [Usage](#usage)
 - [Type-safe Usage](#type-safe-usage)
