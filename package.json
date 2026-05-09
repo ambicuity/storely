@@ -19,7 +19,6 @@
     "test:ci": "pnpm -r test:ci",
     "test:services:start": "chmod +x ./scripts/test-services-start.sh && ./scripts/test-services-start.sh",
     "test:services:stop": "chmod +x ./scripts/test-services-stop.sh && ./scripts/test-services-stop.sh",
-    "bench": "pnpm --filter @storely/benchmarks run bench",
     "website:build": "pnpm recursive --filter @storely/website run website:build",
     "website:serve": "pnpm recursive --filter @storely/website run website:serve",
     "clean": "rimraf node_modules pnpm-lock.yaml && pnpm recursive run clean",

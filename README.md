@@ -49,12 +49,7 @@ storage/          Storage adapters
   redis/  postgres/  mysql/  mongo/  sqlite/
   keydb/  memcache/  etcd/  valkey/  dynamo/  rocksdb/
 website/          Documentation website
-benchmarks/       Competitive benchmarks vs keyv and cache-manager
 ```
-
-# Benchmarks
-
-A competitive benchmark suite comparing storely against `keyv` and `cache-manager` across all shared backends lives in [`benchmarks/`](benchmarks/). Run with `pnpm bench` (start Docker test services first for non-memory backends). Latest results are published as a [docs site page](website/site/docs/benchmarks.md) and in [`benchmarks/results/`](benchmarks/results/).
 
 # Packages
 

@@ -5,7 +5,6 @@ packages:
   - 'encryption/*'
   - 'storage/*'
   - 'website'
-  - 'benchmarks'
 minimumReleaseAge: 2880
 minimumReleaseAgeExclude:
   - memcache
