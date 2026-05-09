@@ -10,7 +10,8 @@ export type BackendName =
 	| "memcache"
 	| "etcd"
 	| "valkey"
-	| "keydb";
+	| "keydb"
+	| "dynamo";
 
 export type Mode = "defaults" | "json";
 

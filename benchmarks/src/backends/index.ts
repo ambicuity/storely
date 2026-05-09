@@ -1,4 +1,5 @@
 import type { BackendFactory } from "../types.js";
+import { dynamoBackend } from "./dynamo.js";
 import { etcdBackend } from "./etcd.js";
 import { keydbBackend } from "./keydb.js";
 import { memcacheBackend } from "./memcache.js";
@@ -21,4 +22,5 @@ export const allBackends: BackendFactory[] = [
 	etcdBackend,
 	valkeyBackend,
 	keydbBackend,
+	dynamoBackend,
 ];
