@@ -8,6 +8,7 @@ import { mongoBackend } from "./mongo.js";
 import { mysqlBackend } from "./mysql.js";
 import { postgresBackend } from "./postgres.js";
 import { redisBackend } from "./redis.js";
+import { rocksdbBackend } from "./rocksdb.js";
 import { sqliteBackend } from "./sqlite.js";
 import { valkeyBackend } from "./valkey.js";
 
@@ -23,4 +24,5 @@ export const allBackends: BackendFactory[] = [
 	valkeyBackend,
 	keydbBackend,
 	dynamoBackend,
+	rocksdbBackend,
 ];

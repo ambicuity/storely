@@ -11,7 +11,8 @@ export type BackendName =
 	| "etcd"
 	| "valkey"
 	| "keydb"
-	| "dynamo";
+	| "dynamo"
+	| "rocksdb";
 
 export type Mode = "defaults" | "json";
 
