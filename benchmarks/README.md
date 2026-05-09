@@ -60,11 +60,21 @@ Numbers outside these rough bands likely indicate a harness bug, not a real perf
 | postgres (localhost) | `get` | 1k – 4k ops/s |
 | mysql (localhost) | `get` | 1k – 3k ops/s |
 | mongo (localhost) | `get` | 1k – 3k ops/s |
+| memcache (localhost) | `get` | 10k – 100k ops/s |
+| etcd (localhost) | `get` | 100 – 2k ops/s (per-op cost dominated by Raft) |
+| valkey (localhost) | `get` / `set` | 1k – 3k ops/s (redis-protocol shape) |
+| keydb (localhost) | `get` / `set` | 1k – 3k ops/s |
+| dynamo (Local, port 8000) | `get` | 100 – 2k ops/s (HTTP API even against Local) |
+| rocksdb (embedded) | `get` | 50k – 500k ops/s (LSM tree, in-process) |
 
 If you see e.g. keyv `set` on redis at 40k+ ops/s, that's the historical
 serialize-disabled bug — confirm `benchmarks/src/libraries/{keyv,cache-manager}.ts`
 is not passing `serialize: undefined`/`deserialize: undefined`. Pre-fix numbers
 were measuring node-redis throwing on a non-string value, caught silently.
+
+**dynamo port collision.** DynamoDB Local listens on port 8000. If another process already binds 8000 (e.g. a local dev server), the dynamo backend's `available()` returns false and the bench skips it. Free the port and re-run to capture dynamo numbers.
+
+**rocksdb tmp directories.** Each rocksdb bench invocation creates a fresh `$TMPDIR/storely-bench-rocksdb-XXXXXX` and does not delete it. Clean up with: `rm -rf "$TMPDIR"/storely-bench-rocksdb-*`. The `available()` probe also returns false if the native binding can't load (e.g. missing `libre2.11.dylib` on a Mac) — the bench skips rocksdb and continues.
 
 ## Regression gate
 
