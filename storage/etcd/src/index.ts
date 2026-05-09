@@ -40,6 +40,19 @@ export class StorelyEtcd<GenericValue = any> extends Hookified {
 	private _keyPrefixSeparator = ":";
 
 	/**
+	 * Cache of recently-created per-call leases, keyed by TTL bucket
+	 * (TTL in seconds). Leases are reused across `set` calls within the
+	 * same bucket to bound lease cardinality. The trade-off: keys sharing
+	 * a bucket lease will be removed when the lease expires (i.e. their
+	 * effective TTL is bounded by the bucket lease's remaining lifetime).
+	 *
+	 * Without this cache the previous implementation created a fresh
+	 * server-side lease for every `set` with a per-key TTL, which
+	 * exhausts etcd's lease table under sustained write load.
+	 */
+	private _leaseBuckets: Map<number, { lease: Lease; createdAt: number }> = new Map();
+
+	/**
 	 * Creates a new StorelyEtcd instance.
 	 * @param url - An etcd server URI string (e.g., `'etcd://localhost:2379'`) or a `StorelyEtcdOptions` object. Defaults to `'127.0.0.1:2379'`.
 	 * @param options - Optional `StorelyEtcdOptions` object. When both `url` and `options` are objects, they are merged together.
@@ -331,9 +344,7 @@ export class StorelyEtcd<GenericValue = any> extends Hookified {
 		try {
 			const target =
 				typeof ttl === "number"
-					? this._client.lease(Math.max(ttl / 1000, 1), {
-							autoKeepAlive: false,
-						})
+					? this.getOrCreateLeaseForTtl(Math.max(ttl / 1000, 1))
 					: this._ttl
 						? this._lease
 						: this._client;
@@ -344,6 +355,27 @@ export class StorelyEtcd<GenericValue = any> extends Hookified {
 			this.emit("error", error);
 			return false;
 		}
+	}
+
+	/**
+	 * Get a lease for the requested TTL (in seconds), reusing any active
+	 * lease from the same bucket whose remaining lifetime still covers
+	 * the requested TTL. Stale buckets are evicted lazily.
+	 */
+	private getOrCreateLeaseForTtl(ttlSeconds: number): Lease {
+		const bucket = Math.ceil(ttlSeconds);
+		const cached = this._leaseBuckets.get(bucket);
+		const now = Date.now();
+		// A lease created at `createdAt` lives until `createdAt + bucket*1000`.
+		// Reuse only if the lease still has at least the full requested TTL
+		// remaining; otherwise create a fresh one. This bounds the worst-case
+		// effective-TTL drift to roughly one bucket-period.
+		if (cached && now - cached.createdAt < (bucket * 1000) / 2) {
+			return cached.lease;
+		}
+		const lease = this._client.lease(bucket, { autoKeepAlive: false });
+		this._leaseBuckets.set(bucket, { lease, createdAt: now });
+		return lease;
 	}
 
 	/**
@@ -491,17 +523,17 @@ export class StorelyEtcd<GenericValue = any> extends Hookified {
 	 */
 	public async disconnect() {
 		try {
-			// Best-effort revoke of the shared instance lease before closing
-			// the client. Per-call leases (created in `set` when a per-key
-			// TTL is provided) are still leaked — that is a Cluster 5 fix.
-			if (this._lease) {
-				try {
-					await this._lease.revoke();
-				} catch {
-					/* lease may already be expired or revoked — ignore */
-				}
-				this._lease = undefined;
-			}
+			// Revoke the shared instance lease and any cached per-TTL bucket
+			// leases. Best-effort: leases that have already expired naturally
+			// will reject the revoke call, which is fine.
+			const allLeases: Lease[] = [];
+			if (this._lease) allLeases.push(this._lease);
+			for (const { lease } of this._leaseBuckets.values()) allLeases.push(lease);
+
+			await Promise.allSettled(allLeases.map((l) => l.revoke()));
+
+			this._lease = undefined;
+			this._leaseBuckets.clear();
 			this._client.close();
 			/* v8 ignore start -- @preserve */
 		} catch (error) {

@@ -25,7 +25,7 @@ it("compress returns a base64 string", async (t) => {
 });
 
 it("options at class level", async (t) => {
-	const storely = new StorelyGzip({ chunkSize: 32 * 1024 });
+	const storely = new StorelyGzip({ compress: { chunkSize: 32 * 1024 } });
 	const compressed = await storely.compress("whatever");
 	t.expect(typeof compressed).toBe("string");
 	t.expect(compressed).not.toBe("whatever");

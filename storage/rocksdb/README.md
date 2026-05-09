@@ -1,5 +1,12 @@
 > RocksDB storage adapter for Storely using `@nxtedition/rocksdb` binding.
 
+> ℹ️ **Native build required.** `@nxtedition/rocksdb` is a native Node.js
+> addon that compiles from source on `npm install` / `pnpm install`. Your
+> environment needs a working C++ toolchain (gcc/clang, make, Python). This
+> rules out minimal Docker images such as `node:20-alpine` (without
+> `apk add g++ make python3`) or distroless. Prebuilt binaries are not
+> distributed.
+
 [![npm](https://img.shields.io/npm/v/@storely/rocksdb.svg)](https://www.npmjs.com/package/@storely/rocksdb)
 [![npm](https://img.shields.io/npm/dm/@storely/rocksdb)](https://npmjs.com/package/@storely/rocksdb)
 

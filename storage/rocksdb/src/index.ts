@@ -642,11 +642,18 @@ export class StorelyRocksDB extends Hookified implements StorelyStorageAdapter {
 	 */
 	async *iterator<Value>(): AsyncGenerator<Array<string | Awaited<Value> | undefined>, void> {
 		await this.ready;
-		const limit = this._iterationLimit > 0 ? this._iterationLimit : 100;
 		const prefix = this.getNamespacePrefix();
 
 		try {
-			const iterOptions: Record<string, any> = { limit };
+			// abstract-level's `limit` is a TOTAL cap, not a batch size — so
+			// passing `_iterationLimit` here would silently truncate large
+			// iterations. We omit it by default; iteration runs to completion.
+			// A user who explicitly opted into a cap (positive iterationLimit)
+			// still gets that behavior, and is responsible for understanding it.
+			const iterOptions: Record<string, any> = {};
+			if (this._iterationLimit > 0) {
+				iterOptions.limit = this._iterationLimit;
+			}
 			if (prefix) {
 				iterOptions.gte = prefix;
 				iterOptions.lt = `${prefix}~`;
@@ -816,12 +823,15 @@ export class StorelyRocksDB extends Hookified implements StorelyStorageAdapter {
 			} catch {
 				return { value };
 			}
-		} else if (
-			Buffer.isBuffer(value) ||
-			(value instanceof Uint8Array && !(value instanceof Uint8Array))
-		) {
+		} else if (Buffer.isBuffer(value) || value instanceof Uint8Array) {
+			// Both Buffer and plain Uint8Array carry encoded JSON bytes from
+			// the abstract-level driver. Buffer extends Uint8Array; the
+			// previous `value instanceof Uint8Array && !(value instanceof
+			// Uint8Array)` was unreachable dead code that effectively
+			// excluded the non-Buffer Uint8Array path.
+			const bytes = Buffer.isBuffer(value) ? value : Buffer.from(value);
 			try {
-				data = JSON.parse(value.toString());
+				data = JSON.parse(bytes.toString());
 			} catch {
 				return { value };
 			}
