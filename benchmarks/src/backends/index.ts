@@ -1,5 +1,6 @@
 import type { BackendFactory } from "../types.js";
 import { etcdBackend } from "./etcd.js";
+import { keydbBackend } from "./keydb.js";
 import { memcacheBackend } from "./memcache.js";
 import { memoryBackend } from "./memory.js";
 import { mongoBackend } from "./mongo.js";
@@ -19,4 +20,5 @@ export const allBackends: BackendFactory[] = [
 	memcacheBackend,
 	etcdBackend,
 	valkeyBackend,
+	keydbBackend,
 ];

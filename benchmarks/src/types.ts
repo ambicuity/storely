@@ -9,7 +9,8 @@ export type BackendName =
 	| "mongo"
 	| "memcache"
 	| "etcd"
-	| "valkey";
+	| "valkey"
+	| "keydb";
 
 export type Mode = "defaults" | "json";
 
