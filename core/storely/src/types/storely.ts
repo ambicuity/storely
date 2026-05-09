@@ -7,10 +7,15 @@ import type {
 } from "./adapters.js";
 
 /**
- * A Map or any Map-like object. Used as a flexible input type for stores.
+ * A Map or Map-like object. Used as a flexible input type for stores.
+ *
+ * The runtime path performs duck-typing on this via `resolveStore`, so we
+ * only require the structural shape `Map` exposes. Earlier revisions
+ * unioned this with `any`, which collapsed the entire type back to `any`
+ * and defeated the type system.
  */
-// biome-ignore lint/suspicious/noExplicitAny: type format
-export type StorelyMapAny = Map<any, any> | any;
+// biome-ignore lint/suspicious/noExplicitAny: Map's value type is genuinely arbitrary here
+export type StorelyMapAny = Map<unknown, any>;
 
 /**
  * The envelope structure used to store values in Storely.

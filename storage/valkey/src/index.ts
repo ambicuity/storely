@@ -1,6 +1,6 @@
 import calculateSlot from "cluster-key-slot";
 import { Hookified } from "hookified";
-import { Redis as IORedis, type Cluster, type Redis as RedisInstance } from "iovalkey";
+import { type Cluster, Redis as IORedis, type Redis as RedisInstance } from "iovalkey";
 import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,

@@ -669,7 +669,15 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 	 */
 	public getKeyWithoutPrefix(key: string, namespace?: string): string {
 		if (namespace) {
-			return key.replace(`${namespace}${this._keyPrefixSeparator}`, "");
+			// Use slice() not String.replace() so a key whose value happens
+			// to contain the namespace prefix substring (e.g. namespace="ns",
+			// key="ns:ns:foo") is not over-stripped. We only ever strip the
+			// known prefix at position 0.
+			const prefix = `${namespace}${this._keyPrefixSeparator}`;
+			if (key.startsWith(prefix)) {
+				return key.slice(prefix.length);
+			}
+			return key;
 		}
 
 		return key;

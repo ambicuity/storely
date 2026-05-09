@@ -98,7 +98,16 @@ export class StorelySqlite extends Hookified implements StorelyStorageAdapter {
 	private _iterationLimit = 10;
 
 	/**
-	 * Whether WAL (Write-Ahead Logging) mode is enabled for improved concurrency.
+	 * Whether WAL (Write-Ahead Logging) mode is enabled.
+	 *
+	 * **Multi-process consequence:** with the default `wal: false`, writes
+	 * take an exclusive database-level lock; any other process attempting
+	 * to read or write the same file is blocked until the writer commits.
+	 * If you run more than one process against the same SQLite file
+	 * (multiple Node workers, sidecar processes, etc.) you should pass
+	 * `wal: true`. WAL mode allows concurrent readers and a single writer
+	 * with much better throughput on multi-process workloads.
+	 *
 	 * Not supported for in-memory databases.
 	 * @default false
 	 */

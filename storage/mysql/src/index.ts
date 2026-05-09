@@ -317,9 +317,13 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 			}
 
 			if (this._intervalExpiration !== undefined && this._intervalExpiration > 0) {
+				// Namespace the event by table so multiple StorelyMysql
+				// instances pointing at different tables in the same MySQL
+				// server do not collide on a single global event name.
+				const eventName = `\`${`storely_delete_expired_keys_${this._table}`.replace(/`/g, "``")}\``;
 				await query("SET GLOBAL event_scheduler = ON;");
-				await query("DROP EVENT IF EXISTS storely_delete_expired_keys;");
-				await query(`CREATE EVENT IF NOT EXISTS storely_delete_expired_keys ON SCHEDULE EVERY ${this._intervalExpiration} SECOND
+				await query(`DROP EVENT IF EXISTS ${eventName};`);
+				await query(`CREATE EVENT IF NOT EXISTS ${eventName} ON SCHEDULE EVERY ${this._intervalExpiration} SECOND
 					DO DELETE FROM ${tableEsc}
 					WHERE expires BETWEEN 1 AND UNIX_TIMESTAMP(NOW(3)) * 1000;`);
 			}

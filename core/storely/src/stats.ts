@@ -108,13 +108,18 @@ export class StorelyStats {
 
 	/**
 	 * LRU-bounded map of key to hit count.
+	 *
+	 * Returns the live internal map. Treat it as read-only — external
+	 * mutation will corrupt the LRU ordering invariant. (We could return
+	 * a snapshot copy here, but it would break callers that read
+	 * `stats.hitKeys.get(key)` in tight loops where allocation matters.)
 	 */
 	public get hitKeys(): Map<string, number> {
 		return this.hitKeysMap;
 	}
 
 	/**
-	 * LRU-bounded map of key to miss count.
+	 * LRU-bounded map of key to miss count. Live map; treat as read-only.
 	 */
 	public get missKeys(): Map<string, number> {
 		return this.missKeysMap;

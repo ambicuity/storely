@@ -114,9 +114,16 @@ export class Storely<GenericValue = any> extends Hookified {
 	) {
 		const mergedOptions = Storely.resolveOptions(store, options);
 
+		// `throwOnEmptyListeners: false` so that internal `emit("error", ...)`
+		// calls don't crash applications that haven't attached a listener.
+		// Errors still propagate via the `throwOnErrors` option (which maps
+		// to `throwOnEmitError`); set it to true to surface failures
+		// explicitly. Previously this was `true` and undocumented, turning
+		// transient adapter errors into uncaught exceptions for users who
+		// hadn't read the source.
 		super({
 			throwOnHookError: false,
-			throwOnEmptyListeners: true,
+			throwOnEmptyListeners: false,
 			throwOnEmitError: mergedOptions.throwOnErrors ?? false,
 		});
 
@@ -337,13 +344,16 @@ export class Storely<GenericValue = any> extends Hookified {
 			return new StorelyBridgeAdapter(store as StorelyBridgeStore);
 		}
 
-		this.emit(
-			StorelyEvents.ERROR,
-			new Error(
-				"Could not use the provided storage adapter, falling back to StorelyMemoryAdapter with Map",
-			),
+		// An unrecognized store shape is a programmer error, not a runtime
+		// hazard. Throw directly so the caller's stack trace points at the
+		// bad input. (Previously this `emit("error", …)` and fell back to
+		// an in-memory store, which only surfaced if the consumer had
+		// `throwOnEmptyListeners` semantics in place. With the more
+		// forgiving runtime listener policy we now use, an invalid store
+		// would otherwise be swallowed silently.)
+		throw new Error(
+			"Could not use the provided storage adapter — does not implement Storely's storage interface",
 		);
-		return new StorelyMemoryAdapter(new Map());
 	}
 
 	/**
@@ -415,8 +425,7 @@ export class Storely<GenericValue = any> extends Hookified {
 		}
 
 		await this.hookWithDeprecated(StorelyHooks.BEFORE_GET, { key });
-		// biome-ignore lint/suspicious/noImplicitAnyLet: need to fix
-		let rawData;
+		let rawData: StorelyStorageGetResult<Value> | undefined;
 		try {
 			rawData = await this._store.get<Value>(key as string);
 		} catch (error) {
@@ -702,61 +711,74 @@ export class Storely<GenericValue = any> extends Hookified {
 		await this.hookWithDeprecated(StorelyHooks.BEFORE_SET_MANY, data);
 		entries = data.entries;
 
-		let results: boolean[] = [];
+		const results: boolean[] = entries.map(() => false);
 
-		try {
-			let serializedEntries: Array<{ key: string; value: unknown; ttl?: number }>;
-			if (this._serialization === undefined) {
-				serializedEntries = new Array(entries.length);
-				for (let i = 0; i < entries.length; i++) {
-					const { key, value, ttl: rawTtl } = entries[i];
-					const ttl = resolveTtl(rawTtl, this._ttl);
-					const expires = calculateExpires(ttl);
-					if (typeof value === "symbol") {
-						this.emit(StorelyEvents.ERROR, "symbol cannot be serialized");
-						this.emitTelemetry(StorelyEvents.STAT_ERROR, key);
-						throw new Error("symbol cannot be serialized");
-					}
-					// No serializer: encode is identity; pass {value, expires} envelope directly.
-					serializedEntries[i] = { key, value: { value, expires }, ttl };
-				}
-			} else {
-				serializedEntries = await Promise.all(
-					entries.map(async ({ key, value, ttl }) => {
-						ttl = resolveTtl(ttl, this._ttl);
+		// Per-entry encode/serialize so a single bad entry does not collapse
+		// the whole batch to all-false (the previous behavior). The store
+		// only sees the entries that survived encoding; failed indices stay
+		// false in `results`.
+		type Encoded = { key: string; value: unknown; ttl?: number };
+		const encodedByIndex: Array<Encoded | null> = new Array(entries.length).fill(null);
+		const surviving: Array<{ encoded: Encoded; originalIndex: number }> = [];
 
-						/* v8 ignore next -- @preserve */
-						const expires = calculateExpires(ttl);
+		const serializeOne = async (entry: StorelyEntry<Value>): Promise<Encoded | null> => {
+			const ttl = resolveTtl(entry.ttl, this._ttl);
+			const expires = calculateExpires(ttl);
 
-						/* v8 ignore next -- @preserve */
-						if (typeof value === "symbol") {
-							this.emit(StorelyEvents.ERROR, "symbol cannot be serialized");
-							this.emitTelemetry(StorelyEvents.STAT_ERROR, key);
-							throw new Error("symbol cannot be serialized");
-						}
-
-						const formattedValue = { value, expires };
-						const encodedValue = await this.encode(formattedValue);
-						return { key, value: encodedValue, ttl };
-					}),
-				);
+			if (typeof entry.value === "symbol") {
+				this.emit(StorelyEvents.ERROR, "symbol cannot be serialized");
+				this.emitTelemetry(StorelyEvents.STAT_ERROR, entry.key);
+				return null;
 			}
-			// biome-ignore lint/style/noNonNullAssertion: guaranteed by resolveStore
-			const storeResult = await this._store.setMany!(serializedEntries);
-			/* v8 ignore next -- @preserve */
-			results = Array.isArray(storeResult) ? (storeResult as boolean[]) : entries.map(() => true);
-			this.emitTelemetry(
-				StorelyEvents.STAT_SET,
-				entries.map((e) => e.key),
-			);
-		} catch (error) {
-			this.emit(StorelyEvents.ERROR, error);
-			this.emitTelemetry(
-				StorelyEvents.STAT_ERROR,
-				entries.map((e) => e.key),
-			);
 
-			results = entries.map(() => false);
+			try {
+				const value =
+					this._serialization === undefined
+						? { value: entry.value, expires }
+						: await this.encode({ value: entry.value, expires });
+				return { key: entry.key, value, ttl };
+			} catch (error) {
+				this.emit(StorelyEvents.ERROR, error);
+				this.emitTelemetry(StorelyEvents.STAT_ERROR, entry.key);
+				return null;
+			}
+		};
+
+		const encoded = await Promise.all(entries.map((entry) => serializeOne(entry)));
+		for (let i = 0; i < entries.length; i++) {
+			encodedByIndex[i] = encoded[i];
+			if (encoded[i] !== null) {
+				surviving.push({ encoded: encoded[i] as Encoded, originalIndex: i });
+			}
+		}
+
+		if (surviving.length > 0) {
+			try {
+				// biome-ignore lint/style/noNonNullAssertion: guaranteed by resolveStore
+				const storeResult = await this._store.setMany!(surviving.map((s) => s.encoded));
+				const storeResults = Array.isArray(storeResult)
+					? (storeResult as boolean[])
+					: surviving.map(() => true);
+				const successKeys: string[] = [];
+				for (let i = 0; i < surviving.length; i++) {
+					const success = storeResults[i] ?? true;
+					results[surviving[i].originalIndex] = success;
+					if (success) successKeys.push(surviving[i].encoded.key);
+				}
+				if (successKeys.length > 0) {
+					this.emitTelemetry(StorelyEvents.STAT_SET, successKeys);
+				}
+			} catch (error) {
+				this.emit(StorelyEvents.ERROR, error);
+				this.emitTelemetry(
+					StorelyEvents.STAT_ERROR,
+					surviving.map((s) => s.encoded.key),
+				);
+				// Store-level failure invalidates all surviving entries.
+				for (const s of surviving) {
+					results[s.originalIndex] = false;
+				}
+			}
 		}
 
 		await this.hookWithDeprecated(StorelyHooks.AFTER_SET_MANY, { entries, values: results });
@@ -1094,7 +1116,12 @@ export class Storely<GenericValue = any> extends Hookified {
 		}
 
 		for await (const [key, raw] of this._store.iterator()) {
-			const data = await this.decode(raw as string);
+			// `raw` may be a serialized string (from a serializer-equipped
+			// pipeline) or an already-decoded `{value, expires}` envelope
+			// (from in-memory adapters). `decode()` handles both via its
+			// internal `typeof === "string"` check; the previous `as string`
+			// cast was a type lie that worked by accident.
+			const data = await this.decode(raw);
 
 			if (this._checkExpired && data && isDataExpired(data)) {
 				await this.delete(key as string);

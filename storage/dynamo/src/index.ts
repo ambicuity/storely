@@ -483,9 +483,7 @@ export class StorelyDynamo extends Hookified implements StorelyStorageAdapter {
 					await this.deleteMany(keys);
 				}
 
-				exclusiveStartKey = scanResult.LastEvaluatedKey as
-					| Record<string, unknown>
-					| undefined;
+				exclusiveStartKey = scanResult.LastEvaluatedKey as Record<string, unknown> | undefined;
 			} while (exclusiveStartKey);
 			/* v8 ignore start -- @preserve */
 		} catch (error) {

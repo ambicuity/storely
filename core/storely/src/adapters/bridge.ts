@@ -282,7 +282,13 @@ export class StorelyBridgeAdapter extends Hookified implements StorelyStorageAda
 				...entry,
 				key: this.getKeyPrefix(entry.key, this._namespace),
 			}));
-			await this._store.setMany?.(prefixedEntries);
+			// Propagate the underlying store's per-key result if it returned
+			// an array of booleans. Stores that return undefined or non-array
+			// values fall back to all-true (no signal to the contrary).
+			const storeResult = await this._store.setMany?.(prefixedEntries);
+			if (Array.isArray(storeResult)) {
+				return storeResult.map((r, i) => (typeof r === "boolean" ? r : i < entries.length));
+			}
 			return entries.map(() => true);
 		}
 

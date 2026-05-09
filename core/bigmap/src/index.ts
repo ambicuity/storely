@@ -1,12 +1,12 @@
 import { Hookified, type HookifiedOptions } from "hookified";
 import { Storely } from "storely";
 
-export type MapInterfacee<K, V> = {
+export type MapInterface<K, V> = {
 	readonly size: number;
 	clear(): void;
 	delete(key: K): boolean;
 	forEach(
-		callbackfn: (value: V, key: K, map: MapInterfacee<K, V>) => void,
+		callbackfn: (value: V, key: K, map: MapInterface<K, V>) => void,
 		// biome-ignore lint/suspicious/noExplicitAny: MapInterface
 		thisArg?: any,
 	): void;
@@ -16,8 +16,14 @@ export type MapInterfacee<K, V> = {
 	[Symbol.iterator](): IterableIterator<[K, V]>;
 	get(key: K): V | undefined;
 	has(key: K): boolean;
-	set(key: K, value: V): Map<K, V>;
+	set(key: K, value: V): MapInterface<K, V>;
 };
+
+/**
+ * @deprecated Misnamed alias kept for backwards compatibility. Use
+ * {@link MapInterface} instead. Will be removed in the next major.
+ */
+export type MapInterfacee<K, V> = MapInterface<K, V>;
 
 export type StoreHashFunction = (key: string, storeSize: number) => number;
 
@@ -66,7 +72,7 @@ export type BigMapOptions = {
 	storeHashFunction?: StoreHashFunction;
 } & HookifiedOptions;
 
-export class BigMap<K, V> extends Hookified implements MapInterfacee<K, V> {
+export class BigMap<K, V> extends Hookified implements MapInterface<K, V> {
 	private _storeSize!: number;
 	private _store!: Array<Map<K, V>>;
 	private _storeHashFunction!: StoreHashFunction;
@@ -323,11 +329,17 @@ export class BigMap<K, V> extends Hookified implements MapInterfacee<K, V> {
 
 	/**
 	 * Sets the value for a key in the map.
+	 *
+	 * Returns `this` (the BigMap instance) so chained `.set(a,1).set(b,2)`
+	 * works correctly across shards. Earlier revisions returned the
+	 * internal shard `Map<K,V>`, which silently routed all chained sets
+	 * into the same shard regardless of the key's actual hash.
+	 *
 	 * @param {K} key - The key of the entry to set.
 	 * @param {V} value - The value to set for the entry.
-	 * @returns {Map<K, V>} The map instance.
+	 * @returns {this} This BigMap instance, for chaining.
 	 */
-	public set(key: K, value: V): Map<K, V> {
+	public set(key: K, value: V): this {
 		let store: Map<K, V>;
 		if (this._storeSize === 1) {
 			store = this._store[0];
@@ -336,7 +348,7 @@ export class BigMap<K, V> extends Hookified implements MapInterfacee<K, V> {
 		}
 
 		store.set(key, value);
-		return store;
+		return this;
 	}
 
 	/**

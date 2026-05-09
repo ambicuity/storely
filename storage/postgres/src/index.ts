@@ -66,10 +66,12 @@ export class StorelyPostgres extends Hookified implements StorelyStorageAdapter 
 	private _ssl?: boolean | ConnectionOptions;
 
 	/**
-	 * The number of rows to fetch per iteration batch.
-	 * @default 10
+	 * The number of rows to fetch per iteration batch. Bumped from 10 to
+	 * 500 because the previous default forced an excessive number of
+	 * round-trips on any non-trivial dataset.
+	 * @default 500
 	 */
-	private _iterationLimit = 10;
+	private _iterationLimit = 500;
 
 	/**
 	 * Whether to use a PostgreSQL unlogged table (faster writes, no WAL, data lost on crash).
