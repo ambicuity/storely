@@ -1,5 +1,11 @@
 # @storely/keydb
 
+> ⚠️ **Experimental.** Batch operations (`getMany` / `setMany` / `deleteMany`)
+> can hang indefinitely if the server becomes unreachable mid-pipeline; the
+> `@redis/client` library queues commands during reconnection without a
+> per-command timeout. Do not put live traffic on this adapter until that
+> is fixed. See [docs/audits/2026-05-09](../../docs/audits/2026-05-09-production-readiness-audit.md).
+
 > KeyDB storage adapter for Storely
 
 > **Note:** KeyDB is Redis-protocol compatible and uses the same `@redis/client` library. This adapter leverages the `node-redis` client to connect to KeyDB instances, just as you would with Redis.

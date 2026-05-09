@@ -47,6 +47,9 @@
       "sqlite3",
       "sqlite325h",
       "unrs-resolver"
-    ]
+    ],
+    "overrides": {
+      "tar@<7.5.9": ">=7.5.9"
+    }
   }
 }

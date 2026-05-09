@@ -1,4 +1,11 @@
 
+> ⚠️ **Experimental.** Per-call lease creation leaks server-side leases
+> on every `set` with a TTL — high-frequency writes will exhaust etcd's
+> lease table. The shared instance lease (when configured) is also never
+> renewed, so all keys evict simultaneously when it expires. Do not put
+> live traffic on this adapter until lease lifecycle is fixed. See
+> [docs/audits/2026-05-09](../../docs/audits/2026-05-09-production-readiness-audit.md).
+
 > Etcd storage adapter for Storely using the [etcd3](https://github.com/microsoft/etcd3) client
 
 [![npm](https://img.shields.io/npm/v/@storely/etcd.svg)](https://www.npmjs.com/package/@storely/etcd)

@@ -1,4 +1,12 @@
 
+> ⚠️ **Experimental.** Until recently `clear()` only deleted the first
+> Scan page (≤1 MB), silently leaving the rest of the table; this has been
+> fixed but the adapter has not yet been load-tested at scale. The previous
+> silent 6-hour default TTL on every write was also removed — set
+> `defaultTtl` explicitly if you want non-permanent storage. Do not put
+> live traffic on this adapter without first running it against your own
+> test fixtures. See [docs/audits/2026-05-09](../../docs/audits/2026-05-09-production-readiness-audit.md).
+
 > DynamoDB storage adapter for Storely
 
 [![npm](https://img.shields.io/npm/v/@storely/dynamo.svg)](https://www.npmjs.com/package/@storely/dynamo)

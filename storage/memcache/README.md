@@ -1,4 +1,12 @@
 
+> ⚠️ **Experimental.** Two known production hazards: (1) batch operations
+> (`getMany` / `setMany` / `deleteMany`) can hang indefinitely if the server
+> becomes unreachable — the underlying `memcache` client has no per-op
+> timeout; (2) `clear()` flushes the **entire** Memcached server regardless
+> of namespace, since Memcached does not support namespaced flush. Do not
+> put live traffic on this adapter until both are fixed. See
+> [docs/audits/2026-05-09](../../docs/audits/2026-05-09-production-readiness-audit.md).
+
 > Memcache storage adapter for Storely using the [memcache](https://www.npmjs.com/package/memcache) client
 [![npm](https://img.shields.io/npm/dm/@storely/memcache)](https://npmjs.com/package/@storely/memcache)
 

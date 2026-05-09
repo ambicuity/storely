@@ -1,5 +1,17 @@
 > Simple key-value storage with support for multiple backends
 
+# Adapter status
+
+Not every adapter is at the same level of production hardening. Use this list
+when picking a backend; the [production-readiness audit](docs/audits/2026-05-09-production-readiness-audit.md)
+has the full reasoning.
+
+- **Production-ready:** `redis`, `sqlite`, `postgres`
+- **Beta** (use with caution; see audit): `mysql`, `mongo`, `valkey`, `rocksdb`
+- **Experimental — known issues:** `keydb`, `memcache`, `etcd`, `dynamo` —
+  see each package's README for the specific gaps. The experimental adapters
+  ship for early integration work; do not put live traffic on them yet.
+
 # Getting Started
 
 Storely provides a consistent interface for key-value storage across multiple backends via storage adapters. It supports TTL-based expiry, making it suitable as a cache or a persistent key-value store.

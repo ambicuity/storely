@@ -491,6 +491,17 @@ export class StorelyEtcd<GenericValue = any> extends Hookified {
 	 */
 	public async disconnect() {
 		try {
+			// Best-effort revoke of the shared instance lease before closing
+			// the client. Per-call leases (created in `set` when a per-key
+			// TTL is provided) are still leaked — that is a Cluster 5 fix.
+			if (this._lease) {
+				try {
+					await this._lease.revoke();
+				} catch {
+					/* lease may already be expired or revoked — ignore */
+				}
+				this._lease = undefined;
+			}
 			this._client.close();
 			/* v8 ignore start -- @preserve */
 		} catch (error) {

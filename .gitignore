@@ -3,3 +3,11 @@ dist/
 coverage/
 .DS_Store
 *.log
+
+# SQLite test artifacts — these change every test run and should not
+# be tracked. They were tracked historically; see Cluster 4 of the
+# production-readiness remediation.
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
