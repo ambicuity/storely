@@ -1,4 +1,5 @@
 import type { BackendFactory } from "../types.js";
+import { memcacheBackend } from "./memcache.js";
 import { memoryBackend } from "./memory.js";
 import { mongoBackend } from "./mongo.js";
 import { mysqlBackend } from "./mysql.js";
@@ -13,4 +14,5 @@ export const allBackends: BackendFactory[] = [
 	mysqlBackend,
 	postgresBackend,
 	mongoBackend,
+	memcacheBackend,
 ];
