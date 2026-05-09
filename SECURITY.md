@@ -1,9 +1,39 @@
 # Security Policy
 
-To report a security vulnerability, please post an issue in our repository for [Storely](../../issues) and mark it with `security vulnerability`. You need to add in the issue description the following information:
+## Reporting a vulnerability
 
-- **Vulnerability Type**: Describe the type of vulnerability (e.g., XSS, CSRF, SQL Injection).
-- **Vulnerability Description**: Describe the vulnerability in detail, including how it can be exploited and what impact it may have.
-- **Proof of Concept**: If possible, provide a proof of concept (PoC) that demonstrates the vulnerability.
+**Do not file public issues for vulnerabilities.** Public reports give attackers
+a head start before a fix is available.
 
-Once the issue has been validated, we will open a [Github Security Advisory](https://docs.github.com/en/code-security/repository-security-advisories/about-github-security-advisories-for-repositories), if necessary. When the issue has been resolved, we will alert users of the past vulnerability by publishing the security advisory.
+Use GitHub's private security advisory flow:
+
+1. Go to the **Security** tab of this repository.
+2. Click **Report a vulnerability**, or follow this link directly:
+   <https://github.com/jaredwray/storely/security/advisories/new>
+   *(replace `jaredwray/storely` with the appropriate fork if reporting against one).*
+3. Fill out the advisory form with:
+   - **Vulnerability type** (e.g. injection, auth bypass, cryptographic weakness).
+   - **Affected packages and versions** — which `@storely/*` package(s), and which version(s) you observed the issue on.
+   - **Reproduction** — the smallest input that demonstrates the issue. A failing
+     test or a code snippet is ideal.
+   - **Impact** — what an attacker can do with this, and under what conditions.
+   - **Suggested remediation** if you have one.
+
+We will acknowledge the report, work on a fix in private, and publish a GitHub
+Security Advisory (with credit, if you'd like) once a patched version is
+released.
+
+## Supported versions
+
+The most recent minor release on `main` is supported. Older versions receive
+fixes only for high-severity issues at the maintainers' discretion.
+
+## Scope
+
+In scope: all packages published from this repository (`storely`,
+`@storely/*`). The website at `website/` is documentation; security issues with
+the rendered docs site infrastructure should be reported to the hosting
+provider.
+
+Out of scope: third-party storage adapters or forks not maintained in this
+repository.

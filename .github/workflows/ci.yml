@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - main
+    tags:
+      - 'v*'
   pull_request:
 
 # Cancel in-flight runs for the same branch/PR so we don't waste minutes on
-# stale commits while a newer one is already queued.
+# stale commits while a newer one is already queued. Tag pushes use a unique
+# group keyed by the tag so they never cancel each other.
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/') }}
 
 jobs:
   # ---------------------------------------------------------------------------
@@ -38,6 +41,32 @@ jobs:
       # --no-write ensures we fail rather than silently auto-fix on CI
       - name: Biome check
         run: pnpm exec biome check
+
+  # ---------------------------------------------------------------------------
+  # Typecheck — `tsc --noEmit` across every package. Build below uses tsdown
+  # which strips types without checking them, so this catches type errors that
+  # would otherwise slip into the published artifacts.
+  # ---------------------------------------------------------------------------
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: tsc --noEmit
+        run: pnpm -r exec tsc --noEmit
 
   # ---------------------------------------------------------------------------
   # Build — confirms tsdown compiles every package cleanly
@@ -106,3 +135,77 @@ jobs:
       - name: Stop Docker test services
         if: always()
         run: pnpm test:services:stop
+
+  # ---------------------------------------------------------------------------
+  # Publish — only runs on semver tag pushes, and only after every other gate
+  # has passed on the same SHA. This is the security-critical job: a tag
+  # cannot publish to npm unless lint + typecheck + build + test all pass.
+  #
+  # `id-token: write` enables npm provenance attestations via GitHub OIDC.
+  # ---------------------------------------------------------------------------
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck, build, test]
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Fetch full history so version-sync scripts and git describe work
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: false
+
+      # registry-url wires up NODE_AUTH_TOKEN to the npm registry automatically
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # The root build script guarantees storely core is compiled before all
+      # other packages, matching the constraint documented in AGENTS.md.
+      - name: Build all packages
+        run: pnpm build
+
+      # ---------------------------------------------------------------------------
+      # Hard version guard: ensure the git tag matches the version field in the
+      # root package.json. A mismatch is a release-pipeline error, not a warning,
+      # because publishing under the wrong tag would corrupt downstream tooling.
+      # ---------------------------------------------------------------------------
+      - name: Verify tag matches package version
+        run: |
+          PKG_VERSION="v$(node -p "require('./package.json').version")"
+          GIT_TAG="${GITHUB_REF_NAME}"
+
+          echo "Package version: $PKG_VERSION"
+          echo "Git tag:         $GIT_TAG"
+
+          if [[ "$GIT_TAG" != "$PKG_VERSION" ]]; then
+            echo "::error::Tag ($GIT_TAG) does not match package.json version ($PKG_VERSION). Refusing to publish."
+            exit 1
+          fi
+          echo "Version check passed."
+
+      # pnpm -r publish iterates every workspace package.
+      # --access public is required for @scoped packages on the free npm tier.
+      # --no-git-checks bypasses the "working tree must be clean" guard that
+      #   would always fail inside a checked-out CI clone.
+      # --provenance attaches a signed attestation linking this artifact to the
+      #   exact GitHub Actions run that produced it (npm provenance via OIDC).
+      # Private packages (private: true in their package.json) are automatically
+      # skipped by pnpm — no extra filtering needed.
+      - name: Publish packages to npm
+        run: pnpm -r publish --access public --no-git-checks --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
