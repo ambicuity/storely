@@ -52,6 +52,7 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 	private _throwOnConnectError = true;
 	private _throwOnErrors = false;
 	private _connectionTimeout: number | undefined;
+	private _commandTimeout: number | undefined;
 
 	/**
 	 * StorelyRedis constructor.
@@ -948,6 +949,28 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 		if (options.connectionTimeout !== undefined) {
 			this._connectionTimeout = options.connectionTimeout;
 		}
+
+		if (options.commandTimeout !== undefined) {
+			this._commandTimeout = options.commandTimeout;
+		}
+	}
+
+	/**
+	 * Race a batch op against `_commandTimeout`. Returns the op result
+	 * unchanged when no timeout is configured.
+	 */
+	private async withCommandTimeout<T>(label: string, op: () => Promise<T>): Promise<T> {
+		const promise = op();
+		if (this._commandTimeout === undefined) return promise;
+		return Promise.race([
+			promise,
+			new Promise<T>((_resolve, reject) =>
+				setTimeout(
+					() => reject(new Error(`redis ${label} timed out after ${this._commandTimeout}ms`)),
+					this._commandTimeout,
+				).unref(),
+			),
+		]);
 	}
 
 	private initClient(): void {

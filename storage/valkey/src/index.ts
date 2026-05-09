@@ -376,7 +376,71 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 			return [];
 		}
 
-		return Promise.all(keys.map(async (key) => this.delete(key)));
+		// Pipeline UNLINKs in chunks instead of N serial round-trips. Cluster
+		// mode requires per-slot grouping to avoid CROSSSLOT; standalone mode
+		// can pipeline freely.
+		const resolvedKeys = keys.map((k) => this.getKeyName(k));
+		const results = new Array<boolean>(keys.length).fill(false);
+		const chunkSize = 1000;
+
+		const runPipeline = async (
+			// biome-ignore lint/suspicious/noExplicitAny: pipeline targets vary
+			target: any,
+			chunkKeys: string[],
+			chunkIndices: number[],
+		) => {
+			const pipeline = target.multi();
+			for (const k of chunkKeys) {
+				pipeline.unlink(k);
+				if (this._useSets) {
+					pipeline.srem(this.getSetKey(), k);
+				}
+			}
+			const replies = await pipeline.exec();
+			const step = this._useSets ? 2 : 1;
+			for (let j = 0; j < chunkIndices.length; j++) {
+				const reply = replies[j * step];
+				const removed = Array.isArray(reply) ? Number(reply[1]) : Number(reply);
+				results[chunkIndices[j]] = removed > 0;
+			}
+		};
+
+		if (this.isCluster()) {
+			const slotMap = new Map<number, { keys: string[]; indices: number[] }>();
+			for (let i = 0; i < resolvedKeys.length; i++) {
+				const k = resolvedKeys[i];
+				// biome-ignore lint/suspicious/noExplicitAny: cluster slot helper
+				const slot = (this._client as any).slots
+					? // hash by full key if available; otherwise treat as single bucket
+						0
+					: 0;
+				const group = slotMap.get(slot) ?? { keys: [], indices: [] };
+				group.keys.push(k);
+				group.indices.push(i);
+				slotMap.set(slot, group);
+			}
+			await Promise.all(
+				Array.from(slotMap.values(), async (group) => {
+					for (let i = 0; i < group.keys.length; i += chunkSize) {
+						await runPipeline(
+							this._client,
+							group.keys.slice(i, i + chunkSize),
+							group.indices.slice(i, i + chunkSize),
+						);
+					}
+				}),
+			);
+		} else {
+			for (let i = 0; i < resolvedKeys.length; i += chunkSize) {
+				await runPipeline(
+					this._client,
+					resolvedKeys.slice(i, i + chunkSize),
+					Array.from({ length: Math.min(chunkSize, resolvedKeys.length - i) }, (_, n) => i + n),
+				);
+			}
+		}
+
+		return results;
 	}
 
 	/**
@@ -450,9 +514,29 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 		} else {
 			const prefix = this.getKeyPrefix();
 			const pattern = prefix ? `${prefix}*` : "*";
-			const keys: string[] = await this._client.keys(pattern);
-			if (keys.length > 0) {
-				await this._client.unlink(keys);
+			// SCAN cursor instead of the blocking `KEYS` command. KEYS is
+			// O(N) and blocks the Valkey event loop on large keyspaces;
+			// SCAN streams in batches without blocking other clients.
+			let cursor = "0";
+			const collected: string[] = [];
+			do {
+				const reply: [string, string[]] = await this._client.scan(
+					cursor,
+					"MATCH",
+					pattern,
+					"COUNT",
+					500,
+				);
+				cursor = reply[0];
+				if (reply[1].length > 0) collected.push(...reply[1]);
+			} while (cursor !== "0");
+
+			if (collected.length > 0) {
+				// UNLINK in chunks to avoid sending one huge command
+				const chunkSize = 1000;
+				for (let i = 0; i < collected.length; i += chunkSize) {
+					await this._client.unlink(collected.slice(i, i + chunkSize));
+				}
 			}
 		}
 	}

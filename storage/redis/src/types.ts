@@ -57,6 +57,20 @@ export type StorelyRedisOptions = {
 	 * @default undefined
 	 */
 	connectionTimeout?: number;
+
+	/**
+	 * Per-batch-operation timeout in milliseconds. When set, `getMany`,
+	 * `setMany`, `deleteMany`, and `hasMany` are raced against this
+	 * deadline. The motivation: `@redis/client` queues commands during
+	 * reconnection without a per-command timeout, so a transient network
+	 * partition mid-pipeline can otherwise block batch operations
+	 * indefinitely.
+	 *
+	 * Single-command operations (`get`, `set`, `delete`) are not wrapped;
+	 * apply them via `connectionTimeout` or your own `Promise.race` if you
+	 * need the same guarantee. Default: undefined (no timeout).
+	 */
+	commandTimeout?: number;
 };
 
 export type StorelyRedisPropertyOptions = StorelyRedisOptions & {
