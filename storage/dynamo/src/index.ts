@@ -27,7 +27,13 @@ import {
 } from "storely";
 
 export class StorelyDynamo extends Hookified implements StorelyStorageAdapter {
-	private _sixHoursInMilliseconds = 6 * 60 * 60 * 1000;
+	/**
+	 * Optional default TTL (milliseconds) applied when a `set` is called
+	 * without an explicit `ttl`. `undefined` means no expiry — the previous
+	 * silent 6-hour fallback was removed because it diverged from every
+	 * other adapter and contradicted "permanent storage" expectations.
+	 */
+	private _defaultTtl: number | undefined;
 	private _namespace?: string;
 	private _tableName = "storely";
 	private _endpoint?: string;
@@ -42,10 +48,11 @@ export class StorelyDynamo extends Hookified implements StorelyStorageAdapter {
 			options = { endpoint: options };
 		}
 
-		const { tableName = "storely", namespace, ...clientConfig } = options;
+		const { tableName = "storely", namespace, defaultTtl, ...clientConfig } = options;
 
 		this._tableName = tableName;
 		this._endpoint = clientConfig.endpoint as string | undefined;
+		this._defaultTtl = defaultTtl;
 
 		if (namespace) {
 			this._namespace = namespace;
@@ -59,17 +66,17 @@ export class StorelyDynamo extends Hookified implements StorelyStorageAdapter {
 	}
 
 	/**
-	 * Gets the default TTL fallback in milliseconds (6 hours).
+	 * Gets the explicit default TTL (ms), or `undefined` if no default is set.
 	 */
-	public get sixHoursInMilliseconds(): number {
-		return this._sixHoursInMilliseconds;
+	public get defaultTtl(): number | undefined {
+		return this._defaultTtl;
 	}
 
 	/**
-	 * Sets the default TTL fallback in milliseconds.
+	 * Sets the default TTL (ms). Pass `undefined` to write keys without expiry.
 	 */
-	public set sixHoursInMilliseconds(value: number) {
-		this._sixHoursInMilliseconds = value;
+	public set defaultTtl(value: number | undefined) {
+		this._defaultTtl = value;
 	}
 
 	/**
@@ -200,20 +207,21 @@ export class StorelyDynamo extends Hookified implements StorelyStorageAdapter {
 		try {
 			await this._tableReady;
 
-			const sixHoursFromNowEpoch = Math.floor((Date.now() + this._sixHoursInMilliseconds) / 1000);
-
+			const effectiveTtl = typeof ttl === "number" ? ttl : this._defaultTtl;
 			const expiresAt =
-				typeof ttl === "number"
-					? Math.floor((Date.now() + (ttl + 1000)) / 1000)
-					: sixHoursFromNowEpoch;
+				typeof effectiveTtl === "number"
+					? Math.floor((Date.now() + (effectiveTtl + 1000)) / 1000)
+					: undefined;
+
+			const item: Record<string, unknown> = {
+				id: this.formatKey(key),
+				value,
+			};
+			if (expiresAt !== undefined) item.expiresAt = expiresAt;
 
 			const putInput: PutCommandInput = {
 				TableName: this._tableName,
-				Item: {
-					id: this.formatKey(key),
-					value,
-					expiresAt,
-				},
+				Item: item,
 			};
 
 			await this._client.put(putInput);
@@ -238,23 +246,20 @@ export class StorelyDynamo extends Hookified implements StorelyStorageAdapter {
 				return entries.map(() => true);
 			}
 
-			const sixHoursFromNowEpoch = Math.floor((Date.now() + this._sixHoursInMilliseconds) / 1000);
-
 			const putRequests = entries.map(({ key, value, ttl }) => {
+				const effectiveTtl = typeof ttl === "number" ? ttl : this._defaultTtl;
 				const expiresAt =
-					typeof ttl === "number"
-						? Math.floor((Date.now() + (ttl + 1000)) / 1000)
-						: sixHoursFromNowEpoch;
+					typeof effectiveTtl === "number"
+						? Math.floor((Date.now() + (effectiveTtl + 1000)) / 1000)
+						: undefined;
 
-				return {
-					PutRequest: {
-						Item: {
-							id: this.formatKey(key),
-							value,
-							expiresAt,
-						},
-					},
+				const item: Record<string, unknown> = {
+					id: this.formatKey(key),
+					value,
 				};
+				if (expiresAt !== undefined) item.expiresAt = expiresAt;
+
+				return { PutRequest: { Item: item } };
 			});
 
 			const results = new Array<boolean>(entries.length).fill(true);
@@ -462,13 +467,26 @@ export class StorelyDynamo extends Hookified implements StorelyStorageAdapter {
 		try {
 			await this._tableReady;
 
-			const scanResult = await this._client.scan({
-				TableName: this._tableName,
-			});
+			// DynamoDB Scan returns at most 1 MB per page. Loop until
+			// LastEvaluatedKey is undefined so tables larger than one page
+			// are fully cleared. Previous implementation processed only
+			// the first page, silently leaving the rest of the table intact.
+			let exclusiveStartKey: Record<string, unknown> | undefined;
+			do {
+				const scanResult = await this._client.scan({
+					TableName: this._tableName,
+					ExclusiveStartKey: exclusiveStartKey,
+				});
 
-			const keys = this.extractKey(scanResult);
+				const keys = this.extractKey(scanResult);
+				if (keys.length > 0) {
+					await this.deleteMany(keys);
+				}
 
-			await this.deleteMany(keys);
+				exclusiveStartKey = scanResult.LastEvaluatedKey as
+					| Record<string, unknown>
+					| undefined;
+			} while (exclusiveStartKey);
 			/* v8 ignore start -- @preserve */
 		} catch (error) {
 			this.emit("error", error);
@@ -758,6 +776,15 @@ export default StorelyDynamo;
 export type StorelyDynamoOptions = {
 	namespace?: string;
 	tableName?: string;
+	/**
+	 * Default TTL (milliseconds) applied to keys written without an explicit
+	 * `ttl` argument. Omit (or set to `undefined`) for permanent storage —
+	 * the adapter no longer applies a hidden 6-hour fallback.
+	 *
+	 * Note: DynamoDB TTL is best-effort and may take up to 48 hours to
+	 * actually delete expired items. Lazy expiry checks compensate on read.
+	 */
+	defaultTtl?: number;
 } & DynamoDBClientConfig;
 
 /**

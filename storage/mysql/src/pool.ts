@@ -1,8 +1,5 @@
 import mysql, { type Pool } from "mysql2";
 
-let mysqlPool: Pool | undefined;
-let globalUri: string | undefined;
-
 export const parseConnectionString = (connectionString: string) => {
 	// Handle # character as URL breaks when it is present
 	connectionString = connectionString.replace(/#/g, "%23");
@@ -30,23 +27,32 @@ export const parseConnectionString = (connectionString: string) => {
 	return poolOptions;
 };
 
-export const pool = (uri: string, options = {}) => {
-	if (globalUri !== uri) {
-		mysqlPool = undefined;
-		globalUri = uri;
-	}
-
+/**
+ * Create a per-instance mysql connection pool.
+ *
+ * Earlier revisions cached a single module-level pool keyed by URI. That
+ * design leaked pools whenever two StorelyMysql instances were created in
+ * the same process with different URIs (the second call replaced the
+ * cached pool without ending the first), and it conflated multi-tenant
+ * use cases. Each StorelyMysql instance now owns its own Pool and ends
+ * it via `endPool` on disconnect.
+ */
+export const createPool = (uri: string, options: object = {}): Pool => {
 	const connectObject = parseConnectionString(uri);
 	const poolOptions = { ...connectObject, ...options };
-
-	mysqlPool ??= mysql.createPool(poolOptions);
-	return mysqlPool.promise();
+	return mysql.createPool(poolOptions);
 };
 
-export const endPool = () => {
-	if (mysqlPool) {
-		mysqlPool.end();
-	}
-
-	globalUri = undefined;
+/**
+ * Drain and close a pool, awaiting completion. Safe to call with `undefined`
+ * (returns immediately).
+ */
+export const endPool = (pool: Pool | undefined): Promise<void> => {
+	if (!pool) return Promise.resolve();
+	return new Promise((resolve, reject) => {
+		pool.end((err) => {
+			if (err) reject(err);
+			else resolve();
+		});
+	});
 };

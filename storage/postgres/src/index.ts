@@ -460,11 +460,19 @@ export class StorelyPostgres extends Hookified implements StorelyStorageAdapter 
 		const ns = this.getNamespaceValue();
 		const deleted = new Set<string>();
 
-		// Postgres RETURNING gives us per-key existence in a single round-trip.
+		// Chunk the key array so we don't ship arbitrarily-large arrays to
+		// the pg driver. 1000 keys per round-trip is the same conservative
+		// bound the SQLite adapter uses for its parameter chunking.
+		const chunkSize = 1000;
 		const sql = `DELETE FROM ${escapeIdentifier(this._schema)}.${escapeIdentifier(this._table)} WHERE key = ANY($1) AND COALESCE(namespace, '') = COALESCE($2, '') RETURNING key`;
-		const rows = await this.query(sql, [strippedKeys, ns]);
-		for (const row of rows as Array<{ key: string }>) {
-			deleted.add(row.key as string);
+
+		for (let i = 0; i < strippedKeys.length; i += chunkSize) {
+			const chunk = strippedKeys.slice(i, i + chunkSize);
+			// Postgres RETURNING gives us per-key existence in a single round-trip per chunk.
+			const rows = await this.query(sql, [chunk, ns]);
+			for (const row of rows as Array<{ key: string }>) {
+				deleted.add(row.key as string);
+			}
 		}
 
 		return strippedKeys.map((k) => deleted.has(k));
@@ -777,4 +785,4 @@ export const createStorely = (options?: StorelyPostgresOptions) =>
 	new Storely({ store: new StorelyPostgres(options) });
 
 export default StorelyPostgres;
-export type { StorelyPostgresOptions } from "./types";
+export type { StorelyPostgresOptions } from "./types.js";

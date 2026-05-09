@@ -55,6 +55,13 @@ export type StorelyRocksDBOptions = {
 	 * @default 'warn'
 	 */
 	infoLogLevel?: RocksDBLogLevel;
+
+	/**
+	 * Optional namespace passed through to the wrapping Storely instance
+	 * when constructed via `createStorelyRocksDB`. Has no effect on the
+	 * adapter itself; namespacing is applied by Storely core via key prefixing.
+	 */
+	namespace?: string;
 };
 
 export enum RocksDBErrorMessages {

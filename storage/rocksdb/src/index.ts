@@ -3,6 +3,7 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+// @ts-expect-error - @nxtedition/rocksdb ships no type declarations
 import { RocksLevel } from "@nxtedition/rocksdb";
 import { Hookified } from "hookified";
 import type { StorelyEntry, StorelyStorageAdapter, StorelyStorageGetResult } from "storely";

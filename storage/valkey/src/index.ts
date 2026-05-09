@@ -1,6 +1,6 @@
 import calculateSlot from "cluster-key-slot";
 import { Hookified } from "hookified";
-import Redis, { type Cluster } from "iovalkey";
+import { Redis as IORedis, type Cluster, type Redis as RedisInstance } from "iovalkey";
 import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
@@ -61,7 +61,7 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 				...options,
 			};
 			// biome-ignore lint/style/noNonNullAssertion: need to fix
-			this._client = new Redis(options.uri!, options);
+			this._client = new IORedis(options.uri!, options);
 		}
 
 		if (options !== undefined && options.useSets !== undefined) {
@@ -131,15 +131,15 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 	 * Can be used to access the raw client for advanced operations not exposed by the adapter.
 	 * @returns {Redis | Cluster} The iovalkey Redis or Cluster instance.
 	 */
-	public get client(): Redis | Cluster {
-		return this._client as Redis | Cluster;
+	public get client(): RedisInstance | Cluster {
+		return this._client as RedisInstance | Cluster;
 	}
 
 	/**
 	 * Replaces the underlying iovalkey Redis or Cluster client instance.
-	 * @param {Redis | Cluster} value - The new iovalkey Redis or Cluster instance to use.
+	 * @param {RedisInstance | Cluster} value - The new iovalkey Redis or Cluster instance to use.
 	 */
-	public set client(value: Redis | Cluster) {
+	public set client(value: RedisInstance | Cluster) {
 		this._client = value;
 	}
 

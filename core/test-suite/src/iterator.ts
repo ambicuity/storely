@@ -36,7 +36,7 @@ const storelyIteratorTests = (
 
 		await Promise.all(toResolve);
 		let count = 0;
-		for await (const [key, value] of storely.iterator(namespace)) {
+		for await (const [key, value] of storely.iterator()) {
 			const doesKeyExist = map.has(key);
 			const isValueSame = map.get(key) === value;
 			t.expect(doesKeyExist && isValueSame).toBeTruthy();
@@ -78,7 +78,7 @@ const storelyIteratorTests = (
 
 		await Promise.all(toResolve);
 		let count = 0;
-		for await (const [key, value] of storely2.iterator(ns2)) {
+		for await (const [key, value] of storely2.iterator()) {
 			const doesKeyExist = map2.has(key);
 			const isValueSame = map2.get(key) === value;
 			t.expect(doesKeyExist && isValueSame).toBeTruthy();
@@ -119,7 +119,7 @@ const storelyIteratorTests = (
 		await storely.set(nonExpiringKey, nonExpiringValue);
 
 		await delay(300);
-		const iterator = storely.iterator(namespace);
+		const iterator = storely.iterator();
 
 		// Collect all yielded entries
 		const keys: string[] = [];

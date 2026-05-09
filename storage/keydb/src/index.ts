@@ -874,7 +874,7 @@ export default class StorelyKeyDB<T> extends Hookified implements StorelyStorage
 				TypeMapping
 			>;
 			const mainNode = cluster.slots[slot].master;
-			return cluster.nodeClient(mainNode) as RedisClientType;
+			return cluster.nodeClient(mainNode) as unknown as RedisClientType;
 		}
 
 		return connection as RedisClientType;

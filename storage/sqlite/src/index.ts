@@ -887,5 +887,5 @@ export type {
 	Sqlite3ModuleLike,
 } from "./drivers/sqlite3-driver.js";
 export { createSqlite3Driver } from "./drivers/sqlite3-driver.js";
-export type { SqliteDriver, SqliteDriverName } from "./drivers/types";
-export type { StorelySqliteOptions } from "./types";
+export type { SqliteDriver, SqliteDriverName } from "./drivers/types.js";
+export type { StorelySqliteOptions } from "./types.js";

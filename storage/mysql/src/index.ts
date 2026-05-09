@@ -1,11 +1,11 @@
 import { Hookified } from "hookified";
-import mysql, { type ConnectionOptions } from "mysql2";
+import mysql, { type ConnectionOptions, type Pool } from "mysql2";
 import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
 } from "storely";
-import { endPool, pool } from "./pool.js";
+import { createPool, endPool } from "./pool.js";
 import type { StorelyMysqlOptions } from "./types.js";
 
 /**
@@ -83,6 +83,12 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 	 * Additional mysql2 ConnectionOptions passed through to the connection pool.
 	 */
 	private _mysqlOptions: ConnectionOptions = {};
+
+	/**
+	 * Per-instance mysql2 connection pool. Owned by this StorelyMysql so that
+	 * multiple instances in the same process do not share or leak pools.
+	 */
+	private _pool: Pool | undefined;
 
 	/**
 	 * Query function for executing SQL statements against the MySQL database.
@@ -231,8 +237,9 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 			this._mysqlOptions = this.generateMySqlOptions(options);
 		}
 
+		this._pool = createPool(this._uri, this._mysqlOptions);
+		const conn = this._pool.promise();
 		const connection = async () => {
-			const conn = pool(this._uri, this._mysqlOptions);
 			return async (sql: string) => {
 				const data = await conn.query(sql);
 				return data[0];
@@ -253,7 +260,7 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 				`SELECT DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = 'value'`,
 				[this._table],
 			);
-			const checkResult: mysql.RowDataPacket = await query(checkSql);
+			const checkResult = (await query(checkSql)) as mysql.RowDataPacket[];
 			const checkRows = Array.isArray(checkResult) ? checkResult : [];
 			if (checkRows[0]?.DATA_TYPE === "text") {
 				await query(`ALTER TABLE ${tableEsc} MODIFY COLUMN value MEDIUMBLOB`);
@@ -443,7 +450,7 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 			const sql = `INSERT INTO ${escapeIdentifier(this._table)} (id, value, namespace, expires)
 			VALUES ${placeholders}
 			ON DUPLICATE KEY UPDATE value=VALUES(value), expires=VALUES(expires);`;
-			const upsert = mysql.format(sql, flatValues);
+			const upsert = mysql.format(sql, flatValues as mysql.SqlValue[]);
 			await this.query(upsert);
 			return entries.map(() => true);
 		} catch (error) {
@@ -633,10 +640,12 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 
 	/**
 	 * Disconnects from the MySQL database and closes the connection pool.
+	 * Awaits pool drain so in-flight queries complete before the pool ends.
 	 * @returns Promise that resolves when disconnected
 	 */
 	public async disconnect() {
-		endPool();
+		await endPool(this._pool);
+		this._pool = undefined;
 	}
 
 	/**
@@ -765,4 +774,4 @@ export const createStorely = (options?: StorelyMysqlOptions | string) =>
 	new Storely({ store: new StorelyMysql(options) });
 
 export default StorelyMysql;
-export type { StorelyMysqlOptions } from "./types";
+export type { StorelyMysqlOptions } from "./types.js";

@@ -684,7 +684,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 		const ns = this.getNamespaceValue();
 
 		if (this._useGridFS) {
-			const document = await client.store.count({
+			const document = await client.store.countDocuments({
 				filename: { $eq: strippedKey },
 				"metadata.namespace": { $eq: ns },
 				$or: [{ "metadata.expiresAt": null }, { "metadata.expiresAt": { $gt: new Date() } }],
@@ -692,7 +692,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 			return document !== 0;
 		}
 
-		const document = await client.store.count({
+		const document = await client.store.countDocuments({
 			key: { $eq: strippedKey },
 			namespace: { $eq: ns },
 			$or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
@@ -792,55 +792,61 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 
 	/**
 	 * Initializes the MongoDB connection and sets up indexes.
+	 *
+	 * Throws on connection failure so the caller's `await this.connect`
+	 * rejects rather than hanging forever. (The previous implementation
+	 * used `new Promise(async (resolve, _reject) => …)` and only emitted
+	 * an `"error"` event on failure, leaving the promise pending and
+	 * deadlocking every subsequent operation.)
 	 */
-	private initConnection(): Promise<StorelyMongoConnect> {
-		// biome-ignore lint/suspicious/noAsyncPromiseExecutor: need to fix
-		return new Promise(async (resolve, _reject) => {
-			try {
-				const client = new mongoClient(this._url, this._mongoOptions);
-				await client.connect();
+	private async initConnection(): Promise<StorelyMongoConnect> {
+		const client = new mongoClient(this._url, this._mongoOptions);
+		try {
+			await client.connect();
+		} catch (error) {
+			this.emit("error", error);
+			throw error;
+		}
 
-				const database = client.db(this._db);
+		const database = client.db(this._db);
 
-				if (this._useGridFS) {
-					const bucket = new GridFSBucket(database, {
-						readPreference: this._readPreference,
-						bucketName: this._collection,
-					});
-					const store = database.collection(`${this._collection}.files`);
+		if (this._useGridFS) {
+			const bucket = new GridFSBucket(database, {
+				readPreference: this._readPreference,
+				bucketName: this._collection,
+			});
+			const store = database.collection(`${this._collection}.files`);
 
-					await store.createIndex({ uploadDate: -1 });
-					await store.createIndex({ "metadata.expiresAt": 1 });
-					await store.createIndex({ "metadata.lastAccessed": 1 });
-					await store.createIndex({ "metadata.filename": 1 });
-					await store.createIndex({ "metadata.namespace": 1 });
+			await store.createIndex({ uploadDate: -1 });
+			await store.createIndex({ "metadata.expiresAt": 1 });
+			await store.createIndex({ "metadata.lastAccessed": 1 });
+			await store.createIndex({ "metadata.filename": 1 });
+			await store.createIndex({ "metadata.namespace": 1 });
 
-					resolve({
-						bucket,
-						store,
-						db: database,
-						mongoClient: client,
-					});
-				} else {
-					const store = database.collection(this._collection);
+			return {
+				bucket,
+				store,
+				db: database,
+				mongoClient: client,
+			};
+		}
 
-					// Migration: drop old single-field unique index on key
-					try {
-						await store.dropIndex("key_1");
-					} catch {
-						// Index doesn't exist or already dropped - safe to ignore
-					}
+		const store = database.collection(this._collection);
 
-					await store.createIndex({ key: 1, namespace: 1 }, { unique: true, background: true });
-					await store.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0, background: true });
+		// Migration: drop old single-field unique index on key
+		try {
+			await store.dropIndex("key_1");
+		} catch {
+			// Index doesn't exist or already dropped - safe to ignore
+		}
 
-					resolve({ store, mongoClient: client });
-				}
-			} catch (error) {
-				/* v8 ignore next -- @preserve */
-				this.emit("error", error);
-			}
-		});
+		// `background: true` was deprecated in mongodb driver v4 and is the
+		// default server behavior since MongoDB 4.2 — passing it generates
+		// deprecation warnings.
+		await store.createIndex({ key: 1, namespace: 1 }, { unique: true });
+		await store.createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+
+		return { store, mongoClient: client };
 	}
 }
 

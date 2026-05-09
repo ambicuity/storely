@@ -304,7 +304,11 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 		try {
 			key = this.createKeyPrefix(key, this._namespace);
 
-			if (ttl) {
+			// Treat ttl ≤ 0 as no-op (no expiry). The previous `if (ttl)` form
+			// silently dropped TTL=0, which a caller might reasonably expect
+			// to mean "expire immediately". Document explicitly: ttl undefined
+			// or ttl <= 0 → persist without expiry.
+			if (typeof ttl === "number" && ttl > 0) {
 				await client.set(key, value, { PX: ttl });
 			} else {
 				await client.set(key, value);
@@ -354,7 +358,7 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 							entry: { key, value, ttl },
 						} of slotEntries) {
 							const prefixedKey = this.createKeyPrefix(key, this._namespace);
-							if (ttl) {
+							if (typeof ttl === "number" && ttl > 0) {
 								multi.set(prefixedKey, value as string, { PX: ttl });
 							} else {
 								multi.set(prefixedKey, value as string);
@@ -372,7 +376,7 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 				const multi = client.multi();
 				for (const { key, value, ttl } of entries) {
 					const prefixedKey = this.createKeyPrefix(key, this._namespace);
-					if (ttl) {
+					if (typeof ttl === "number" && ttl > 0) {
 						multi.set(prefixedKey, value as string, { PX: ttl });
 					} else {
 						multi.set(prefixedKey, value as string);
@@ -863,7 +867,7 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 				TypeMapping
 			>;
 			const mainNode = cluster.slots[slot].master;
-			return cluster.nodeClient(mainNode) as RedisClientType;
+			return cluster.nodeClient(mainNode) as unknown as RedisClientType;
 		}
 
 		return connection as RedisClientType;
