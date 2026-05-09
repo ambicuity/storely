@@ -8,7 +8,8 @@ export type BackendName =
 	| "postgres"
 	| "mongo"
 	| "memcache"
-	| "etcd";
+	| "etcd"
+	| "valkey";
 
 export type Mode = "defaults" | "json";
 

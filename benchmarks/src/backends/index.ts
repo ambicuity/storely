@@ -7,6 +7,7 @@ import { mysqlBackend } from "./mysql.js";
 import { postgresBackend } from "./postgres.js";
 import { redisBackend } from "./redis.js";
 import { sqliteBackend } from "./sqlite.js";
+import { valkeyBackend } from "./valkey.js";
 
 export const allBackends: BackendFactory[] = [
 	memoryBackend,
@@ -17,4 +18,5 @@ export const allBackends: BackendFactory[] = [
 	mongoBackend,
 	memcacheBackend,
 	etcdBackend,
+	valkeyBackend,
 ];
