@@ -5,26 +5,70 @@ import {
 	createHash,
 	type DecipherGCM,
 	getCipherInfo,
+	pbkdf2Sync,
 	randomBytes,
 } from "node:crypto";
 import type { StorelyEncryptionAdapter } from "storely";
 
-const AEAD_MODES = new Set(["gcm", "ccm", "stream"]);
+/**
+ * Set of cipher modes recognized as AEAD via Node's `getCipherInfo().mode`.
+ * GCM and CCM both report cleanly via mode. ChaCha20-Poly1305 is also AEAD
+ * but Node reports its mode as "stream" — same label as some non-AEAD
+ * stream ciphers — so we additionally check the algorithm name explicitly
+ * against a known-AEAD allowlist.
+ */
+const AEAD_MODES = new Set(["gcm", "ccm"]);
 const CCM_MODES = new Set(["ccm"]);
+const KNOWN_AEAD_ALGORITHMS = new Set(["chacha20-poly1305"]);
 
 const AUTH_TAG_LENGTH = 16;
+const DEFAULT_PBKDF2_ITERATIONS = 100_000;
 
 /**
  * Options for {@link StorelyEncryptNode}.
  */
 export type StorelyEncryptNodeOptions = {
-	/** Encryption key. Strings are hashed with SHA-256 and truncated to the required length. Buffers are used directly and must match the algorithm's key length. */
+	/**
+	 * Encryption key. Strings are SHA-256-hashed and truncated to the
+	 * algorithm's key length — this only normalises *length*, it does
+	 * not stretch entropy. **Do not pass raw user passwords.** For
+	 * password-derived keys, call {@link deriveKey} first and pass the
+	 * resulting Buffer.
+	 *
+	 * Buffer keys must already be exactly the algorithm's key length.
+	 */
 	key: string | Buffer;
 	/** Cipher algorithm to use. Any algorithm supported by Node.js `crypto.getCipherInfo()`. @defaultValue `"aes-256-gcm"` */
 	algorithm?: string;
 	/** Output encoding for the encrypted string. @defaultValue `"base64"` */
 	encoding?: BufferEncoding;
 };
+
+/**
+ * Derive a 32-byte key from a password and salt using PBKDF2-SHA256.
+ *
+ * Use this when the only "key material" you have is a user-supplied
+ * password or other low-entropy string. Passing such inputs directly
+ * to the {@link StorelyEncryptNode} constructor is unsafe; SHA-256 is
+ * not a key derivation function and provides no work-factor against
+ * brute force.
+ *
+ * @param password - The password or passphrase to stretch.
+ * @param salt - A salt value. Must be unique per key; store alongside the
+ *   ciphertext or in a separate config so you can re-derive on decrypt.
+ *   At least 16 bytes recommended.
+ * @param iterations - PBKDF2 iteration count. Defaults to 100,000.
+ * @param length - Output key length in bytes. Defaults to 32 (AES-256).
+ * @returns A Buffer of `length` bytes suitable for use as `options.key`.
+ */
+export function deriveKey(
+	password: string,
+	salt: string | Buffer,
+	iterations: number = DEFAULT_PBKDF2_ITERATIONS,
+	length = 32,
+): Buffer {
+	return pbkdf2Sync(password, salt, iterations, length, "sha256");
+}
 
 /**
  * Node.js `crypto`-based encryption adapter for Storely.
@@ -37,12 +81,27 @@ export type StorelyEncryptNodeOptions = {
  * Wire format (AEAD): `[IV || AuthTag (16 bytes) || Ciphertext]`
  * Wire format (non-AEAD): `[IV || Ciphertext]`
  *
+ * **Authentication:** AES-CBC and other non-AEAD ciphers do **not**
+ * verify integrity. An attacker who can modify ciphertext can flip
+ * plaintext bits without detection. Prefer AES-GCM or another AEAD mode.
+ *
+ * **Key rotation:** there is no built-in ciphertext versioning. To
+ * rotate the encryption key, decrypt all stored values with the old key
+ * and re-encrypt them with the new key. Plan this into your operational
+ * procedures before relying on encryption at rest.
+ *
  * @example
  * ```ts
  * import Storely from "storely";
- * import StorelyEncryptNode from "@storely/encrypt-node";
+ * import StorelyEncryptNode, { deriveKey } from "@storely/encrypt-node";
  *
- * const encryption = new StorelyEncryptNode({ key: "my-secret" });
+ * // Direct key (32 random bytes from a key management system):
+ * const encryption = new StorelyEncryptNode({ key: keyBuffer });
+ *
+ * // Password-derived key (always use deriveKey, never pass the password):
+ * const key = deriveKey(userPassword, storedSalt);
+ * const encryption = new StorelyEncryptNode({ key });
+ *
  * const storely = new Storely({ encryption });
  * await storely.set("foo", "bar");
  * ```
@@ -72,7 +131,7 @@ export class StorelyEncryptNode implements StorelyEncryptionAdapter {
 
 		const mode = info.mode ?? "";
 		this._ivLength = info.ivLength ?? 12;
-		this._isAead = AEAD_MODES.has(mode);
+		this._isAead = AEAD_MODES.has(mode) || KNOWN_AEAD_ALGORITHMS.has(this._algorithm);
 		this._isCcm = CCM_MODES.has(mode);
 
 		if (Buffer.isBuffer(options.key)) {
@@ -82,6 +141,10 @@ export class StorelyEncryptNode implements StorelyEncryptionAdapter {
 
 			this._key = options.key;
 		} else {
+			// String keys are SHA-256-hashed and truncated to the algorithm's
+			// key length. This only normalises length — it does not stretch
+			// entropy. Callers passing user-supplied passwords should use
+			// `deriveKey()` first.
 			const hash = createHash("sha256").update(options.key).digest();
 			this._key = hash.subarray(0, info.keyLength);
 		}

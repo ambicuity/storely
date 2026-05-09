@@ -18,11 +18,61 @@ export type WebAlgorithm =
  * Options for {@link StorelyEncryptWeb}.
  */
 export type StorelyEncryptWebOptions = {
-	/** Encryption key. Strings are hashed with SHA-256 and truncated to the required length. Uint8Array keys are used directly and must match the algorithm's key length. */
+	/**
+	 * Encryption key. Strings are SHA-256-hashed and truncated to the
+	 * required length — this only normalises length, it does not stretch
+	 * entropy. **Do not pass raw user passwords.** For password-derived
+	 * keys, call {@link deriveKey} first and pass the resulting Uint8Array.
+	 *
+	 * Uint8Array keys must already be exactly the algorithm's key length.
+	 */
 	key: string | Uint8Array<ArrayBuffer>;
 	/** Algorithm. @defaultValue `"aes-256-gcm"` */
 	algorithm?: WebAlgorithm;
 };
+
+const DEFAULT_PBKDF2_ITERATIONS = 100_000;
+
+/**
+ * Derive a key from a password and salt using PBKDF2-SHA256 via the
+ * Web Crypto API.
+ *
+ * Use this when the only "key material" you have is a user-supplied
+ * password or other low-entropy string. Passing such inputs directly
+ * to the {@link StorelyEncryptWeb} constructor is unsafe; SHA-256 is
+ * not a key derivation function and provides no work-factor against
+ * brute force.
+ *
+ * @param password - The password or passphrase to stretch.
+ * @param salt - A salt value. Must be unique per key; store alongside the
+ *   ciphertext or in a separate config so you can re-derive on decrypt.
+ *   At least 16 bytes recommended.
+ * @param iterations - PBKDF2 iteration count. Defaults to 100,000.
+ * @param length - Output key length in bytes. Defaults to 32 (AES-256).
+ * @returns A `Uint8Array` of `length` bytes suitable for use as `options.key`.
+ */
+export async function deriveKey(
+	password: string,
+	salt: string | Uint8Array<ArrayBuffer>,
+	iterations: number = DEFAULT_PBKDF2_ITERATIONS,
+	length = 32,
+): Promise<Uint8Array<ArrayBuffer>> {
+	const encoder = new TextEncoder();
+	const saltBytes: Uint8Array<ArrayBuffer> = typeof salt === "string" ? encoder.encode(salt) : salt;
+	const baseKey = await crypto.subtle.importKey(
+		"raw",
+		encoder.encode(password),
+		{ name: "PBKDF2" },
+		false,
+		["deriveBits"],
+	);
+	const bits = await crypto.subtle.deriveBits(
+		{ name: "PBKDF2", salt: saltBytes, iterations, hash: "SHA-256" },
+		baseKey,
+		length * 8,
+	);
+	return new Uint8Array(bits);
+}
 
 /** Internal configuration derived from a {@link WebAlgorithm} value. */
 type AlgorithmConfig = {
@@ -98,12 +148,27 @@ function concat(...arrays: Uint8Array[]): Uint8Array<ArrayBuffer> {
  * Wire format (AEAD): `[IV (12 bytes) || AuthTag (16 bytes) || Ciphertext]`
  * Wire format (non-AEAD): `[IV (16 bytes) || Ciphertext]`
  *
+ * **Authentication:** AES-CBC does **not** verify integrity. An attacker
+ * who can modify ciphertext can flip plaintext bits without detection.
+ * Prefer AES-GCM unless you have a specific reason to use CBC.
+ *
+ * **Key rotation:** there is no built-in ciphertext versioning. To
+ * rotate the encryption key, decrypt all stored values with the old key
+ * and re-encrypt them with the new key. Plan this into your operational
+ * procedures before relying on encryption at rest.
+ *
  * @example
  * ```ts
  * import Storely from "storely";
- * import StorelyEncryptWeb from "@storely/encrypt-web";
+ * import StorelyEncryptWeb, { deriveKey } from "@storely/encrypt-web";
  *
- * const encryption = new StorelyEncryptWeb({ key: "my-secret" });
+ * // Direct key (32 random bytes from a key management system):
+ * const encryption = new StorelyEncryptWeb({ key: keyBytes });
+ *
+ * // Password-derived key (always use deriveKey, never pass the password):
+ * const key = await deriveKey(userPassword, storedSalt);
+ * const encryption = new StorelyEncryptWeb({ key });
+ *
  * const storely = new Storely({ encryption });
  * await storely.set("foo", "bar");
  * ```
