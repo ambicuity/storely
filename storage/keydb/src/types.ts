@@ -57,6 +57,18 @@ export type StorelyKeyDBOptions = {
 	 * @default undefined
 	 */
 	connectionTimeout?: number;
+
+	/**
+	 * Per-batch-operation timeout in milliseconds. When set, `getMany`,
+	 * `setMany`, `deleteMany`, and `hasMany` are raced against this
+	 * deadline. The motivation: `@redis/client` queues commands during
+	 * reconnection without a per-command timeout, so a transient network
+	 * partition mid-pipeline can otherwise block batch operations
+	 * indefinitely (the bench-removal commit's named symptom).
+	 *
+	 * Default: undefined (no timeout).
+	 */
+	commandTimeout?: number;
 };
 
 export type StorelyKeyDBPropertyOptions = StorelyKeyDBOptions & {

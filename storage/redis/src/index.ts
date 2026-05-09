@@ -329,9 +329,17 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 
 	/**
 	 * Will set many key value pairs in the store. TTL is in milliseconds. This will be done as a single transaction.
+	 * Bounded by `commandTimeout` when configured, so a transient network
+	 * partition mid-pipeline cannot block the call indefinitely.
 	 * @param {StorelyEntry[]} entries - the key value pairs to set with optional ttl
 	 */
 	public async setMany<Value>(entries: StorelyEntry<Value>[]): Promise<boolean[] | undefined> {
+		return this.withCommandTimeout("setMany", () => this._setManyImpl(entries));
+	}
+
+	private async _setManyImpl<Value>(
+		entries: StorelyEntry<Value>[],
+	): Promise<boolean[] | undefined> {
 		try {
 			const results = new Array<boolean>(entries.length).fill(false);
 
@@ -437,6 +445,10 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 	 * @returns {Promise<Array<boolean>>} - array of booleans for each key if it exists
 	 */
 	public async hasMany(keys: string[]): Promise<boolean[]> {
+		return this.withCommandTimeout("hasMany", () => this._hasManyImpl(keys));
+	}
+
+	private async _hasManyImpl(keys: string[]): Promise<boolean[]> {
 		try {
 			const prefixedKeys = keys.map((key) => this.createKeyPrefix(key, this._namespace));
 
@@ -523,6 +535,10 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 	 * @returns {Promise<Array<string | undefined>>} - array of values or undefined if the key does not exist
 	 */
 	public async getMany<U = T>(keys: string[]): Promise<Array<U | undefined>> {
+		return this.withCommandTimeout("getMany", () => this._getManyImpl<U>(keys));
+	}
+
+	private async _getManyImpl<U = T>(keys: string[]): Promise<Array<U | undefined>> {
 		if (keys.length === 0) {
 			return []; // Return empty array if no keys are provided
 		}
@@ -573,6 +589,10 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 	 * @returns {Promise<boolean[]>} - array of booleans indicating whether each key was successfully deleted
 	 */
 	public async deleteMany(keys: string[]): Promise<boolean[]> {
+		return this.withCommandTimeout("deleteMany", () => this._deleteManyImpl(keys));
+	}
+
+	private async _deleteManyImpl(keys: string[]): Promise<boolean[]> {
 		const resultMap = new Map<string, boolean>();
 		const prefixedKeys = keys.map((key) => this.createKeyPrefix(key, this._namespace));
 
