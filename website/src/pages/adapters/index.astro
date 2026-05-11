@@ -1,0 +1,72 @@
+---
+import MarketingLayout from "~/layouts/MarketingLayout.astro";
+import AdapterGrid from "~/components/AdapterGrid.astro";
+---
+
+<MarketingLayout
+	title="Storage adapters · Storely"
+	description="Every storage adapter Storely officially supports, with maturity tiers and direct links to the docs."
+>
+	<section class="head">
+		<div class="inner">
+			<p class="kicker">№ 002 — Directory</p>
+			<h1>Storage <em>adapters</em>.</h1>
+			<p class="lede">
+				Twelve official adapters. Pick what fits the operational profile of
+				your project — start with a production-tier one if you need certainty.
+			</p>
+		</div>
+	</section>
+
+	<section class="directory">
+		<div class="inner">
+			<AdapterGrid />
+		</div>
+	</section>
+</MarketingLayout>
+
+<style>
+	.head {
+		border-bottom: 1px solid var(--rule);
+		padding: clamp(3rem, 6vw, 5rem) 0 clamp(2rem, 4vw, 3rem);
+	}
+	.head .inner {
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: 0 var(--margin);
+	}
+	.kicker {
+		font-family: var(--font-mono);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+		margin-bottom: 1rem;
+	}
+	h1 {
+		font-family: var(--font-display);
+		font-size: var(--step-6);
+		line-height: 0.95;
+		letter-spacing: var(--tracking-display);
+		color: var(--ink);
+	}
+	h1 em {
+		font-style: italic;
+		color: var(--accent);
+	}
+	.lede {
+		margin-top: 1.2rem;
+		max-width: 42rem;
+		font-size: var(--step-1);
+		line-height: 1.5;
+		color: var(--ink-soft);
+	}
+	.directory {
+		padding: clamp(2rem, 5vw, 4rem) 0;
+	}
+	.directory .inner {
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: 0 var(--margin);
+	}
+</style>

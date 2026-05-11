@@ -170,7 +170,7 @@ it("should have correct default property values", (t) => {
 	t.expect(storely.keyLength).toBe(255);
 	t.expect(storely.namespaceLength).toBe(255);
 	t.expect(storely.schema).toBe("public");
-	t.expect(storely.iterationLimit).toBe(10);
+	t.expect(storely.iterationLimit).toBe(500);
 	t.expect(storely.useUnloggedTable).toBe(false);
 	t.expect(storely.ssl).toBeUndefined();
 	t.expect(storely.namespace).toBeUndefined();

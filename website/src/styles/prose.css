@@ -1,0 +1,199 @@
+/*
+ * Prose typography for long-form docs content. Editorial rhythm:
+ *  - 68ch max measure for body
+ *  - Drop cap on the first paragraph after every h2
+ *  - Hairline rules between major sections
+ *  - Tabular code blocks with small-caps language labels
+ */
+
+.prose {
+	font-size: var(--step-0);
+	line-height: var(--leading-body);
+	color: var(--ink);
+	max-width: var(--measure);
+	font-feature-settings: "kern" 1, "liga" 1, "onum" 1;
+}
+
+.prose > * + * {
+	margin-top: 1.1em;
+}
+
+.prose h1 {
+	font-family: var(--font-display);
+	font-size: var(--step-5);
+	line-height: var(--leading-tight);
+	letter-spacing: var(--tracking-display);
+	margin-bottom: 0.6em;
+}
+
+.prose h2 {
+	font-family: var(--font-display);
+	font-style: italic;
+	font-size: var(--step-3);
+	line-height: var(--leading-snug);
+	letter-spacing: var(--tracking-tight);
+	margin-top: 2.4em;
+	padding-top: 1.2em;
+	border-top: 1px solid var(--rule);
+}
+
+.prose h2:first-child {
+	border-top: 0;
+	padding-top: 0;
+	margin-top: 0;
+}
+
+.prose h3 {
+	font-family: var(--font-display);
+	font-size: var(--step-2);
+	line-height: var(--leading-snug);
+	letter-spacing: var(--tracking-tight);
+	margin-top: 1.8em;
+}
+
+.prose h4 {
+	font-family: var(--font-body);
+	font-size: var(--step-0);
+	font-weight: 600;
+	letter-spacing: var(--tracking-wide);
+	text-transform: uppercase;
+	color: var(--ink-soft);
+	margin-top: 1.6em;
+}
+
+.prose p {
+	hanging-punctuation: first last;
+}
+
+.prose h2 + p::first-letter {
+	font-family: var(--font-display);
+	font-style: italic;
+	font-size: 4.2em;
+	line-height: 1;
+	float: left;
+	margin: 0.05em 0.08em 0 -0.05em;
+	color: var(--accent);
+}
+
+.prose strong {
+	font-weight: 600;
+	color: var(--ink);
+}
+
+.prose em {
+	font-family: var(--font-display);
+	font-style: italic;
+	font-size: 1.05em;
+	letter-spacing: var(--tracking-tight);
+}
+
+.prose a {
+	color: var(--accent);
+	border-bottom: 1px solid var(--rule);
+	transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.prose a:hover {
+	border-bottom-color: var(--accent);
+}
+
+.prose code:not(pre code) {
+	font-family: var(--font-mono);
+	font-size: 0.92em;
+	background: var(--canvas-soft);
+	padding: 0.1em 0.35em;
+	border-radius: 2px;
+	color: var(--accent);
+}
+
+.prose pre {
+	font-family: var(--font-mono);
+	font-size: var(--step--1);
+	line-height: 1.55;
+	background: var(--canvas-soft);
+	padding: 1.4rem 1.6rem;
+	margin: 1.6em 0;
+	overflow-x: auto;
+	border-left: 2px solid var(--rule);
+	tab-size: 2;
+	position: relative;
+}
+
+.prose pre code {
+	font-family: inherit;
+	background: none;
+	padding: 0;
+	color: inherit;
+}
+
+.prose ul,
+.prose ol {
+	padding-left: 1.6em;
+	list-style: revert;
+}
+
+.prose ul {
+	list-style: "— " outside;
+}
+
+.prose ul li,
+.prose ol li {
+	padding-left: 0.4em;
+	margin-top: 0.5em;
+}
+
+.prose ul li::marker {
+	color: var(--ink-faint);
+	font-family: var(--font-display);
+}
+
+.prose blockquote {
+	font-family: var(--font-display);
+	font-style: italic;
+	font-size: var(--step-2);
+	line-height: var(--leading-snug);
+	letter-spacing: var(--tracking-tight);
+	color: var(--ink);
+	margin: 2em 0;
+	padding: 0 0 0 1.4em;
+	border-left: 2px solid var(--accent);
+}
+
+.prose blockquote p {
+	margin: 0;
+}
+
+.prose table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: var(--step--1);
+	margin: 1.6em 0;
+}
+
+.prose th,
+.prose td {
+	text-align: left;
+	padding: 0.6em 0.8em;
+	border-bottom: 1px solid var(--rule);
+	vertical-align: top;
+}
+
+.prose th {
+	font-family: var(--font-body);
+	font-weight: 500;
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-caps);
+	font-size: var(--step--2);
+	color: var(--ink-soft);
+	border-bottom: 1px solid var(--ink);
+}
+
+.prose hr {
+	margin: 3em auto;
+	max-width: 6em;
+	border-top-color: var(--rule);
+}
+
+.prose img {
+	border: 1px solid var(--rule);
+}

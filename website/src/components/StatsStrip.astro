@@ -1,0 +1,119 @@
+---
+/**
+ * Compact masthead-style row of three or four numeric proof points.
+ * Reads like a newspaper subhead: numerals in display serif, label in small caps.
+ */
+
+const stats = [
+	{ value: "12", label: "Storage adapters", note: "from SQLite to DynamoDB" },
+	{ value: "1.0.0", label: "Stable since", note: "May 2026" },
+	{ value: "MIT", label: "License", note: "every package" },
+	{ value: "0 kB", label: "Runtime JS on docs", note: "static-first" },
+];
+---
+
+<section class="strip">
+	<dl>
+		{stats.map((s) => (
+			<div>
+				<dt>{s.label}</dt>
+				<dd>
+					<span class="value">{s.value}</span>
+					<span class="note">{s.note}</span>
+				</dd>
+			</div>
+		))}
+	</dl>
+</section>
+
+<style>
+	.strip {
+		border-top: 1px solid var(--rule);
+		border-bottom: 1px solid var(--rule);
+		background: var(--canvas);
+	}
+
+	dl {
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: 1.6rem var(--margin);
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		gap: 1.6rem;
+	}
+
+	@media (max-width: 760px) {
+		dl {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 420px) {
+		dl {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	dl > div {
+		position: relative;
+		padding-left: 1.2rem;
+	}
+
+	dl > div::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		top: 0.4rem;
+		bottom: 0.4rem;
+		width: 1px;
+		background: var(--rule);
+	}
+
+	dl > div:first-child::before {
+		display: none;
+	}
+
+	@media (max-width: 760px) {
+		dl > div:nth-child(3)::before {
+			display: none;
+		}
+	}
+
+	@media (max-width: 420px) {
+		dl > div::before {
+			display: none;
+		}
+	}
+
+	dt {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+		margin-bottom: 0.4rem;
+	}
+
+	dd {
+		margin: 0;
+		display: flex;
+		align-items: baseline;
+		gap: 0.55rem;
+		flex-wrap: wrap;
+	}
+
+	.value {
+		font-family: var(--font-display);
+		font-size: var(--step-3);
+		line-height: 1;
+		letter-spacing: var(--tracking-tight);
+		color: var(--ink);
+	}
+
+	.note {
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--step-0);
+		color: var(--ink-soft);
+	}
+</style>

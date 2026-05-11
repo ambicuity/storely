@@ -250,11 +250,11 @@ it("client getter and setter", (t) => {
 	t.expect(store.client).toBe(newStore.client);
 });
 
-it("sixHoursInMilliseconds getter and setter", (t) => {
+it("defaultTtl getter and setter", (t) => {
 	const store = new StorelyDynamo({ endpoint: dynamoURL });
-	t.expect(store.sixHoursInMilliseconds).toBe(6 * 60 * 60 * 1000);
-	store.sixHoursInMilliseconds = 1000;
-	t.expect(store.sixHoursInMilliseconds).toBe(1000);
+	t.expect(store.defaultTtl).toBeUndefined();
+	store.defaultTtl = 1000;
+	t.expect(store.defaultTtl).toBe(1000);
 });
 
 it("get/set with namespace", async (t) => {

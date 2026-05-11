@@ -290,17 +290,16 @@ export class StorelyRocksDB extends Hookified implements StorelyStorageAdapter {
 				return undefined;
 			}
 
+			// Peek at the envelope only to enforce lazy expiration; otherwise
+			// return the raw stored value verbatim so Storely's serializer can
+			// own envelope decoding (matches the contract of every other adapter).
 			const data = this.parseValue(raw);
-			if (data === null) {
-				return undefined;
-			}
-
-			if (data.expires !== undefined && data.expires !== null && data.expires <= Date.now()) {
+			if (data?.expires != null && data.expires <= Date.now()) {
 				await this._dbInstance.del(prefixedKey);
 				return undefined;
 			}
 
-			return data.value as StorelyStorageGetResult<Value>;
+			return raw as StorelyStorageGetResult<Value>;
 		} catch (error: any) {
 			if (error?.code === "LEVEL_NOT_FOUND") {
 				return undefined;
@@ -345,17 +344,14 @@ export class StorelyRocksDB extends Hookified implements StorelyStorageAdapter {
 					continue;
 				}
 
+				// Same contract as `get()`: peek for lazy expiration only; return
+				// the raw stored value so Storely's serializer owns decoding.
 				const data = this.parseValue(raw);
-				if (data === null) {
-					results.push(undefined as StorelyStorageGetResult<Value | undefined>);
-					continue;
-				}
-
-				if (data.expires !== undefined && data.expires !== null && data.expires <= now) {
+				if (data?.expires != null && data.expires <= now) {
 					expiredKeys.push(prefixedKeys[i]);
 					results.push(undefined as StorelyStorageGetResult<Value | undefined>);
 				} else {
-					results.push(data.value as StorelyStorageGetResult<Value | undefined>);
+					results.push(raw as StorelyStorageGetResult<Value | undefined>);
 				}
 			}
 
@@ -664,15 +660,13 @@ export class StorelyRocksDB extends Hookified implements StorelyStorageAdapter {
 				const strippedKey = this.removeKeyPrefix(keyStr);
 
 				if (value !== undefined && value !== null) {
+					// Peek for expiration only; yield the raw value so consumers
+					// see exactly what was stored (matches `get()` contract).
 					const data = this.parseValue(value);
-					if (data !== null) {
-						if (data.expires !== undefined && data.expires !== null && data.expires <= Date.now()) {
-							continue;
-						}
-						yield [strippedKey, data.value as Awaited<Value>];
-					} else {
-						yield [strippedKey, value as Awaited<Value>];
+					if (data?.expires != null && data.expires <= Date.now()) {
+						continue;
 					}
+					yield [strippedKey, value as Awaited<Value>];
 				} else {
 					yield [strippedKey, undefined];
 				}

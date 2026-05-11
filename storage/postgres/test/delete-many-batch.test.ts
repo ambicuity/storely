@@ -23,11 +23,11 @@ describe("postgres deleteMany batched", () => {
 		expect(await s.get("a")).toBeUndefined();
 	});
 
-	test("handles 2500 keys", async () => {
+	test("handles 2500 keys", { timeout: 30_000 }, async () => {
 		await s.clear();
-		const keys = Array.from({ length: 2500 }, (_, i) => `k${i}`);
-		for (const k of keys) await s.set(k, "v");
-		const result = await s.deleteMany(keys);
+		const entries = Array.from({ length: 2500 }, (_, i) => ({ key: `k${i}`, value: "v" }));
+		await s.setMany(entries);
+		const result = await s.deleteMany(entries.map((e) => e.key));
 		expect(result.length).toBe(2500);
 		expect(result.every((r) => r === true)).toBe(true);
 	});

@@ -2,6 +2,12 @@ import { faker } from "@faker-js/faker";
 import { beforeEach, describe, expect, test } from "vitest";
 import StorelyKeyDB, { createSentinel } from "../src/index.js";
 
+// Sentinel tests require docker-compose-redis-sentinel.yaml to be running
+// (sentinels on 26379/26380/26381). Gate behind STORELY_KEYDB_SENTINEL=1
+// so the default `pnpm test:ci` doesn't hang waiting on missing infra.
+// To run: STORELY_KEYDB_SENTINEL=1 pnpm test:ci.
+const describeSentinel = process.env.STORELY_KEYDB_SENTINEL === "1" ? describe : describe.skip;
+
 const defaultSentinelOptions = {
 	name: "mymaster",
 	sentinelRootNodes: [
@@ -20,7 +26,7 @@ const defaultSentinelOptions = {
 	],
 };
 
-describe("StorelyKeyDB Sentinel", () => {
+describeSentinel("StorelyKeyDB Sentinel", () => {
 	beforeEach(async () => {
 		const sentinel = createSentinel(defaultSentinelOptions);
 		const storelyKeyDB = new StorelyKeyDB(sentinel);

@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from "vitest";
 import StorelyRedis, { RedisErrorMessages } from "../src/index.js";
 
 const redisUri = process.env.REDIS_URI ?? "redis://localhost:6379";
-const redisBadUri = process.env.REDIS_BAD_URI ?? "redis://localhost:6378";
+const redisBadUri = process.env.REDIS_BAD_URI ?? "redis://localhost:1";
 
 describe("delete", () => {
 	test("should delete a value", async () => {

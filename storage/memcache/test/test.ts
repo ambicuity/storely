@@ -19,6 +19,12 @@ if (process.env.URI) {
 const storelyMemcache = new StorelyMemcache(uri);
 
 beforeEach(async () => {
+	// Storely.namespace is propagated to the underlying adapter (see
+	// core/storely.ts: `this._store.namespace = this._namespace`), so the
+	// shared `storelyMemcache` instance retains whatever namespace the
+	// previous test happened to set last. Reset before calling clear() so
+	// the destructive-flush guard doesn't fire.
+	storelyMemcache.namespace = undefined;
 	await storelyMemcache.clear();
 });
 
@@ -322,7 +328,7 @@ it("createStorely with options passes them through", () => {
 	expect(storely).toBeInstanceOf(Storely);
 });
 
-it("clear flushes the entire server", async () => {
+it("clear flushes the entire server when caller acknowledges with destructive: true", async () => {
 	const store1 = new StorelyMemcache(uri);
 	const store2 = new StorelyMemcache(uri);
 	const storely1 = new Storely({ store: store1, namespace: "ns1" });
@@ -332,11 +338,20 @@ it("clear flushes the entire server", async () => {
 	await storely1.set(key, faker.lorem.word());
 	await storely2.set(key, faker.lorem.word());
 
-	// Clear from one instance flushes everything
-	await storely1.clear();
+	// Calling clear via the namespaced Storely wrapper would throw because
+	// memcached's flush is global. The adapter's destructive opt-in still
+	// flushes both namespaces — which is the documented behavior.
+	await store1.clear({ destructive: true });
 
 	expect(await storely1.get(key)).toBeUndefined();
 	expect(await storely2.get(key)).toBeUndefined();
+});
+
+it("clear with a namespace and no destructive flag throws", async () => {
+	const store = new StorelyMemcache(uri);
+	store.namespace = "guarded";
+
+	await expect(store.clear()).rejects.toThrow(/destructive: true/);
 });
 
 it("get returns undefined for expired key", async () => {

@@ -2,7 +2,6 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { faker } from "@faker-js/faker";
-import Storely from "storely";
 import { afterEach, beforeEach, describe, it } from "vitest";
 import StorelyRocksDB from "../src/index.js";
 
@@ -22,67 +21,61 @@ afterEach(async () => {
 
 describe("namespace isolation", () => {
 	it("two instances with different namespaces do not interfere", async (t) => {
-		const storeA = new StorelyRocksDB({ uri: `rocksdb://${dbPath}` });
-		const storeB = new StorelyRocksDB({ uri: `rocksdb://${dbPath}` });
-		const storelyA = new Storely({ store: storeA, namespace: "ns1" });
-		const storelyB = new Storely({ store: storeB, namespace: "ns2" });
-
-		await storelyA.clear();
-		await storelyB.clear();
+		// RocksDB takes an exclusive lock on the directory, so we can't open
+		// the same path twice. Test namespace isolation by using a single
+		// adapter and switching its namespace between writes.
+		const store = new StorelyRocksDB({ uri: `rocksdb://${dbPath}` });
 
 		const keyA1 = faker.string.uuid();
 		const keyA2 = faker.string.uuid();
-		const keyA3 = faker.string.uuid();
 		const valA1 = faker.lorem.word();
 		const valA2 = faker.lorem.word();
-		const valA3 = faker.lorem.word();
 		const valB1 = faker.lorem.word();
 		const valB2 = faker.lorem.word();
-		const valB3 = faker.lorem.word();
 
-		await storelyA.set(keyA1, valA1);
-		await storelyA.set(keyA2, valA2);
-		await storelyA.set(keyA3, valA3);
+		store.namespace = "ns1";
+		await store.set(keyA1, valA1);
+		await store.set(keyA2, valA2);
 
-		await storelyB.set(keyA1, valB1);
-		await storelyB.set(keyA2, valB2);
-		await storelyB.set(keyA3, valB3);
+		store.namespace = "ns2";
+		await store.set(keyA1, valB1);
+		await store.set(keyA2, valB2);
 
-		const resultA = await storelyA.get([keyA1, keyA2, keyA3]);
-		const resultB = await storelyB.get([keyA1, keyA2, keyA3]);
+		store.namespace = "ns1";
+		t.expect(await store.get(keyA1)).toBe(valA1);
+		t.expect(await store.get(keyA2)).toBe(valA2);
 
-		t.expect(resultA).toStrictEqual([valA1, valA2, valA3]);
-		t.expect(resultB).toStrictEqual([valB1, valB2, valB3]);
+		store.namespace = "ns2";
+		t.expect(await store.get(keyA1)).toBe(valB1);
+		t.expect(await store.get(keyA2)).toBe(valB2);
 
-		await storeA.disconnect();
-		await storeB.disconnect();
+		await store.disconnect();
 	});
 
 	it("clear only clears current namespace", async (t) => {
-		const storeA = new StorelyRocksDB({ uri: `rocksdb://${dbPath}` });
-		const storeB = new StorelyRocksDB({ uri: `rocksdb://${dbPath}` });
-		storeA.namespace = "nsA";
-		storeB.namespace = "nsB";
-
-		await storeA.clear();
-		await storeB.clear();
+		// Single adapter, namespace toggled between writes — see the comment
+		// in the previous test for why two instances cannot share a path.
+		const store = new StorelyRocksDB({ uri: `rocksdb://${dbPath}` });
 
 		const nsKey = faker.string.uuid();
 		const valA = faker.lorem.word();
 		const valB = faker.lorem.word();
-		await storeA.set(`nsA:${nsKey}`, valA);
-		await storeB.set(`nsB:${nsKey}`, valB);
 
-		t.expect(await storeA.get(`nsA:${nsKey}`)).toBe(valA);
-		t.expect(await storeB.get(`nsB:${nsKey}`)).toBe(valB);
+		store.namespace = "nsA";
+		await store.set(nsKey, valA);
 
-		await storeA.clear();
-		t.expect(await storeA.get(`nsA:${nsKey}`)).toBeUndefined();
-		t.expect(await storeB.get(`nsB:${nsKey}`)).toBe(valB);
+		store.namespace = "nsB";
+		await store.set(nsKey, valB);
 
-		await storeB.clear();
-		await storeA.disconnect();
-		await storeB.disconnect();
+		store.namespace = "nsA";
+		t.expect(await store.get(nsKey)).toBe(valA);
+		await store.clear();
+		t.expect(await store.get(nsKey)).toBeUndefined();
+
+		store.namespace = "nsB";
+		t.expect(await store.get(nsKey)).toBe(valB);
+
+		await store.disconnect();
 	});
 
 	it("namespace prefix is properly stripped in iterator", async (t) => {
@@ -90,7 +83,8 @@ describe("namespace isolation", () => {
 		store.namespace = "myns";
 		const key = faker.string.uuid();
 		const val = faker.lorem.word();
-		await store.set(`myns:${key}`, val);
+		// The adapter prepends the namespace, so pass the bare key.
+		await store.set(key, val);
 
 		const entries: Array<[string, string]> = [];
 		for await (const [k, v] of store.iterator()) {

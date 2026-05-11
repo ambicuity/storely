@@ -20,12 +20,12 @@ beforeEach(async () => {
 	await storely.clear();
 });
 
-it("throws if ssl is not used", async (t) => {
-	try {
-		new StorelyMysql({ uri: "mysql://root@localhost:3307/storely_test" });
-	} catch {
-		t.expect(true).toBeTruthy();
-	}
+it("emits error when ssl is required but not supplied", async (t) => {
+	const storely = new StorelyMysql({ uri: "mysql://root@localhost:3307/storely_test" });
+	const error = await new Promise<Error>((resolve) => {
+		storely.on("error", resolve);
+	});
+	t.expect((error as Error & { code?: string }).code).toBe("ER_SECURE_TRANSPORT_REQUIRED");
 });
 
 it("set with ssl ", async (t) => {

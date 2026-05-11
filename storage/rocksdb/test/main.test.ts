@@ -141,11 +141,15 @@ describe("property setters", () => {
 describe("disconnect", () => {
 	it("disconnect closes the database", async (t) => {
 		const store = new StorelyRocksDB({ uri: `rocksdb://${dbPath}` });
+		store.throwOnErrors = true;
+		store.on("error", () => {});
 		const key = faker.string.uuid();
 		const val = faker.lorem.word();
 		await store.set(key, val);
 		t.expect(await store.get(key)).toBe(val);
 		await store.disconnect();
+		// With `throwOnErrors`, post-disconnect calls reject because the
+		// underlying DB handle is closed.
 		await t.expect(async () => store.get(key)).rejects.toThrow();
 	});
 

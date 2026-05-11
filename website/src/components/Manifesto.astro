@@ -1,0 +1,140 @@
+---
+/**
+ * Editorial manifesto block — bold typographic statement of the project's
+ * philosophy. Sits between hero and example; gives the page a soul-moment.
+ */
+
+const principles = [
+	{
+		num: "I",
+		title: "Storage is plumbing, not a framework.",
+		body:
+			"Twelve backends. One verb set. <em>set, get, delete, has, clear.</em> Nothing else to learn before you can ship.",
+	},
+	{
+		num: "II",
+		title: "Adapters are honest about their tier.",
+		body:
+			"Production-ready means hardened in deployments. Beta means feature-complete but not yet load-tested. <em>You always know what you're picking up.</em>",
+	},
+	{
+		num: "III",
+		title: "Encryption, compression, observability are not afterthoughts.",
+		body:
+			"They are first-class pipeline stages — pluggable, ordered, and tested with the same compliance suite as the storage adapters themselves.",
+	},
+	{
+		num: "IV",
+		title: "Zero JavaScript shipped that wasn't asked for.",
+		body:
+			"The library has no runtime dependency you didn't install. The website ships static HTML. <em>Discipline is the feature.</em>",
+	},
+];
+---
+
+<section class="manifesto">
+	<div class="masthead">
+		<span class="line" aria-hidden="true"></span>
+		<p class="title">A short manifesto</p>
+		<span class="line" aria-hidden="true"></span>
+	</div>
+
+	<div class="grid">
+		{principles.map((p) => (
+			<article class="principle">
+				<header>
+					<span class="num">{p.num}</span>
+					<h3>{p.title}</h3>
+				</header>
+				<p set:html={p.body}></p>
+			</article>
+		))}
+	</div>
+</section>
+
+<style>
+	.manifesto {
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: clamp(3.5rem, 8vw, 6.5rem) var(--margin);
+		background: var(--canvas);
+	}
+
+	.masthead {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: 1.4rem;
+		margin-bottom: clamp(2rem, 5vw, 3.6rem);
+	}
+
+	.masthead .line {
+		height: 1px;
+		background: var(--rule);
+	}
+
+	.masthead .title {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-soft);
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: clamp(2rem, 4vw, 3.2rem) clamp(2.4rem, 5vw, 4.5rem);
+	}
+
+	@media (max-width: 760px) {
+		.grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.principle {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		column-gap: 1rem;
+		row-gap: 0.6rem;
+		max-width: 36rem;
+	}
+
+	.principle header {
+		display: contents;
+	}
+
+	.num {
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--step-3);
+		line-height: 1;
+		color: var(--accent);
+		padding-top: 0.4rem;
+		min-width: 1.4em;
+	}
+
+	.principle h3 {
+		font-family: var(--font-display);
+		font-size: var(--step-3);
+		line-height: 1.05;
+		letter-spacing: var(--tracking-tight);
+		color: var(--ink);
+		text-wrap: balance;
+	}
+
+	.principle > p {
+		grid-column: 2;
+		font-size: var(--step-0);
+		line-height: 1.55;
+		color: var(--ink-soft);
+		max-width: 34rem;
+	}
+
+	.principle > p :global(em) {
+		font-family: var(--font-display);
+		font-style: italic;
+		color: var(--ink);
+	}
+</style>

@@ -1,0 +1,112 @@
+---
+const capabilities = [
+	{ name: "TTL & expiry", href: "/docs/getting-started/#ttl" },
+	{ name: "Namespaces", href: "/docs/getting-started/#namespaces" },
+	{ name: "Serialization", href: "/docs/serialization/" },
+	{ name: "Compression", href: "/docs/compression/" },
+	{ name: "Encryption", href: "/docs/encryption/" },
+	{ name: "Observability", href: "/docs/observability/" },
+];
+---
+
+<section class="capabilities">
+	<header>
+		<p class="kicker">Table of contents</p>
+		<h2>Everything Storely <em>hands you</em>, in one stack.</h2>
+	</header>
+	<ol>
+		{capabilities.map((c, i) => (
+			<li>
+				<a href={c.href}>
+					<span class="num">{String(i + 1).padStart(2, "0")}</span>
+					<span class="name">{c.name}</span>
+					<span class="arr" aria-hidden="true">→</span>
+				</a>
+			</li>
+		))}
+	</ol>
+</section>
+
+<style>
+	.capabilities {
+		padding: clamp(3rem, 8vw, 6rem) var(--margin);
+		max-width: 1320px;
+		margin: 0 auto;
+	}
+
+	header {
+		max-width: 36rem;
+		margin-bottom: 2.4rem;
+	}
+
+	.kicker {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+		margin-bottom: 0.8rem;
+	}
+
+	h2 {
+		font-family: var(--font-display);
+		font-size: var(--step-4);
+		line-height: 1.05;
+		letter-spacing: var(--tracking-display);
+		color: var(--ink);
+	}
+
+	h2 em {
+		font-style: italic;
+		color: var(--accent);
+	}
+
+	ol {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+		gap: 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	ol li {
+		border-bottom: 1px solid var(--rule);
+	}
+
+	ol li a {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: baseline;
+		gap: 1rem;
+		padding: 1.2rem 0;
+		transition: padding var(--dur-fast) var(--ease-out);
+	}
+
+	ol li a:hover {
+		padding-left: 0.6rem;
+	}
+
+	.num {
+		font-family: var(--font-mono);
+		font-size: var(--step--2);
+		color: var(--ink-faint);
+	}
+
+	.name {
+		font-family: var(--font-display);
+		font-size: var(--step-2);
+		letter-spacing: var(--tracking-tight);
+		color: var(--ink);
+	}
+
+	.arr {
+		color: var(--accent);
+		font-family: var(--font-display);
+		opacity: 0;
+		transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+	}
+
+	ol li a:hover .arr {
+		opacity: 1;
+		transform: translateX(0.3em);
+	}
+</style>

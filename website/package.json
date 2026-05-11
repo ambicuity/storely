@@ -1,23 +1,32 @@
 {
-  "name": "@storely/website",
-  "version": "1.0.0",
-  "description": "Storely Website",
-  "author": "Ritesh Rana <contact@riteshrana.engineer>",
-  "license": "MIT",
-  "private": true,
-  "scripts": {
-    "test:ci": "echo 'no tests needed'",
-    "test": "echo 'no tests needed'",
-    "generate-docs": "rimraf ./dist && tsx ./src/docs.ts",
-    "build": "echo 'no build needed'",
-    "website:build": "pnpm generate-docs && docula build",
-    "build-serve": "pnpm clean && pnpm generate-docs && docula serve",
-    "clean": "rimraf ./dist ./docs/compression ./docs/test-suite ./docs/storage-adapters",
-    "website:serve": "docula serve"
-  },
-  "devDependencies": {
-    "docula": "^0.31.1",
-    "rimraf": "^6.1.2",
-    "tsx": "^4.21.0"
-  }
+	"name": "@storely/website",
+	"version": "1.0.0",
+	"description": "Storely Website",
+	"author": "Ritesh Rana <contact@riteshrana.engineer>",
+	"license": "MIT",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test:ci": "echo 'no tests needed'",
+		"test": "echo 'no tests needed'",
+		"sync": "tsx ./src/scripts/sync-adapter-docs.ts",
+		"build": "echo 'no build needed'",
+		"website:build": "pnpm sync && astro build && pagefind --site dist",
+		"website:serve": "pnpm sync && astro dev",
+		"preview": "astro preview",
+		"clean": "rimraf ./dist ./src/content/adapters/_generated"
+	},
+	"dependencies": {
+		"@astrojs/mdx": "^5.0.4",
+		"@astrojs/sitemap": "^3.7.2",
+		"astro": "^6.3.1",
+		"pagefind": "^1.4.0",
+		"shiki": "^4.0.2"
+	},
+	"devDependencies": {
+		"@types/node": "^24.12.2",
+		"rimraf": "^6.1.2",
+		"tsx": "^4.21.0",
+		"typescript": "^5.7.0"
+	}
 }

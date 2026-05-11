@@ -233,6 +233,22 @@ storely.on('clear', handleClear);
 storely.on('disconnect', handleDisconnect);
 ```
 
+## Cleaning up listeners
+
+`Storely` extends [`Hookified`](https://www.npmjs.com/package/hookified) so it
+exposes the standard `EventEmitter` surface: `off()` removes a single handler
+and `removeAllListeners()` removes every handler for a given event. If you
+attach listeners that close over heavy state (loggers, request contexts) and
+the `Storely` instance lives for the lifetime of the process, detach them
+explicitly when the owning unit is torn down to avoid retaining that state.
+
+```js
+const handler = (err) => log.error(err);
+storely.on('error', handler);
+// ...later
+storely.off('error', handler);
+```
+
 # Hooks
 
 Storely supports hooks for `get`, `set`, and `delete` methods. Hooks are useful for logging, debugging, and other custom functionality. Here is a list of all the hooks:

@@ -1,0 +1,92 @@
+---
+import BaseLayout from "~/layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="404 · Storely" description="The page you requested is not in this volume.">
+	<section class="oops">
+		<p class="kicker">404 · Folio missing</p>
+		<h1>
+			<span class="line">This <em>page</em> isn't</span>
+			<span class="line">in this volume.</span>
+		</h1>
+		<p class="lede">
+			The reference you followed has either moved or never existed. Try the
+			docs index or the adapters directory.
+		</p>
+		<div class="links">
+			<a href="/">Return home</a>
+			<a href="/docs/getting-started/">Open the docs</a>
+			<a href="/adapters/">Browse adapters</a>
+		</div>
+		<p class="patron">
+			While you're here — Storely is maintained by one person.
+			<a href="https://buymeacoffee.com/ritesh.rana" rel="noopener">A coffee helps →</a>
+		</p>
+	</section>
+</BaseLayout>
+
+<style>
+	.oops {
+		max-width: 60rem;
+		margin: clamp(4rem, 10vw, 8rem) auto;
+		padding: 0 var(--margin);
+	}
+	.kicker {
+		font-family: var(--font-mono);
+		font-size: var(--step--1);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+		margin-bottom: 1.6rem;
+	}
+	h1 {
+		font-family: var(--font-display);
+		font-size: var(--step-6);
+		line-height: 1;
+		letter-spacing: var(--tracking-display);
+	}
+	h1 .line {
+		display: block;
+	}
+	h1 em {
+		font-style: italic;
+		color: var(--accent);
+	}
+	.lede {
+		margin-top: 1.6rem;
+		max-width: 32rem;
+		color: var(--ink-soft);
+		font-size: var(--step-1);
+		line-height: 1.5;
+	}
+	.links {
+		margin-top: 2.4rem;
+		display: flex;
+		gap: 2rem;
+		flex-wrap: wrap;
+		font-size: var(--step-1);
+	}
+	.links a {
+		color: var(--accent);
+		border-bottom: 1px solid var(--accent);
+		padding-bottom: 2px;
+	}
+	.patron {
+		margin-top: 3rem;
+		padding-top: 1.6rem;
+		border-top: 1px solid var(--rule);
+		max-width: 32rem;
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--step-1);
+		color: var(--ink-soft);
+		line-height: 1.45;
+	}
+	.patron a {
+		color: var(--accent);
+		border-bottom: 1px solid var(--rule);
+	}
+	.patron a:hover {
+		border-bottom-color: var(--accent);
+	}
+</style>

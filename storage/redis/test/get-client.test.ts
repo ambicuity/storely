@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 import StorelyRedis, { createStorely, RedisErrorMessages } from "../src/index.js";
 
 const redisUri = process.env.REDIS_URI ?? "redis://localhost:6379";
-const redisBadUri = process.env.REDIS_BAD_URI ?? "redis://localhost:6378";
+const redisBadUri = process.env.REDIS_BAD_URI ?? "redis://localhost:1";
 
 describe("getClient", () => {
 	test("should get client that is connected", async () => {

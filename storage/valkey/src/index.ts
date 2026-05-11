@@ -40,6 +40,14 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 	private _client: any;
 
 	/**
+	 * Optional per-call timeout (in milliseconds) applied to batch operations
+	 * (`getMany`, `setMany`, `deleteMany`, `hasMany`). When set, each batch op
+	 * is raced against this deadline so a network partition cannot hang the
+	 * call indefinitely. `undefined` disables the timeout (default).
+	 */
+	private _commandTimeout: number | undefined;
+
+	/**
 	 * Creates a new StorelyValkey adapter instance.
 	 * @param {StorelyValkeyOptions | StorelyUriOptions} uri - Connection URI string (e.g. `"redis://localhost:6379"`),
 	 * @param {StorelyValkeyOptions} [options] - Additional adapter options such as `useSets`. Merged with
@@ -60,15 +68,40 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 				...(typeof uri === "string" ? { uri } : (uri as StorelyValkeyOptions)),
 				...options,
 			};
-			// biome-ignore lint/style/noNonNullAssertion: need to fix
-			this._client = new IORedis(options.uri!, options);
+			// iovalkey accepts either a URI plus options or just options
+			// (defaulting to localhost:6379); explicit branching here keeps
+			// the call type-safe and removes the prior `options.uri!` lie.
+			this._client =
+				options.uri === undefined ? new IORedis(options) : new IORedis(options.uri, options);
 		}
 
 		if (options !== undefined && options.useSets !== undefined) {
 			this._useSets = options.useSets;
 		}
 
+		if (options !== undefined && options.commandTimeout !== undefined) {
+			this._commandTimeout = options.commandTimeout;
+		}
+
 		this._client.on("error", (error: Error) => this.emit("error", error));
+	}
+
+	/**
+	 * Race a batch op against `_commandTimeout`. Returns the op result
+	 * unchanged when no timeout is configured.
+	 */
+	private async withCommandTimeout<T>(label: string, op: () => Promise<T>): Promise<T> {
+		const promise = op();
+		if (this._commandTimeout === undefined) return promise;
+		return Promise.race<T>([
+			promise,
+			new Promise<T>((_resolve, reject) => {
+				setTimeout(
+					() => reject(new Error(`valkey ${label} timed out after ${this._commandTimeout}ms`)),
+					this._commandTimeout,
+				);
+			}),
+		]);
 	}
 
 	/**
@@ -173,6 +206,12 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 	public async getMany<Value>(
 		keys: string[],
 	): Promise<Array<StorelyStorageGetResult<Value | undefined>>> {
+		return this.withCommandTimeout("getMany", () => this._getManyImpl<Value>(keys));
+	}
+
+	private async _getManyImpl<Value>(
+		keys: string[],
+	): Promise<Array<StorelyStorageGetResult<Value | undefined>>> {
 		const resolvedKeys = keys.map((key) => this.getKeyName(key));
 
 		if (this.isCluster()) {
@@ -254,6 +293,12 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 	 * @returns {Promise<void>}
 	 */
 	public async setMany<Value>(entries: StorelyEntry<Value>[]): Promise<boolean[] | undefined> {
+		return this.withCommandTimeout("setMany", () => this._setManyImpl(entries));
+	}
+
+	private async _setManyImpl<Value>(
+		entries: StorelyEntry<Value>[],
+	): Promise<boolean[] | undefined> {
 		if (entries.length === 0) {
 			return entries.map(() => true);
 		}
@@ -372,6 +417,10 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 	 *   Each element is `true` if the corresponding key existed and was deleted, `false` otherwise.
 	 */
 	public async deleteMany(keys: string[]): Promise<boolean[]> {
+		return this.withCommandTimeout("deleteMany", () => this._deleteManyImpl(keys));
+	}
+
+	private async _deleteManyImpl(keys: string[]): Promise<boolean[]> {
 		if (keys.length === 0) {
 			return [];
 		}
@@ -452,6 +501,10 @@ class StorelyValkey extends Hookified implements StorelyStorageAdapter {
 	 *   Each element is `true` if the corresponding key exists, `false` otherwise.
 	 */
 	public async hasMany(keys: string[]): Promise<boolean[]> {
+		return this.withCommandTimeout("hasMany", () => this._hasManyImpl(keys));
+	}
+
+	private async _hasManyImpl(keys: string[]): Promise<boolean[]> {
 		if (keys.length === 0) {
 			return [];
 		}

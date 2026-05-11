@@ -558,26 +558,24 @@ it("iterator should iterate over multiple keys in namespace", async (t) => {
 	const redis = new Redis(redisURI);
 	const storelyRedis = new StorelyValkey(redis);
 	const ns = `iterator-${faker.string.alphanumeric(8)}`;
-	const storely = new Storely(storelyRedis, { namespace: ns });
+	storelyRedis.namespace = ns;
 
-	// Clear any existing keys
-	await storely.clear();
+	// Clear any existing keys in this namespace
+	await storelyRedis.clear();
 
-	// Set multiple keys
+	// Write raw values directly via the adapter (no serializer envelope) so
+	// the iterator yields exactly what we wrote.
 	const testData: Record<string, string> = {};
 	for (let i = 0; i < 4; i++) {
 		const key = faker.string.alphanumeric(10);
 		const value = faker.string.alphanumeric(10);
 		testData[key] = value;
-	}
-
-	for (const [key, value] of Object.entries(testData)) {
-		await storely.set(key, value);
+		await storelyRedis.set(key, value);
 	}
 
 	// Iterate and collect all keys/values
 	const collected = new Map<string, string>();
-	for await (const [key, value] of storelyRedis.iterator(ns)) {
+	for await (const [key, value] of storelyRedis.iterator()) {
 		collected.set(key, value);
 	}
 
@@ -585,10 +583,10 @@ it("iterator should iterate over multiple keys in namespace", async (t) => {
 	t.expect(collected.size).toBe(Object.keys(testData).length);
 	for (const [key, value] of Object.entries(testData)) {
 		t.expect(collected.has(key)).toBe(true);
-		t.expect(collected.get(key)).toBe(JSON.stringify({ value }));
+		t.expect(collected.get(key)).toBe(value);
 	}
 
-	await storely.disconnect();
+	await storelyRedis.disconnect();
 });
 
 it("setMany returns false entries on exec error", async (t) => {

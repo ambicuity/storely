@@ -331,6 +331,14 @@ export class StorelyMysql extends Hookified implements StorelyStorageAdapter {
 			return query;
 		});
 
+		// Surface bootstrap failures (eg. SSL-required server reached over a
+		// plaintext socket) via the adapter's `error` event and silence the
+		// otherwise-unhandled rejection. Callers still see the same error
+		// thrown when awaiting `query()` below.
+		connected.catch((error: Error) => {
+			this.emit("error", error);
+		});
+
 		this.query = async <T>(sqlString: string): QueryType<T> => {
 			const query = await connected;
 			return query(sqlString) as QueryType<T>;

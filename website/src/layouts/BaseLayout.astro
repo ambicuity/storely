@@ -1,0 +1,87 @@
+---
+import "~/styles/tokens.css";
+import "~/styles/reset.css";
+import "~/styles/shiki.css";
+import Header from "~/components/Header.astro";
+import Footer from "~/components/Footer.astro";
+
+interface Props {
+	title: string;
+	description?: string;
+	canonical?: string;
+}
+
+const { title, description = "Simple key-value storage with support for multiple backends.", canonical } = Astro.props;
+const canonicalUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		<meta name="description" content={description} />
+		<meta name="theme-color" content="#F6F2E8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="canonical" href={canonicalUrl} />
+		<link rel="sitemap" href="/sitemap-index.xml" />
+
+		<meta property="og:type" content="website" />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalUrl} />
+		<meta property="og:site_name" content="Storely" />
+		<meta property="og:image" content={new URL("/og.svg", Astro.site).toString()} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:image" content={new URL("/og.svg", Astro.site).toString()} />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/geist@1.5.1/dist/fonts/geist-sans/style.min.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/geist@1.5.1/dist/fonts/geist-mono/style.min.css"
+		/>
+
+		<title>{title}</title>
+	</head>
+	<body>
+		<a class="skip" href="#main">Skip to content</a>
+		<Header />
+		<main id="main">
+			<slot />
+		</main>
+		<Footer />
+	</body>
+</html>
+
+<style>
+	.skip {
+		position: absolute;
+		left: -9999px;
+		top: 0.5rem;
+		background: var(--ink);
+		color: var(--canvas);
+		padding: 0.6rem 1rem;
+		z-index: 100;
+		font-size: var(--step--1);
+		letter-spacing: var(--tracking-wide);
+		text-transform: uppercase;
+	}
+	.skip:focus {
+		left: 0.5rem;
+	}
+	main {
+		min-height: 60dvh;
+	}
+</style>

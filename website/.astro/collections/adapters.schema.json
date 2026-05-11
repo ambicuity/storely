@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "npm": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "production",
+        "beta",
+        "experimental"
+      ]
+    },
+    "tagline": {
+      "type": "string"
+    },
+    "source": {
+      "type": "string"
+    },
+    "$schema": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "slug",
+    "npm",
+    "tier",
+    "tagline",
+    "source"
+  ]
+}

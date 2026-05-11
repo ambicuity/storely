@@ -2,6 +2,12 @@ import { faker } from "@faker-js/faker";
 import { beforeEach, describe, expect, test, vitest } from "vitest";
 import StorelyKeyDB, { createCluster } from "../src/index.js";
 
+// Cluster tests require docker-compose-redis-cluster.yaml to be running
+// (nodes on 7001/7002/7003). Gate behind STORELY_KEYDB_CLUSTER=1 so the
+// default `pnpm test:ci` doesn't hang waiting on missing infra.
+// To run: STORELY_KEYDB_CLUSTER=1 pnpm test:ci.
+const describeCluster = process.env.STORELY_KEYDB_CLUSTER === "1" ? describe : describe.skip;
+
 const defaultClusterOptions = {
 	rootNodes: [
 		{
@@ -17,7 +23,7 @@ const defaultClusterOptions = {
 	useReplicas: true,
 };
 
-describe("StorelyKeyDB Cluster", () => {
+describeCluster("StorelyKeyDB Cluster", () => {
 	beforeEach(async () => {
 		const cluster = createCluster(defaultClusterOptions);
 		const storelyKeyDB = new StorelyKeyDB(cluster);

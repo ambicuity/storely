@@ -1,0 +1,172 @@
+---
+import Search from "./Search.astro";
+
+const path = Astro.url.pathname;
+const isActive = (prefix: string) =>
+	prefix === "/"
+		? path === "/"
+		: path === prefix || path.startsWith(prefix);
+---
+
+<header class="header">
+	<div class="inner">
+		<a class="brand" href="/" aria-label="Storely home">
+			<span class="mark" aria-hidden="true">
+				<svg viewBox="0 0 32 32" width="22" height="22" fill="none">
+					<rect x="2.5" y="2.5" width="27" height="27" stroke="currentColor" stroke-width="1.5" />
+					<path
+						d="M11 11h10M11 16h10M11 21h10"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+					/>
+				</svg>
+			</span>
+			<span class="word">Storely</span>
+			<span class="version" aria-label="version 1.0.0">v1.0.0</span>
+		</a>
+		<Search />
+		<nav aria-label="Primary">
+			<a href="/docs/getting-started/" class:list={{ active: isActive("/docs") }}>Docs</a>
+			<a href="/adapters/" class:list={{ active: isActive("/adapters") }}>Adapters</a>
+			<a href="/guides/caching-express/" class:list={{ active: isActive("/guides") }}>Guides</a>
+			<a
+				href="https://buymeacoffee.com/ritesh.rana"
+				rel="noopener"
+				class="ext patron"
+				aria-label="Buy me a coffee — support Storely"
+			>
+				<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+					<path
+						d="M3 7h9.5a1.5 1.5 0 0 1 0 3H12M3 7v4a3 3 0 0 0 3 3h3a3 3 0 0 0 3-3v-1M5 4c0-.6.4-1 1-1M7 4c0-.6.4-1 1-1M9 4c0-.6.4-1 1-1"
+						stroke="currentColor"
+						stroke-width="1.2"
+						fill="none"
+						stroke-linecap="round"
+					/>
+				</svg>
+				Buy me a coffee
+			</a>
+			<a
+				href="https://github.com/ambicuity/storely"
+				rel="noopener"
+				class="ext"
+			>
+				GitHub
+				<svg viewBox="0 0 8 8" width="8" height="8" aria-hidden="true">
+					<path d="M2 2h4v4M2 6L6 2" stroke="currentColor" stroke-width="1" fill="none" />
+				</svg>
+			</a>
+		</nav>
+	</div>
+</header>
+
+<style>
+	.header {
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		background: color-mix(in srgb, var(--canvas) 92%, transparent);
+		backdrop-filter: blur(8px);
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.inner {
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: 1rem var(--margin);
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1.4rem;
+	}
+
+	.inner > .brand {
+		margin-right: auto;
+	}
+
+	.inner > :global(.search-trigger) {
+		flex-shrink: 0;
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.55rem;
+	}
+
+	.mark {
+		color: var(--accent);
+		transform: translateY(2px);
+	}
+
+	.word {
+		font-family: var(--font-display);
+		font-size: var(--step-2);
+		letter-spacing: var(--tracking-tight);
+		color: var(--ink);
+	}
+
+	.version {
+		font-family: var(--font-mono);
+		font-size: var(--step--2);
+		color: var(--ink-faint);
+		letter-spacing: 0;
+	}
+
+	nav {
+		display: inline-flex;
+		align-items: center;
+		gap: 1.6rem;
+		font-size: var(--step--1);
+		font-feature-settings: "ss01" 1;
+	}
+
+	nav a {
+		color: var(--ink-soft);
+		padding: 0.4rem 0;
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	nav a:hover,
+	nav a.active {
+		color: var(--accent);
+	}
+
+	nav a.active {
+		border-bottom: 1px solid var(--accent);
+	}
+
+	nav .ext {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	nav .patron {
+		color: var(--accent);
+		font-feature-settings: "ss01" 1;
+	}
+
+	nav .patron:hover {
+		color: var(--accent-soft);
+	}
+
+	@media (max-width: 880px) {
+		nav .patron {
+			display: none;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.inner {
+			gap: 1rem;
+		}
+		nav {
+			gap: 1rem;
+		}
+		.version {
+			display: none;
+		}
+	}
+</style>

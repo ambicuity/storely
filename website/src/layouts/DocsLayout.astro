@@ -1,0 +1,323 @@
+---
+import "~/styles/prose.css";
+import BaseLayout from "./BaseLayout.astro";
+import { docsNav } from "~/content/nav";
+
+interface Heading {
+	depth: number;
+	slug: string;
+	text: string;
+}
+
+interface Props {
+	title: string;
+	description?: string;
+	section?: string;
+	headings?: Heading[];
+	editUrl?: string;
+	currentPath?: string;
+}
+
+const {
+	title,
+	description,
+	section,
+	headings = [],
+	editUrl,
+	currentPath = Astro.url.pathname,
+} = Astro.props;
+
+const toc = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+
+// Flatten the sidebar into one ordered list so we can compute prev/next.
+const flat = docsNav.flatMap((group) => group.items);
+const normalize = (s: string) => s.replace(/\/$/, "");
+const here = normalize(currentPath);
+const idx = flat.findIndex((item) => normalize(item.href) === here);
+const prev = idx > 0 ? flat[idx - 1] : undefined;
+const next = idx >= 0 && idx < flat.length - 1 ? flat[idx + 1] : undefined;
+---
+
+<BaseLayout title={`${title} · Storely`} description={description}>
+	<div class="layout">
+		<aside class="rail-left" aria-label="Documentation sections">
+			<nav>
+				{docsNav.map((group) => (
+					<section>
+						<h3>{group.title}</h3>
+						<ul>
+							{group.items.map((item) => (
+								<li>
+									<a
+										href={item.href}
+										class:list={["nav-link", { active: currentPath === item.href || currentPath.replace(/\/$/, "") === item.href.replace(/\/$/, "") }]}
+									>
+										{item.label}
+									</a>
+								</li>
+							))}
+						</ul>
+					</section>
+				))}
+			</nav>
+		</aside>
+
+		<article class="content">
+			{section && <p class="kicker">{section}</p>}
+			<h1>{title}</h1>
+			<div class="prose">
+				<slot />
+			</div>
+			{(prev || next) && (
+				<nav class="pager" aria-label="Document">
+					{prev ? (
+						<a href={prev.href} class="prev">
+							<span class="dir">← Previous</span>
+							<span class="title">{prev.label}</span>
+						</a>
+					) : (
+						<span class="prev empty" aria-hidden="true"></span>
+					)}
+					{next ? (
+						<a href={next.href} class="next">
+							<span class="dir">Next →</span>
+							<span class="title">{next.label}</span>
+						</a>
+					) : (
+						<span class="next empty" aria-hidden="true"></span>
+					)}
+				</nav>
+			)}
+
+			{editUrl && (
+				<footer class="page-foot">
+					<a href={editUrl} rel="noopener">Edit this page on GitHub →</a>
+				</footer>
+			)}
+		</article>
+
+		{toc.length > 0 && (
+			<aside class="rail-right" aria-label="On this page">
+				<p class="rail-label">On this page</p>
+				<ol>
+					{toc.map((h) => (
+						<li class:list={[`level-${h.depth}`]}>
+							<a href={`#${h.slug}`}>{h.text}</a>
+						</li>
+					))}
+				</ol>
+			</aside>
+		)}
+	</div>
+</BaseLayout>
+
+<style>
+	.layout {
+		display: grid;
+		grid-template-columns: var(--rail) minmax(0, 1fr) var(--toc);
+		gap: var(--gutter);
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: var(--margin) var(--margin) calc(var(--margin) * 2);
+	}
+
+	@media (max-width: 1080px) {
+		.layout {
+			grid-template-columns: 240px minmax(0, 1fr);
+		}
+		.rail-right {
+			display: none;
+		}
+	}
+
+	@media (max-width: 760px) {
+		.layout {
+			grid-template-columns: 1fr;
+		}
+		.rail-left {
+			position: static;
+			border-right: 0;
+			border-bottom: 1px solid var(--rule);
+			padding-bottom: 1.4rem;
+		}
+	}
+
+	.rail-left {
+		position: sticky;
+		top: 5rem;
+		align-self: start;
+		max-height: calc(100dvh - 6rem);
+		overflow-y: auto;
+		border-right: 1px solid var(--rule);
+		padding-right: 1.2rem;
+	}
+
+	.rail-left nav section + section {
+		margin-top: 1.6rem;
+	}
+
+	.rail-left h3 {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+		margin-bottom: 0.6rem;
+	}
+
+	.rail-left ul {
+		display: flex;
+		flex-direction: column;
+		gap: 0.15rem;
+	}
+
+	.nav-link {
+		display: block;
+		padding: 0.22rem 0;
+		font-size: var(--step--1);
+		color: var(--ink-soft);
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	.nav-link:hover {
+		color: var(--ink);
+	}
+
+	.nav-link.active {
+		color: var(--accent);
+		border-bottom: 1px solid var(--accent);
+		padding-bottom: 0.2rem;
+	}
+
+	.content {
+		min-width: 0;
+		max-width: 68ch;
+	}
+
+	.kicker {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+		margin-bottom: 1rem;
+	}
+
+	.content > h1 {
+		font-family: var(--font-display);
+		font-size: var(--step-5);
+		line-height: var(--leading-tight);
+		letter-spacing: var(--tracking-display);
+		margin-bottom: 0.6em;
+	}
+
+	.page-foot {
+		margin-top: 2rem;
+		padding-top: 1.4rem;
+		border-top: 1px solid var(--rule);
+		font-size: var(--step--1);
+	}
+
+	.page-foot a {
+		color: var(--accent);
+		border-bottom: 1px solid var(--rule);
+	}
+
+	.pager {
+		margin-top: 4rem;
+		padding-top: 1.6rem;
+		border-top: 1px solid var(--rule);
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1.6rem;
+	}
+
+	.pager .prev,
+	.pager .next {
+		display: flex;
+		flex-direction: column;
+		gap: 0.35rem;
+		padding: 0.8rem 1rem;
+		border: 1px solid var(--rule);
+		min-height: 4rem;
+		transition: border-color var(--dur-fast) var(--ease-out),
+			background var(--dur-fast) var(--ease-out);
+	}
+
+	.pager .next {
+		text-align: right;
+	}
+
+	.pager a:hover {
+		border-color: var(--accent);
+		background: var(--canvas-soft);
+	}
+
+	.pager .empty {
+		border: 0;
+	}
+
+	.pager .dir {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+	}
+
+	.pager .title {
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--step-1);
+		letter-spacing: var(--tracking-tight);
+		color: var(--ink);
+		line-height: 1.2;
+	}
+
+	.pager a:hover .title {
+		color: var(--accent);
+	}
+
+	.rail-right {
+		position: sticky;
+		top: 5rem;
+		align-self: start;
+		font-size: var(--step--1);
+		max-height: calc(100dvh - 6rem);
+		overflow-y: auto;
+	}
+
+	.rail-label {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+		margin-bottom: 0.8rem;
+	}
+
+	.rail-right ol {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		list-style: none;
+		counter-reset: toc;
+	}
+
+	.rail-right li a {
+		display: block;
+		color: var(--ink-soft);
+		padding: 0.15rem 0;
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	.rail-right li a:hover {
+		color: var(--accent);
+	}
+
+	.level-3 {
+		padding-left: 1rem;
+		font-size: 0.94em;
+	}
+</style>

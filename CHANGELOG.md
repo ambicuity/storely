@@ -2,83 +2,46 @@
 
 All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-Starting with `1.0.0`, releases are generated from [Changesets](https://github.com/changesets/changesets) entries in `.changeset/`. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the contributor workflow.
+Starting with `1.0.0`, releases are generated from [Changesets](https://github.com/changesets/changesets) entries in [`.changeset/`](./.changeset/). See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the contributor workflow.
 
 ## 1.0.0 — 2026-05-11
 
-Initial stable release. The `@storely/*` suite is now production-ready across the seven supported storage adapters (redis, postgres, mysql, mongo, sqlite, valkey, rocksdb). Encryption, compression, serialization, observability, and operability stories are all first-party.
+Initial stable release. See [`README.md`](./README.md) for installation and a quickstart; each package ships its own `README.md` with API and usage details.
 
-### Highlights
+### Packages
 
-- **Stable API surface** — see [`docs/API_STABILITY.md`](./docs/API_STABILITY.md) for the tiered surface (Stable / Stable-deprecated / Experimental / Internal) and [`docs/DEPRECATION_POLICY.md`](./docs/DEPRECATION_POLICY.md) for the support contract.
-- **Operator runbook** — [`docs/RUNBOOK.md`](./docs/RUNBOOK.md) plus per-adapter operations docs under `docs/adapters/`.
-- **Release pipeline gated** — the publish job depends on lint, typecheck, build, test, and website-build. A bad tag cannot ship.
-- **Private security disclosure** — `SECURITY.md` directs reporters to GitHub's Private Security Advisory flow.
+#### Core
 
-### Core
+- [`storely`](./core/storely) — main key-value interface with hooks, events, stats, namespaces, TTL, and pluggable serialization/compression/encryption.
+- [`@storely/test-suite`](./core/test-suite) — shared compliance test suite for storage adapters.
+- [`@storely/bigmap`](./core/bigmap) — sharded in-memory `Map` implementation.
 
-- `Storely` class with hooks (`StorelyHookTypes`), events (`StorelyEvents`), and stats (`StorelyStats`).
-- `setMany` reports per-entry success / failure instead of collapsing to all-false on a single bad entry.
-- `BigMap.set()` returns `this` so chaining routes writes to the correct shard.
-- `throwOnEmptyListeners` defaults to `false`; internal error events no longer crash consumers without an `on("error")` handler.
-- `get()` documents the `undefined`-value vs missing-key semantic gap on the public overloads — use `has()` when the distinction matters.
-- `StorelyStats` exposes both zero-allocation live-map getters (`hitKeys` etc.) and defensive `snapshot*Keys()` accessors.
+#### Storage adapters
 
-### Storage adapters (production-supported)
+- Production-ready: [`@storely/redis`](./storage/redis), [`@storely/sqlite`](./storage/sqlite), [`@storely/postgres`](./storage/postgres).
+- Beta: [`@storely/mysql`](./storage/mysql), [`@storely/mongo`](./storage/mongo), [`@storely/valkey`](./storage/valkey), [`@storely/rocksdb`](./storage/rocksdb).
+- Experimental: [`@storely/keydb`](./storage/keydb), [`@storely/memcache`](./storage/memcache), [`@storely/etcd`](./storage/etcd), [`@storely/dynamo`](./storage/dynamo).
 
-- **`@storely/redis`** — `commandTimeout` wired through all four batch methods; `set(k, v, 0)` correctly means "no expiry"; `getKeyWithoutPrefix` uses `slice()` (no first-occurrence-replace bug).
-- **`@storely/postgres`** — per-instance pool with config-time validation (`max <= 0` and negative timeouts throw `RangeError`); `deleteMany` chunked at 1000 keys; iterator default 500 rows per batch.
-- **`@storely/mysql`** — per-instance pool with `await endPool` on disconnect; event-scheduler cleanup event named per-table to avoid cross-instance collision.
-- **`@storely/mongo`** — `initConnection` rejects on connection failure (no more deadlocks); `countDocuments` instead of deprecated `count()`.
-- **`@storely/sqlite`** — WAL opt-in option; multi-driver detection (better-sqlite3 / sqlite3 / node:sqlite); parameter chunking on `deleteMany`. Concurrency test suite passes.
-- **`@storely/valkey`** — cursor-based `SCAN` in `clear()`; pipelined `UNLINK` in `deleteMany` chunks of 1000.
-- **`@storely/rocksdb`** — iterator no longer silently truncates at 100 (limit is opt-in); `parseValue` handles plain `Uint8Array` correctly.
+#### Serialization
 
-### Encryption — `@storely/encrypt-node` / `@storely/encrypt-web`
+- [`@storely/serialize-superjson`](./serialization/superjson), [`@storely/serialize-msgpackr`](./serialization/msgpackr). The built-in JSON serializer (with binary/BigInt round-trip and a `*`-sentinel optimization for envelopes without an expiry) ships inside `storely`.
 
-- New `deriveKey()` PBKDF2 helpers for password-derived keys (default 600,000 iterations matching OWASP 2024).
-- AEAD detection hardened with an explicit ChaCha20-Poly1305 allowlist (no false-positives on Node's loose `"stream"` mode label).
-- Ciphertext wire format carries a 4-byte `STv0` magic prefix for forward compatibility; legacy no-magic ciphertexts still decrypt for migration.
-- AES-CBC docs explicitly warn that it does not verify integrity. Prefer AES-GCM.
+#### Compression
 
-### Compression
+- [`@storely/compress-gzip`](./compression/compress-gzip) (RFC 1952), [`@storely/compress-brotli`](./compression/compress-brotli), [`@storely/compress-lz4`](./compression/compress-lz4) (requires Node ≥ 20).
 
-- **`@storely/compress-gzip`** ships real gzip (RFC 1952 headers/trailer). Interop-safe with `Content-Encoding: gzip`, S3, nginx, gunzip.
-- **`@storely/compress-brotli`** defaults to quality 4 (cache-storage tradeoff). Override via `compressOptions.params`.
-- **`@storely/compress-lz4`** at Node `>= 20`.
-- Per-package READMEs note that all three buffer values in memory; no streaming API.
+#### Encryption
 
-### Observability — `@storely/otel`
+- [`@storely/encrypt-node`](./encryption/encrypt-node) (Node `crypto`) and [`@storely/encrypt-web`](./encryption/encrypt-web) (Web Crypto). AES-GCM and ChaCha20-Poly1305 AEAD; PBKDF2 `deriveKey()` defaults to 600,000 iterations (OWASP 2024). Ciphertext carries a 4-byte `STv0` magic prefix.
 
-New first-party OpenTelemetry adapter. Duck-typed to the OTel API (peer dep only):
+#### Observability
 
-```ts
-import { instrumentWithOtel } from "@storely/otel";
-instrumentWithOtel(storely, { meter, tracer, namespace: "myapp" });
-```
+- [`@storely/otel`](./observability/otel) — first-party OpenTelemetry adapter (peer-dep only). Emits counters for hit/miss/set/delete/error, histograms for `get`/`set` durations, and spans around the hook lifecycle.
 
-Emits counters for hit / miss / set / delete / error, histograms for get and set durations, and spans wrapping `get` / `set` / `delete` hook lifecycles. Disposable for clean shutdown.
+### API surface
 
-### Operability
+The exported types and methods listed in each package's `README.md` are the supported public surface. Future breaking changes require a major version bump.
 
-- `docs/RUNBOOK.md` covers health-checking, tuning, common failure modes, CVE response, and backups.
-- Per-adapter `docs/adapters/<adapter>-operations.md` for the seven production adapters with SLOs, tuning, failure modes, and known limitations.
-- Lightweight perf-regression gate (`scripts/perf-baseline.ts` + `.github/workflows/perf-gate.yml`) catches order-of-magnitude regressions without competitive-benchmark noise. 25% threshold; label-gated on PRs, mandatory on `main`.
-- Chaos test framework (`storage-chaos.ts`, opt-in via `chaos: true`) verifies timeouts return, batch ops don't hang, and stores remain usable after failure windows.
+### Security
 
-### Experimental adapters (not production-supported)
-
-- **`@storely/keydb`** — Redis-protocol compatible; production hardening in flight.
-- **`@storely/memcache`** — permanent experimental for the `1.x` line. Underlying `memcache@1.x` client unmaintained since 2013; migration to a maintained client (likely `memjs`) is post-`1.0.0` work.
-- **`@storely/etcd`** — iterator and lease lifecycle are recent; not yet load-tested.
-- **`@storely/dynamo`** — pagination and TTL semantics corrected, but not yet load-tested.
-
-### Supply chain
-
-- `tar` pinned `>= 7.5.9` via `pnpm.overrides` to clear the GHSA-* CVEs that flowed through `sqlite3`.
-- GitHub Actions pinned to commit SHAs with version-tag comments. `.github/dependabot.yml` auto-bumps weekly.
-- `pnpm-workspace.yaml` enforces `minimumReleaseAge: 2880` (2 days).
-
-### Migration
-
-This is the initial `1.0.0` release. Consumers coming from any pre-release version of `@storely/*` should re-install at `1.0.0` and refer to [`docs/API_STABILITY.md`](./docs/API_STABILITY.md) for the supported surface.
+`SECURITY.md` directs vulnerability reports to GitHub's Private Security Advisory flow. `tar` is pinned `>= 7.5.9` via `pnpm.overrides`; `pnpm-workspace.yaml` enforces `minimumReleaseAge: 2880` (two days) to mitigate supply-chain risk.

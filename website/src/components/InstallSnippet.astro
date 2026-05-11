@@ -1,0 +1,103 @@
+---
+interface Props {
+	command?: string;
+	label?: string;
+}
+
+const { command = "npm install @ambicuity/storely", label = "Install" } = Astro.props;
+---
+
+<div class="snippet">
+	<span class="label">{label}</span>
+	<code id="install-cmd" class="cmd">{command}</code>
+	<button class="copy" type="button" data-copy-target="install-cmd" aria-label="Copy install command">
+		<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+			<rect x="4.5" y="4.5" width="8" height="8" stroke="currentColor" stroke-width="1.2" fill="none" />
+			<path d="M3 3v8h1" stroke="currentColor" stroke-width="1.2" fill="none" />
+		</svg>
+		<span class="copy-label">Copy</span>
+	</button>
+</div>
+
+<script>
+	document.querySelectorAll<HTMLButtonElement>("[data-copy-target]").forEach((btn) => {
+		btn.addEventListener("click", async () => {
+			const id = btn.dataset.copyTarget;
+			if (!id) return;
+			const el = document.getElementById(id);
+			if (!el) return;
+			try {
+				await navigator.clipboard.writeText(el.textContent ?? "");
+				const lbl = btn.querySelector(".copy-label");
+				if (lbl) {
+					const prev = lbl.textContent;
+					lbl.textContent = "Copied";
+					setTimeout(() => {
+						lbl.textContent = prev ?? "Copy";
+					}, 1400);
+				}
+			} catch {
+				/* ignore */
+			}
+		});
+	});
+</script>
+
+<style>
+	.snippet {
+		display: inline-flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.75rem 1rem 0.75rem 1.2rem;
+		background: var(--canvas-soft);
+		border-left: 2px solid var(--accent);
+		font-size: var(--step-0);
+		max-width: 100%;
+	}
+
+	.label {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+	}
+
+	.cmd {
+		font-family: var(--font-mono);
+		color: var(--ink);
+		white-space: nowrap;
+		overflow-x: auto;
+	}
+
+	.copy {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-family: var(--font-body);
+		font-size: var(--step--1);
+		color: var(--ink-soft);
+		padding: 0.3rem 0.5rem;
+		border-left: 1px solid var(--rule);
+		transition: color var(--dur-fast) var(--ease-out);
+	}
+
+	.copy:hover {
+		color: var(--accent);
+	}
+
+	@media (max-width: 520px) {
+		.snippet {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.6rem;
+		}
+		.cmd {
+			font-size: var(--step--1);
+		}
+		.copy {
+			border-left: 0;
+			padding-left: 0;
+		}
+	}
+</style>

@@ -1,0 +1,242 @@
+---
+// Editorial hero: full-bleed cream canvas, hairline rule, Instrument Serif italic.
+---
+
+<section class="hero">
+	<div class="rule top" aria-hidden="true"></div>
+	<div class="grid">
+		<div class="meta">
+			<p class="kicker">
+				<span>№ 001</span>
+				<span aria-hidden="true">—</span>
+				<span>An Editorial Library</span>
+			</p>
+			<p class="folio">Volume I · Issue 1.0.0 · 2026</p>
+		</div>
+
+		<div class="copy">
+			<h1>
+				<span class="line one">Simple key-value</span>
+				<span class="line two"><em>storage,</em></span>
+				<span class="line three">for every backend</span>
+				<span class="line four"><em>you actually use.</em></span>
+			</h1>
+
+			<p class="sub">
+				A small interface over Redis, Postgres, SQLite, Mongo, Valkey, and seven
+				other backends. TTL, namespaces, pluggable serialization, encryption,
+				compression — without the framework tax.
+			</p>
+
+			<div class="actions">
+				<a class="cta" href="/docs/getting-started/">
+					Read the docs
+					<span aria-hidden="true">→</span>
+				</a>
+				<a class="cta secondary" href="/adapters/">Browse adapters</a>
+			</div>
+		</div>
+
+		<aside class="aside">
+			<p class="aside-label">Editor's note</p>
+			<p class="aside-body">
+				Storely 1.0.0 ships twelve storage adapters across three maturity tiers.
+				Pick what fits — start with SQLite locally, swap in Redis or Postgres
+				when traffic arrives. The API stays the same.
+			</p>
+			<p class="aside-patron">
+				Maintained by one person. If it saved you a weekend,
+				<a href="https://buymeacoffee.com/ritesh.rana" rel="noopener">consider a coffee →</a>
+			</p>
+		</aside>
+	</div>
+	<div class="rule bottom" aria-hidden="true"></div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		padding: clamp(2.4rem, 6vw, 5rem) 0 clamp(3rem, 8vw, 7rem);
+	}
+
+	.rule {
+		height: 1px;
+		background: var(--rule);
+		margin-inline: var(--margin);
+	}
+
+	.rule.bottom {
+		margin-top: clamp(2rem, 5vw, 3.5rem);
+	}
+
+	.grid {
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: clamp(2rem, 5vw, 4rem) var(--margin) 0;
+		display: grid;
+		grid-template-columns: minmax(0, 4fr) minmax(0, 1.5fr);
+		grid-template-areas:
+			"meta meta"
+			"copy aside";
+		gap: var(--gutter);
+		row-gap: clamp(1.4rem, 3vw, 2.4rem);
+	}
+
+	@media (max-width: 880px) {
+		.grid {
+			grid-template-columns: 1fr;
+			grid-template-areas:
+				"meta"
+				"copy"
+				"aside";
+		}
+	}
+
+	.meta {
+		grid-area: meta;
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		font-family: var(--font-mono);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+	}
+
+	.kicker {
+		display: inline-flex;
+		gap: 0.7rem;
+		align-items: baseline;
+	}
+
+	.copy {
+		grid-area: copy;
+		max-width: 22ch;
+	}
+
+	h1 {
+		font-family: var(--font-display);
+		font-size: var(--step-7);
+		line-height: 0.96;
+		letter-spacing: var(--tracking-display);
+		color: var(--ink);
+	}
+
+	h1 .line {
+		display: block;
+		opacity: 0;
+		transform: translateY(0.4em);
+		animation: rise var(--dur-slow) var(--ease-out) forwards;
+	}
+
+	h1 .one {
+		animation-delay: 60ms;
+	}
+	h1 .two {
+		animation-delay: 160ms;
+		padding-left: 0.4em;
+	}
+	h1 .three {
+		animation-delay: 280ms;
+	}
+	h1 .four {
+		animation-delay: 400ms;
+		padding-left: 1.4em;
+	}
+
+	h1 em {
+		font-style: italic;
+		color: var(--accent);
+	}
+
+	@keyframes rise {
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.sub {
+		margin-top: 1.4rem;
+		max-width: 36rem;
+		font-size: var(--step-1);
+		line-height: 1.5;
+		color: var(--ink-soft);
+	}
+
+	.actions {
+		margin-top: 2rem;
+		display: flex;
+		gap: 2rem;
+		flex-wrap: wrap;
+	}
+
+	.cta {
+		font-family: var(--font-body);
+		font-size: var(--step-1);
+		color: var(--accent);
+		border-bottom: 1px solid var(--accent);
+		padding-bottom: 4px;
+		display: inline-flex;
+		gap: 0.5rem;
+		align-items: baseline;
+		transition: border-width var(--dur-fast) var(--ease-out);
+	}
+
+	.cta:hover {
+		border-bottom-width: 2px;
+	}
+
+	.cta.secondary {
+		color: var(--ink-soft);
+		border-bottom-color: var(--rule);
+	}
+
+	.cta.secondary:hover {
+		color: var(--ink);
+		border-bottom-color: var(--ink);
+	}
+
+	.aside {
+		grid-area: aside;
+		padding-left: 1.2rem;
+		border-left: 1px solid var(--rule);
+		max-width: 24rem;
+		align-self: end;
+	}
+
+	.aside-label {
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--step-0);
+		color: var(--accent);
+		margin-bottom: 0.6rem;
+	}
+
+	.aside-body {
+		font-size: var(--step--1);
+		line-height: 1.55;
+		color: var(--ink-soft);
+	}
+
+	.aside-patron {
+		margin-top: 1rem;
+		padding-top: 1rem;
+		border-top: 1px dashed var(--rule);
+		font-size: var(--step--1);
+		line-height: 1.55;
+		color: var(--ink-soft);
+		font-feature-settings: "ss01" 1;
+	}
+
+	.aside-patron a {
+		color: var(--accent);
+		border-bottom: 1px solid var(--rule);
+		transition: border-color var(--dur-fast) var(--ease-out);
+	}
+
+	.aside-patron a:hover {
+		border-bottom-color: var(--accent);
+	}
+</style>

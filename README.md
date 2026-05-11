@@ -3,8 +3,8 @@
 # Adapter status
 
 Not every adapter is at the same level of production hardening. Use this list
-when picking a backend; the [production-readiness audit](docs/audits/2026-05-09-production-readiness-audit.md)
-has the full reasoning.
+when picking a backend; check each package's README for adapter-specific
+caveats.
 
 - **Production-ready:** `redis`, `sqlite`, `postgres`
 - **Beta** (use with caution; see audit): `mysql`, `mongo`, `valkey`, `rocksdb`

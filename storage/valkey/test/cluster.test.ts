@@ -9,6 +9,11 @@ const clusterNodes = [
 	{ host: "127.0.0.1", port: 7003 },
 ];
 
+// Cluster tests require a running redis cluster on ports 7001-7003. They are
+// gated behind STORELY_VALKEY_CLUSTER=1 so the default `pnpm test:ci` does not
+// hang on missing infra. To run: STORELY_VALKEY_CLUSTER=1 pnpm test:ci.
+const itCluster = process.env.STORELY_VALKEY_CLUSTER === "1" ? it : it.skip;
+
 async function createReadyCluster() {
 	const cluster = new Redis.Cluster(clusterNodes);
 	await new Promise<void>((resolve) => {
@@ -17,7 +22,7 @@ async function createReadyCluster() {
 	return cluster;
 }
 
-it("cluster: setMany should work without CROSSSLOT errors", { retry: 3 }, async (t) => {
+itCluster("cluster: setMany should work without CROSSSLOT errors", { retry: 3 }, async (t) => {
 	const cluster = await createReadyCluster();
 	const storely = new StorelyValkey(cluster as Cluster);
 
@@ -43,7 +48,7 @@ it("cluster: setMany should work without CROSSSLOT errors", { retry: 3 }, async 
 	await storely.disconnect();
 });
 
-it("cluster: getMany should work without CROSSSLOT errors", { retry: 3 }, async (t) => {
+itCluster("cluster: getMany should work without CROSSSLOT errors", { retry: 3 }, async (t) => {
 	const cluster = await createReadyCluster();
 	const storely = new StorelyValkey(cluster as Cluster);
 
@@ -64,7 +69,7 @@ it("cluster: getMany should work without CROSSSLOT errors", { retry: 3 }, async 
 	await storely.disconnect();
 });
 
-it("cluster: deleteMany should work without CROSSSLOT errors", { retry: 3 }, async (t) => {
+itCluster("cluster: deleteMany should work without CROSSSLOT errors", { retry: 3 }, async (t) => {
 	const cluster = await createReadyCluster();
 	const storely = new StorelyValkey(cluster as Cluster);
 
@@ -88,7 +93,7 @@ it("cluster: deleteMany should work without CROSSSLOT errors", { retry: 3 }, asy
 	await storely.disconnect();
 });
 
-it("cluster: hasMany should work without CROSSSLOT errors", { retry: 3 }, async (t) => {
+itCluster("cluster: hasMany should work without CROSSSLOT errors", { retry: 3 }, async (t) => {
 	const cluster = await createReadyCluster();
 	const storely = new StorelyValkey(cluster as Cluster);
 

@@ -221,7 +221,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 
 			// Delete expired GridFS entry
 			if (file.metadata?.expiresAt && new Date(file.metadata.expiresAt as Date) <= new Date()) {
-				// biome-ignore lint/style/noNonNullAssertion: need to fix
+				// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 				await client.bucket!.delete(file._id);
 				return undefined;
 			}
@@ -235,7 +235,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 				},
 			);
 
-			// biome-ignore lint/style/noNonNullAssertion: need to fix
+			// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 			const stream = client.bucket!.openDownloadStream(file._id);
 
 			return new Promise((resolve) => {
@@ -342,7 +342,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 
 			if (this._useGridFS) {
 				const client = await this.connect;
-				// biome-ignore lint/style/noNonNullAssertion: need to fix
+				// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 				const stream = client.bucket!.openUploadStream(strippedKey, {
 					metadata: {
 						expiresAt,
@@ -445,7 +445,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 
 		if (this._useGridFS) {
 			try {
-				// biome-ignore lint/style/noNonNullAssertion: need to fix
+				// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 				const connection = client.db!;
 				const bucket = new GridFSBucket(connection, {
 					bucketName: this._collection,
@@ -460,7 +460,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 					return false;
 				}
 
-				// biome-ignore lint/style/noNonNullAssertion: need to fix
+				// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 				await client.bucket!.delete(files[0]._id);
 				return true;
 			} catch (error) {
@@ -526,7 +526,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 		const ns = this.getNamespaceValue();
 
 		if (this._useGridFS) {
-			// biome-ignore lint/style/noNonNullAssertion: need to fix
+			// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 			const connection = client.db!;
 			const bucket = new GridFSBucket(connection, {
 				bucketName: this._collection,
@@ -538,7 +538,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 				.toArray();
 
 			await Promise.all(
-				// biome-ignore lint/style/noNonNullAssertion: need to fix
+				// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 				files.map(async (file) => client.bucket!.delete(file._id)),
 			);
 			return;
@@ -562,7 +562,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 		const ns = this.getNamespaceValue();
 
 		return this.connect.then(async (client) => {
-			// biome-ignore lint/style/noNonNullAssertion: need to fix
+			// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 			const connection = client.db!;
 			const bucket = new GridFSBucket(connection, {
 				bucketName: this._collection,
@@ -578,7 +578,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 				.toArray()
 				.then(async (expiredFiles) =>
 					Promise.all(
-						// biome-ignore lint/style/noNonNullAssertion: need to fix
+						// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 						expiredFiles.map(async (file) => client.bucket!.delete(file._id)),
 					).then(() => true),
 				);
@@ -598,7 +598,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 
 		const ns = this.getNamespaceValue();
 		const client = await this.connect;
-		// biome-ignore lint/style/noNonNullAssertion: need to fix
+		// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 		const connection = client.db!;
 		const bucket = new GridFSBucket(connection, {
 			bucketName: this._collection,
@@ -614,7 +614,7 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 			.toArray();
 
 		await Promise.all(
-			// biome-ignore lint/style/noNonNullAssertion: need to fix
+			// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 			lastAccessedFiles.map(async (file) => client.bucket!.delete(file._id)),
 		);
 		return true;
@@ -634,12 +634,12 @@ export class StorelyMongo extends Hookified implements StorelyStorageAdapter {
 
 			for await (const file of cursor) {
 				if (file.metadata?.expiresAt && new Date(file.metadata.expiresAt as Date) <= now) {
-					// biome-ignore lint/style/noNonNullAssertion: need to fix
+					// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 					await client.bucket!.delete(file._id);
 					continue;
 				}
 
-				// biome-ignore lint/style/noNonNullAssertion: need to fix
+				// biome-ignore lint/style/noNonNullAssertion: bucket/db are present whenever useGridFS is true and this path only runs in that branch
 				const stream = client.bucket!.openDownloadStream(file._id);
 				const data = await new Promise<string | undefined>((resolve) => {
 					const resp: Uint8Array[] = [];

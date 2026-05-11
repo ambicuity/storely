@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+	<defs>
+		<style>
+			.canvas { fill: #F6F2E8; }
+			.ink { fill: #1A1714; }
+			.soft { fill: #5B544B; }
+			.accent { fill: #6B1F1F; }
+			.rule { stroke: #C8BFB0; stroke-width: 1; }
+			.serif-i { font-family: 'Instrument Serif', 'Iowan Old Style', Georgia, serif; font-style: italic; }
+			.serif { font-family: 'Instrument Serif', 'Iowan Old Style', Georgia, serif; }
+			.sans { font-family: 'Geist', system-ui, sans-serif; font-weight: 400; }
+			.mono { font-family: 'Geist Mono', 'SF Mono', Menlo, monospace; }
+		</style>
+	</defs>
+
+	<rect class="canvas" width="1200" height="630" />
+
+	<!-- top hairline rule + masthead -->
+	<line class="rule" x1="80" y1="80" x2="1120" y2="80" />
+	<text class="sans soft" x="80" y="64" font-size="14" letter-spacing="3">№ 001 — AN EDITORIAL LIBRARY</text>
+	<text class="sans soft" x="1120" y="64" font-size="14" letter-spacing="3" text-anchor="end">VOLUME I · 1.0.0 · 2026</text>
+
+	<!-- headline -->
+	<text class="serif ink" x="80" y="240" font-size="120">Simple key-value</text>
+	<text class="serif-i accent" x="540" y="340" font-size="120">storage,</text>
+	<text class="serif ink" x="80" y="440" font-size="120">for every backend</text>
+	<text class="serif-i accent" x="540" y="540" font-size="120">you actually use.</text>
+
+	<!-- bottom hairline rule + colophon -->
+	<line class="rule" x1="80" y1="580" x2="1120" y2="580" />
+	<text class="sans soft" x="80" y="606" font-size="16" letter-spacing="3">STORELY.ORG</text>
+	<text class="mono soft" x="1120" y="606" font-size="16" text-anchor="end">npm install @ambicuity/storely</text>
+</svg>

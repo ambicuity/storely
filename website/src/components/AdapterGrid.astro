@@ -1,0 +1,153 @@
+---
+import { adapters, tierLabel, tierBlurb } from "~/content/nav";
+
+const tiers: Array<"production" | "beta" | "experimental"> = [
+	"production",
+	"beta",
+	"experimental",
+];
+
+const tierIndex: Record<string, string> = {
+	production: "I",
+	beta: "II",
+	experimental: "III",
+};
+---
+
+<section class="grid">
+	{tiers.map((tier) => {
+		const rows = adapters.filter((a) => a.tier === tier);
+		return (
+			<article class="row" data-tier={tier}>
+				<header>
+					<span class="numeral">{tierIndex[tier]}</span>
+					<div>
+						<h3>{tierLabel[tier]}</h3>
+						<p>{tierBlurb[tier]}</p>
+					</div>
+				</header>
+				<ul>
+					{rows.map((entry) => (
+						<li>
+							<a href={`/adapters/${entry.slug}/`}>
+								<span class="name">{entry.name}</span>
+								<span class="npm">{entry.npm}</span>
+								<span class="tag">{entry.tagline}</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			</article>
+		);
+	})}
+</section>
+
+<style>
+	.grid {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.row {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.8fr);
+		gap: var(--gutter);
+		padding: 2.4rem 0;
+		border-top: 1px solid var(--rule);
+	}
+
+	.row:last-of-type {
+		border-bottom: 1px solid var(--rule);
+	}
+
+	@media (max-width: 760px) {
+		.row {
+			grid-template-columns: 1fr;
+			gap: 1.4rem;
+		}
+	}
+
+	.row header {
+		display: flex;
+		gap: 1rem;
+		align-items: flex-start;
+	}
+
+	.numeral {
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--step-4);
+		line-height: 0.9;
+		color: var(--accent);
+	}
+
+	.row h3 {
+		font-family: var(--font-display);
+		font-size: var(--step-3);
+		line-height: 1;
+		letter-spacing: var(--tracking-tight);
+		margin-bottom: 0.4rem;
+	}
+
+	.row header p {
+		font-size: var(--step--1);
+		color: var(--ink-soft);
+		max-width: 28rem;
+		line-height: 1.5;
+	}
+
+	.row ul {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	.row li {
+		border-top: 1px dashed var(--rule);
+	}
+
+	.row li:first-child {
+		border-top: 0;
+	}
+
+	.row li a {
+		display: grid;
+		grid-template-columns: minmax(7rem, 8rem) minmax(10rem, 12rem) minmax(0, 1fr);
+		align-items: baseline;
+		gap: 1rem;
+		padding: 0.8rem 0;
+		transition: background var(--dur-fast) var(--ease-out);
+	}
+
+	.row li a:hover {
+		background: linear-gradient(to right, var(--canvas-soft), transparent 70%);
+	}
+
+	@media (max-width: 540px) {
+		.row li a {
+			grid-template-columns: 1fr;
+			gap: 0.2rem;
+			padding: 1rem 0;
+		}
+	}
+
+	.name {
+		font-family: var(--font-display);
+		font-size: var(--step-2);
+		color: var(--ink);
+		letter-spacing: var(--tracking-tight);
+	}
+
+	.npm {
+		font-family: var(--font-mono);
+		font-size: var(--step--1);
+		color: var(--accent);
+	}
+
+	.tag {
+		font-size: var(--step--1);
+		color: var(--ink-soft);
+		line-height: 1.45;
+	}
+</style>

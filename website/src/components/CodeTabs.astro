@@ -1,0 +1,338 @@
+---
+import { codeToHtml } from "shiki";
+
+interface Tab {
+	id: string;
+	label: string;
+	caption: string;
+	code: string;
+}
+
+const tabs: Tab[] = [
+	{
+		id: "cache",
+		label: "Cache",
+		caption: "Wrap an expensive call. The second hit is free.",
+		code: `import Storely from "@ambicuity/storely";
+import StorelyRedis from "@ambicuity/redis";
+
+const cache = new Storely(
+  new StorelyRedis("redis://localhost:6379"),
+  { namespace: "products", ttl: 5 * 60_000 },
+);
+
+async function fetchProduct(id: string) {
+  const cached = await cache.get<Product>(id);
+  if (cached) return cached;
+
+  const product = await db.products.findOne({ id });
+  await cache.set(id, product);
+  return product;
+}`,
+	},
+	{
+		id: "session",
+		label: "Session",
+		caption: "Stateless tokens, stateful sessions, one TTL away from expiring.",
+		code: `import Storely from "@ambicuity/storely";
+import StorelyPostgres from "@ambicuity/postgres";
+
+const sessions = new Storely(
+  new StorelyPostgres({ uri: process.env.PG_URL! }),
+  { namespace: "sessions", ttl: 24 * 60 * 60_000 },
+);
+
+async function login(userId: string) {
+  const token = crypto.randomUUID();
+  await sessions.set(token, { userId, issuedAt: Date.now() });
+  return token;
+}
+
+async function whoami(token: string) {
+  return await sessions.get(token);
+}`,
+	},
+	{
+		id: "ratelimit",
+		label: "Rate limit",
+		caption: "A fixed-window counter, four lines of business logic.",
+		code: `import Storely from "@ambicuity/storely";
+import StorelyRedis from "@ambicuity/redis";
+
+const counter = new Storely(
+  new StorelyRedis("redis://localhost:6379"),
+  { namespace: "ratelimit", ttl: 60_000 },
+);
+
+async function allow(ip: string, limit = 60) {
+  const seen = (await counter.get<number>(ip)) ?? 0;
+  if (seen >= limit) return false;
+  await counter.set(ip, seen + 1);
+  return true;
+}`,
+	},
+	{
+		id: "encrypted",
+		label: "Encrypted",
+		caption: "Add encryption and compression without touching call sites.",
+		code: `import Storely from "@ambicuity/storely";
+import StorelySqlite from "@ambicuity/sqlite";
+import StorelyEncrypt from "@ambicuity/encrypt-node";
+import StorelyGzip from "@ambicuity/compress-gzip";
+
+const vault = new Storely({
+  store: new StorelySqlite("sqlite://./vault.db"),
+  encryption: new StorelyEncrypt({
+    secret: process.env.SECRET!,
+    mode: "aes-gcm",
+  }),
+  compression: new StorelyGzip(),
+});
+
+await vault.set("api-keys/openai", "sk-...");`,
+	},
+];
+
+const highlighted = await Promise.all(
+	tabs.map(async (t) => ({
+		...t,
+		html: await codeToHtml(t.code, { lang: "ts", theme: "min-light" }),
+	})),
+);
+---
+
+<section class="code-tabs" aria-label="Code examples">
+	<header>
+		<p class="kicker">Sample I · Live code</p>
+		<h2><em>One</em> verb set, four shapes of work.</h2>
+		<p class="lede">
+			Cache results. Track sessions. Bound a rate limit. Encrypt secrets at rest.
+			The adapter changes; the call sites do not.
+		</p>
+	</header>
+
+	<div class="tabs" role="tablist" aria-label="Code example">
+		{highlighted.map((t, i) => (
+			<button
+				type="button"
+				role="tab"
+				id={`tab-${t.id}`}
+				aria-controls={`panel-${t.id}`}
+				aria-selected={i === 0 ? "true" : "false"}
+				tabindex={i === 0 ? 0 : -1}
+				data-tab={t.id}
+			>
+				<span class="num">{String(i + 1).padStart(2, "0")}</span>
+				<span class="label">{t.label}</span>
+			</button>
+		))}
+	</div>
+
+	{highlighted.map((t, i) => (
+		<div
+			class="panel"
+			role="tabpanel"
+			id={`panel-${t.id}`}
+			aria-labelledby={`tab-${t.id}`}
+			data-panel={t.id}
+			hidden={i !== 0}
+		>
+			<figure>
+				<set:html value={t.html} />
+				<figcaption>{t.caption}</figcaption>
+			</figure>
+		</div>
+	))}
+</section>
+
+<script>
+	const root = document.currentScript?.previousElementSibling?.parentElement;
+	const sections = document.querySelectorAll<HTMLElement>(".code-tabs");
+	sections.forEach((section) => {
+		const buttons = section.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+		const panels = section.querySelectorAll<HTMLElement>('[role="tabpanel"]');
+
+		const activate = (id: string) => {
+			buttons.forEach((b) => {
+				const match = b.dataset.tab === id;
+				b.setAttribute("aria-selected", match ? "true" : "false");
+				b.setAttribute("tabindex", match ? "0" : "-1");
+			});
+			panels.forEach((p) => {
+				const match = p.dataset.panel === id;
+				p.hidden = !match;
+			});
+		};
+
+		buttons.forEach((b) => {
+			b.addEventListener("click", () => activate(b.dataset.tab ?? ""));
+			b.addEventListener("keydown", (e) => {
+				const list = Array.from(buttons);
+				const idx = list.indexOf(b);
+				if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+					e.preventDefault();
+					const next = list[(idx + 1) % list.length];
+					next.focus();
+					activate(next.dataset.tab ?? "");
+				}
+				if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+					e.preventDefault();
+					const prev = list[(idx - 1 + list.length) % list.length];
+					prev.focus();
+					activate(prev.dataset.tab ?? "");
+				}
+				if (e.key === "Home") {
+					e.preventDefault();
+					list[0].focus();
+					activate(list[0].dataset.tab ?? "");
+				}
+				if (e.key === "End") {
+					e.preventDefault();
+					const last = list[list.length - 1];
+					last.focus();
+					activate(last.dataset.tab ?? "");
+				}
+			});
+		});
+	});
+</script>
+
+<style>
+	.code-tabs {
+		max-width: 1320px;
+		margin: 0 auto;
+		padding: clamp(3rem, 7vw, 5.5rem) var(--margin);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr);
+		gap: var(--gutter);
+	}
+
+	@media (max-width: 880px) {
+		.code-tabs {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	header {
+		max-width: 26rem;
+	}
+
+	.kicker {
+		font-family: var(--font-body);
+		font-size: var(--step--2);
+		text-transform: uppercase;
+		letter-spacing: var(--tracking-caps);
+		color: var(--ink-faint);
+		margin-bottom: 0.8rem;
+	}
+
+	h2 {
+		font-family: var(--font-display);
+		font-size: var(--step-4);
+		line-height: 1.05;
+		letter-spacing: var(--tracking-display);
+		color: var(--ink);
+		max-width: 14ch;
+	}
+
+	h2 em {
+		font-style: italic;
+		color: var(--accent);
+	}
+
+	.lede {
+		margin-top: 1.2rem;
+		font-size: var(--step-0);
+		color: var(--ink-soft);
+		line-height: 1.55;
+		max-width: 30rem;
+	}
+
+	.tabs {
+		grid-column: 2;
+		grid-row: 1;
+		display: flex;
+		gap: 1.6rem;
+		flex-wrap: wrap;
+		padding-bottom: 0.6rem;
+		border-bottom: 1px solid var(--rule);
+		align-self: end;
+	}
+
+	@media (max-width: 880px) {
+		.tabs {
+			grid-column: 1;
+			grid-row: auto;
+		}
+	}
+
+	.tabs button {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.4rem;
+		padding: 0.3rem 0;
+		color: var(--ink-soft);
+		font-family: var(--font-body);
+		font-size: var(--step-0);
+		border-bottom: 1px solid transparent;
+		transition: color var(--dur-fast) var(--ease-out),
+			border-color var(--dur-fast) var(--ease-out);
+	}
+
+	.tabs button:hover {
+		color: var(--ink);
+	}
+
+	.tabs button[aria-selected="true"] {
+		color: var(--accent);
+		border-bottom-color: var(--accent);
+	}
+
+	.tabs button .num {
+		font-family: var(--font-mono);
+		font-size: var(--step--2);
+		color: var(--ink-faint);
+	}
+
+	.tabs button[aria-selected="true"] .num {
+		color: var(--accent);
+	}
+
+	.tabs button .label {
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--step-1);
+		letter-spacing: var(--tracking-tight);
+	}
+
+	.panel {
+		grid-column: 2;
+		grid-row: 2;
+	}
+
+	@media (max-width: 880px) {
+		.panel {
+			grid-column: 1;
+		}
+	}
+
+	.panel figure {
+		margin: 0;
+	}
+
+	.panel :global(pre) {
+		font-size: var(--step--1);
+	}
+
+	.panel figcaption {
+		margin-top: 1rem;
+		font-family: var(--font-display);
+		font-style: italic;
+		font-size: var(--step-1);
+		line-height: 1.4;
+		color: var(--ink-soft);
+		max-width: 48ch;
+		border-left: 2px solid var(--rule);
+		padding-left: 1rem;
+	}
+</style>

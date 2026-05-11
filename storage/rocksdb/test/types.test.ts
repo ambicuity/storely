@@ -9,7 +9,7 @@ import StorelyRocksDB, {
 describe("StorelyRocksDB Types", () => {
 	test("should accept string URI in constructor", () => {
 		const adapter = new StorelyRocksDB("rocksdb://:memory:");
-		expectTypeOf(adapter).toBeCallable();
+		expectTypeOf(adapter).toBeObject();
 	});
 
 	test("should accept options object in constructor", () => {
@@ -24,7 +24,7 @@ describe("StorelyRocksDB Types", () => {
 			infoLogLevel: "warn",
 		};
 		const adapter = new StorelyRocksDB(options);
-		expectTypeOf(adapter).toBeCallable();
+		expectTypeOf(adapter).toBeObject();
 	});
 
 	test("createStorelyRocksDB returns a Storely instance", () => {
