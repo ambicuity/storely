@@ -60,7 +60,7 @@ Each Storely instance has roughly three knobs that matter under load:
 
 ### Memcache "key not found" after restart
 
-**Memcache is permanent experimental for `6.0.x`.** Don't put live traffic on it.
+**Memcache is permanent experimental for `1.x`.** Don't put live traffic on it.
 
 ### DynamoDB `clear()` partial
 
@@ -74,7 +74,7 @@ Each Storely instance has roughly three knobs that matter under load:
 2. Maintainers acknowledge within 5 business days.
 3. Fix is developed in a private branch; reporter is credited in the advisory unless they prefer anonymity.
 4. Release plan:
-   - **Patch release** for the current `6.0.x` line.
+   - **Patch release** for the current `1.x` line.
    - **Backport** to the previous minor if it's still receiving patches.
 5. Advisory is made public on release day, with the fix version and CVSS score.
 

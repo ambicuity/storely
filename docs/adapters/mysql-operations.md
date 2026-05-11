@@ -18,5 +18,5 @@ Reference numbers from `perf-baselines/mysql.json` (local docker). Comparable to
 
 ## Known limitations
 
-- `deleteMany` still does two round-trips per chunk (pre-flight `SELECT id` then `DELETE`). MySQL 8.0.20+ supports `DELETE … RETURNING`; migrating is post-`6.0.0` work.
+- `deleteMany` still does two round-trips per chunk (pre-flight `SELECT id` then `DELETE`). MySQL 8.0.20+ supports `DELETE … RETURNING`; migrating is post-`1.0.0` work.
 - `intervalExpiration` is in seconds, not milliseconds. Cross-package inconsistency carried forward; documented in JSDoc.

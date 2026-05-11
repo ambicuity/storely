@@ -1,9 +1,9 @@
 
-> ⚠️ **Permanent experimental for 6.0.x.** The underlying [`memcache`](https://www.npmjs.com/package/memcache)
+> ⚠️ **Permanent experimental for 1.x.** The underlying [`memcache`](https://www.npmjs.com/package/memcache)
 > client was last published in 2013 and is unmaintained. This adapter ships
 > for API parity only and is **not supported for production use**. A
 > migration to a maintained client (likely [`memjs`](https://www.npmjs.com/package/memjs))
-> is tracked as post-`6.0.0` work. Cluster 3 added a `commandTimeout` wrapper
+> is tracked as post-`1.0.0` work. Cluster 3 added a `commandTimeout` wrapper
 > that mitigates batch-op hangs and Cluster 4 made `clear()` refuse to flush
 > the entire server when a namespace is set, but the unmaintained-client
 > risk remains. Do not put live traffic on this adapter.

@@ -64,8 +64,8 @@ function percentiles(samples: number[]): Measurement {
 async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () => Promise<void> }> {
 	switch (name) {
 		case "redis": {
-			// @ts-ignore -- workspace adapter; resolves at runtime via pnpm
-			const mod = await import("@storely/redis");
+			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
+			const mod = (await import("@storely/redis")) as any;
 			const adapter = new mod.default({
 				uri: process.env.REDIS_URL ?? "redis://localhost:6379",
 				namespace: `perfbase-${Date.now()}`,
@@ -74,8 +74,8 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 			return { adapter, cleanup: async () => adapter.disconnect?.() };
 		}
 		case "postgres": {
-			// @ts-ignore -- workspace adapter; resolves at runtime via pnpm
-			const mod = await import("@storely/postgres");
+			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
+			const mod = (await import("@storely/postgres")) as any;
 			const adapter = new mod.default({
 				uri: process.env.POSTGRES_URL ?? "postgresql://postgres:postgres@localhost:5432/storely_test",
 				namespace: `perfbase-${Date.now()}`,
@@ -83,8 +83,8 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 			return { adapter, cleanup: async () => adapter.disconnect?.() };
 		}
 		case "mysql": {
-			// @ts-ignore -- workspace adapter; resolves at runtime via pnpm
-			const mod = await import("@storely/mysql");
+			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
+			const mod = (await import("@storely/mysql")) as any;
 			const adapter = new mod.default({
 				uri: process.env.MYSQL_URL ?? "mysql://root@localhost:3306/storely_test",
 				namespace: `perfbase-${Date.now()}`,
@@ -92,8 +92,8 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 			return { adapter, cleanup: async () => adapter.disconnect?.() };
 		}
 		case "mongo": {
-			// @ts-ignore -- workspace adapter; resolves at runtime via pnpm
-			const mod = await import("@storely/mongo");
+			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
+			const mod = (await import("@storely/mongo")) as any;
 			const adapter = new mod.default({
 				url: process.env.MONGO_URL ?? "mongodb://localhost:27017/storely_test",
 				namespace: `perfbase-${Date.now()}`,
@@ -101,8 +101,8 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 			return { adapter, cleanup: async () => adapter.disconnect?.() };
 		}
 		case "sqlite": {
-			// @ts-ignore -- workspace adapter; resolves at runtime via pnpm
-			const mod = await import("@storely/sqlite");
+			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
+			const mod = (await import("@storely/sqlite")) as any;
 			const tmpFile = path.join(ROOT, `tmp-perfbase-${Date.now()}.sqlite`);
 			const adapter = new mod.default({ uri: `sqlite://${tmpFile}` });
 			return {
@@ -114,8 +114,8 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 			};
 		}
 		case "valkey": {
-			// @ts-ignore -- workspace adapter; resolves at runtime via pnpm
-			const mod = await import("@storely/valkey");
+			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
+			const mod = (await import("@storely/valkey")) as any;
 			const adapter = new mod.default({
 				uri: process.env.VALKEY_URL ?? "redis://localhost:6380",
 				namespace: `perfbase-${Date.now()}`,
@@ -124,8 +124,8 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 			return { adapter, cleanup: async () => adapter.disconnect?.() };
 		}
 		case "rocksdb": {
-			// @ts-ignore -- workspace adapter; resolves at runtime via pnpm
-			const mod = await import("@storely/rocksdb");
+			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
+			const mod = (await import("@storely/rocksdb")) as any;
 			const tmpDir = path.join(ROOT, `tmp-perfbase-rocks-${Date.now()}`);
 			const adapter = new mod.default({ path: tmpDir });
 			return {

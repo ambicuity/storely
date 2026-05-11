@@ -65,7 +65,7 @@ Functional and tested, but a replacement exists. Removal target: `7.0.0`.
 | Entity | Why experimental |
 |---|---|
 | `@storely/keydb` | Production hardening still in flight; do not put live traffic on this without your own integration tests. |
-| `@storely/memcache` | Underlying `memcache@1.x` client unmaintained since 2013. Permanent experimental for the `6.0.x` line; migration to a maintained client is post-`6.0.0` work. |
+| `@storely/memcache` | Underlying `memcache@1.x` client unmaintained since 2013. Permanent experimental for the `1.x` line; migration to a maintained client is post-`6.0.0` work. |
 | `@storely/etcd` | Iterator + lease lifecycle are recent; not yet load-tested. |
 | `@storely/dynamo` | Pagination + TTL semantics corrected in Cluster 2, but not yet load-tested under heavy parallel write traffic. |
 
@@ -78,5 +78,5 @@ Anything reachable only via deep imports (`storely/dist/...`, package internals)
 These are stable and any change requires a major bump:
 
 - **Storely envelope** — `{ value, expires? }` JSON shape (or msgpack equivalent).
-- **Encrypted envelope** — `STv0` magic + IV + (AuthTag) + Ciphertext. Legacy "no-magic" decoding is also stable for the `6.0.x` line.
-- **Storage row schemas** — the table/collection/key schemas in each SQL/document/KV adapter are stable for the `6.0.x` line. Migrations between majors will ship with a documented upgrade path.
+- **Encrypted envelope** — `STv0` magic + IV + (AuthTag) + Ciphertext. Legacy "no-magic" decoding is also stable for the `1.x` line.
+- **Storage row schemas** — the table/collection/key schemas in each SQL/document/KV adapter are stable for the `1.x` line. Migrations between majors will ship with a documented upgrade path.
