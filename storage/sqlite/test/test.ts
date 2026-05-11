@@ -1,6 +1,6 @@
+import Storely from "@ambicuity/storely";
+import { storageTestSuite, storelyTestSuite } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
-import { storageTestSuite, storelyTestSuite } from "@storely/test-suite";
-import Storely from "storely";
 import { beforeEach, it, vi } from "vitest";
 import StorelySqlite, { createStorely } from "../src/index.js";
 
@@ -384,7 +384,7 @@ it("WAL mode with in-memory database logs a warning", async (t) => {
 	await storely.query("SELECT 1");
 
 	t.expect(warnSpy).toHaveBeenCalledWith(
-		"@storely/sqlite: WAL mode is not supported for in-memory databases. The wal option will be ignored.",
+		"@ambicuity/sqlite: WAL mode is not supported for in-memory databases. The wal option will be ignored.",
 	);
 
 	warnSpy.mockRestore();

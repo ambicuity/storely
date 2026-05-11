@@ -1,11 +1,11 @@
-import calculateSlot from "cluster-key-slot";
-import { Hookified } from "hookified";
-import { type Cluster, Redis as IORedis, type Redis as RedisInstance } from "iovalkey";
 import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
-} from "storely";
+} from "@ambicuity/storely";
+import calculateSlot from "cluster-key-slot";
+import { Hookified } from "hookified";
+import { type Cluster, Redis as IORedis, type Redis as RedisInstance } from "iovalkey";
 import type { StorelyUriOptions, StorelyValkeyOptions } from "./types.js";
 
 /**

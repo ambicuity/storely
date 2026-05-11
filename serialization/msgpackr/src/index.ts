@@ -1,5 +1,5 @@
+import type { StorelySerializationAdapter } from "@ambicuity/storely";
 import { Packr } from "msgpackr";
-import type { StorelySerializationAdapter } from "storely";
 
 /**
  * MessagePack serializer for Storely, backed by `msgpackr`.

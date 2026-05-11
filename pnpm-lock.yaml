@@ -11,6 +11,30 @@ importers:
 
   .:
     devDependencies:
+      '@ambicuity/mongo':
+        specifier: workspace:*
+        version: link:storage/mongo
+      '@ambicuity/mysql':
+        specifier: workspace:*
+        version: link:storage/mysql
+      '@ambicuity/postgres':
+        specifier: workspace:*
+        version: link:storage/postgres
+      '@ambicuity/redis':
+        specifier: workspace:*
+        version: link:storage/redis
+      '@ambicuity/rocksdb':
+        specifier: workspace:*
+        version: link:storage/rocksdb
+      '@ambicuity/sqlite':
+        specifier: workspace:*
+        version: link:storage/sqlite
+      '@ambicuity/storely':
+        specifier: workspace:*
+        version: link:core/storely
+      '@ambicuity/valkey':
+        specifier: workspace:*
+        version: link:storage/valkey
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.4.14
@@ -20,27 +44,6 @@ importers:
       '@faker-js/faker':
         specifier: ^10.2.0
         version: 10.4.0
-      '@storely/mongo':
-        specifier: workspace:*
-        version: link:storage/mongo
-      '@storely/mysql':
-        specifier: workspace:*
-        version: link:storage/mysql
-      '@storely/postgres':
-        specifier: workspace:*
-        version: link:storage/postgres
-      '@storely/redis':
-        specifier: workspace:*
-        version: link:storage/redis
-      '@storely/rocksdb':
-        specifier: workspace:*
-        version: link:storage/rocksdb
-      '@storely/sqlite':
-        specifier: workspace:*
-        version: link:storage/sqlite
-      '@storely/valkey':
-        specifier: workspace:*
-        version: link:storage/valkey
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -56,9 +59,6 @@ importers:
       rimraf:
         specifier: ^6.1.2
         version: 6.1.3
-      storely:
-        specifier: workspace:*
-        version: link:core/storely
       tsd:
         specifier: ^0.33.0
         version: 0.33.0
@@ -77,16 +77,16 @@ importers:
 
   compression/compress-brotli:
     dependencies:
-      storely:
+      '@ambicuity/storely':
         specifier: workspace:^
         version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.4.14
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.18
         version: 4.1.5(vitest@4.1.5)
@@ -99,22 +99,22 @@ importers:
 
   compression/compress-gzip:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       '@types/pako':
         specifier: ^2.0.4
         version: 2.0.4
       pako:
         specifier: ^2.1.0
         version: 2.1.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.4.14
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.18
         version: 4.1.5(vitest@4.1.5)
@@ -130,19 +130,19 @@ importers:
 
   compression/compress-lz4:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       lz4-napi:
         specifier: ^2.9.0
         version: 2.9.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.8
         version: 2.4.14
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.14
         version: 4.1.5(vitest@4.1.5)
@@ -155,15 +155,15 @@ importers:
 
   core/bigmap:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../storely
       hashery:
         specifier: ^1.5.0
         version: 1.5.1
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
-      storely:
-        specifier: workspace:^
-        version: link:../storely
     devDependencies:
       '@biomejs/biome':
         specifier: ^2.3.11
@@ -232,6 +232,9 @@ importers:
 
   core/test-suite:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../storely
       '@faker-js/faker':
         specifier: ^10.2.0
         version: 10.4.0
@@ -247,9 +250,6 @@ importers:
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
-      storely:
-        specifier: workspace:^
-        version: link:../storely
       timekeeper:
         specifier: ^2.3.1
         version: 2.3.1
@@ -272,16 +272,16 @@ importers:
 
   encryption/encrypt-node:
     dependencies:
-      storely:
+      '@ambicuity/storely':
         specifier: workspace:^
         version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.4.14
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.18
         version: 4.1.5(vitest@4.1.5)
@@ -294,19 +294,19 @@ importers:
 
   encryption/encrypt-web:
     dependencies:
-      storely:
+      '@ambicuity/storely':
         specifier: workspace:^
         version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.4.14
       '@faker-js/faker':
         specifier: ^9.8.0
         version: 9.9.0
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.18
         version: 4.1.5(vitest@4.1.5)
@@ -319,7 +319,7 @@ importers:
 
   observability/otel:
     dependencies:
-      storely:
+      '@ambicuity/storely':
         specifier: workspace:^
         version: link:../../core/storely
     devDependencies:
@@ -347,19 +347,19 @@ importers:
 
   serialization/msgpackr:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       msgpackr:
         specifier: ^1.11.9
         version: 1.11.12
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.4.14
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.18
         version: 4.1.5(vitest@4.1.5)
@@ -378,19 +378,19 @@ importers:
 
   serialization/superjson:
     dependencies:
-      storely:
+      '@ambicuity/storely':
         specifier: workspace:^
         version: link:../../core/storely
       superjson:
         specifier: ^2.2.2
         version: 2.2.6
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.13
         version: 2.4.14
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.18
         version: 4.1.5(vitest@4.1.5)
@@ -409,6 +409,9 @@ importers:
 
   storage/dynamo:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       '@aws-sdk/client-dynamodb':
         specifier: ^3.958.0
         version: 3.1042.0
@@ -418,32 +421,32 @@ importers:
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
-      '@storely/test-suite':
+      '@ambicuity/test-suite':
         specifier: workspace:^
         version: link:../../core/test-suite
 
   storage/etcd:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       etcd3:
         specifier: ^1.1.2
         version: 1.1.2
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
-      '@storely/test-suite':
+      '@ambicuity/test-suite':
         specifier: workspace:^
         version: link:../../core/test-suite
 
   storage/keydb:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       '@redis/client':
         specifier: ^5.10.0
         version: 5.12.1(@opentelemetry/api@1.9.0)
@@ -453,11 +456,8 @@ importers:
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
-      '@storely/test-suite':
+      '@ambicuity/test-suite':
         specifier: workspace:^
         version: link:../../core/test-suite
       timekeeper:
@@ -466,44 +466,44 @@ importers:
 
   storage/memcache:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
       memcache:
         specifier: ^1.4.0
         version: 1.6.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
-      '@storely/compress-gzip':
+      '@ambicuity/compress-gzip':
         specifier: workspace:^
         version: link:../../compression/compress-gzip
-      '@storely/test-suite':
+      '@ambicuity/test-suite':
         specifier: workspace:^
         version: link:../../core/test-suite
 
   storage/mongo:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
       mongodb:
         specifier: ^7.0.0
         version: 7.2.0(socks@2.8.8)
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.10
         version: 2.4.14
       '@faker-js/faker':
         specifier: ^10.2.0
         version: 10.4.0
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.16
         version: 4.1.5(vitest@4.1.5)
@@ -526,24 +526,24 @@ importers:
         specifier: ^3.16.1
         version: 3.22.3(@types/node@24.12.2)
     devDependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.11
         version: 2.4.14
       '@faker-js/faker':
         specifier: ^9.8.0
         version: 9.9.0
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.17
         version: 4.1.5(vitest@4.1.5)
       rimraf:
         specifier: ^6.1.2
         version: 6.1.3
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@types/node@24.12.2)(typescript@6.0.3)
@@ -556,25 +556,25 @@ importers:
 
   storage/postgres:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
       pg:
         specifier: ^8.17.1
         version: 8.20.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.11
         version: 2.4.14
       '@faker-js/faker':
         specifier: ^10.2.0
         version: 10.4.0
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@types/pg':
         specifier: ^8.16.0
         version: 8.20.0
@@ -593,6 +593,9 @@ importers:
 
   storage/redis:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       '@redis/client':
         specifier: ^5.10.0
         version: 5.12.1(@opentelemetry/api@1.9.0)
@@ -602,11 +605,8 @@ importers:
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
-      '@storely/test-suite':
+      '@ambicuity/test-suite':
         specifier: workspace:^
         version: link:../../core/test-suite
       timekeeper:
@@ -615,38 +615,38 @@ importers:
 
   storage/rocksdb:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       '@nxtedition/rocksdb':
         specifier: ^15.4.1
         version: 15.4.1
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
-      '@storely/test-suite':
+      '@ambicuity/test-suite':
         specifier: workspace:^
         version: link:../../core/test-suite
 
   storage/sqlite:
     dependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
       better-sqlite3:
         specifier: ^11.0.0
         version: 11.10.0
       hookified:
         specifier: ^2.0.0
         version: 2.2.0
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
     devDependencies:
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@monstermann/tinybench-pretty-printer':
         specifier: ^0.3.0
         version: 0.3.0(tinybench@6.0.1)
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@types/better-sqlite3':
         specifier: ^7.6.0
         version: 7.6.13
@@ -672,24 +672,24 @@ importers:
         specifier: ^0.3.3
         version: 0.3.3
     devDependencies:
+      '@ambicuity/storely':
+        specifier: workspace:^
+        version: link:../../core/storely
+      '@ambicuity/test-suite':
+        specifier: workspace:^
+        version: link:../../core/test-suite
       '@biomejs/biome':
         specifier: ^2.3.8
         version: 2.4.14
       '@faker-js/faker':
         specifier: ^10.2.0
         version: 10.4.0
-      '@storely/test-suite':
-        specifier: workspace:^
-        version: link:../../core/test-suite
       '@vitest/coverage-v8':
         specifier: ^4.0.15
         version: 4.1.5(vitest@4.1.5)
       rimraf:
         specifier: ^6.1.2
         version: 6.1.3
-      storely:
-        specifier: workspace:^
-        version: link:../../core/storely
       timekeeper:
         specifier: ^2.3.1
         version: 2.3.1

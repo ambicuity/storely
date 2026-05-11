@@ -1,12 +1,12 @@
-import { faker } from "@faker-js/faker";
+import Storely from "@ambicuity/storely";
 import {
 	delay,
 	storageTestSuite,
 	storelyIteratorTests,
 	storelyTestSuite,
-} from "@storely/test-suite";
+} from "@ambicuity/test-suite";
+import { faker } from "@faker-js/faker";
 import type mysql from "mysql2";
-import Storely from "storely";
 import { it } from "vitest";
 import StorelyMysql, { createStorely } from "../src/index.js";
 import { parseConnectionString } from "../src/pool.js";

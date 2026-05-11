@@ -1,4 +1,4 @@
-import type Storely from "storely";
+import type Storely from "@ambicuity/storely";
 import { describe, expectTypeOf, test } from "vitest";
 import type { StorelyRocksDBOptions } from "../src/index.js";
 import StorelyRocksDB, {

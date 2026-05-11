@@ -1,6 +1,6 @@
 import { Buffer } from "node:buffer";
+import type { StorelyCompressionAdapter } from "@ambicuity/storely";
 import { compress, uncompress } from "lz4-napi";
-import type { StorelyCompressionAdapter } from "storely";
 
 export class StorelyLz4 implements StorelyCompressionAdapter {
 	constructor(private readonly dictionary?: string) {}

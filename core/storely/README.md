@@ -31,7 +31,7 @@ in-memory store and removes 4–80× per-op overhead.
 To restore the previous behavior, pass an explicit serializer:
 
 ```ts
-import { Storely, StorelyJsonSerializer } from "storely";
+import { Storely, StorelyJsonSerializer } from "@ambicuity/storely";
 const cache = new Storely({
     store: new Map(),
     serialization: new StorelyJsonSerializer(),
@@ -102,21 +102,21 @@ npm install --save storely
 By default everything is stored in memory, you can optionally also install a storage adapter.
 
 ```
-npm install --save @storely/redis
-npm install --save @storely/valkey
-npm install --save @storely/mongo
-npm install --save @storely/sqlite
-npm install --save @storely/postgres
-npm install --save @storely/mysql
-npm install --save @storely/etcd
-npm install --save @storely/memcache
-npm install --save @storely/dynamo
+npm install --save @ambicuity/redis
+npm install --save @ambicuity/valkey
+npm install --save @ambicuity/mongo
+npm install --save @ambicuity/sqlite
+npm install --save @ambicuity/postgres
+npm install --save @ambicuity/mysql
+npm install --save @ambicuity/etcd
+npm install --save @ambicuity/memcache
+npm install --save @ambicuity/dynamo
 ```
 
 First, create a new Storely instance. 
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 ```
 
 # Type-safe Usage
@@ -153,7 +153,7 @@ Once you have created your Storely instance you can use it as a simple key-value
 
 ```js
 // redis
-import StorelyRedis from '@storely/redis';
+import StorelyRedis from '@ambicuity/redis';
 
 const storely = new Storely(new StorelyRedis('redis://user:pass@localhost:6379'));
 ```
@@ -162,7 +162,7 @@ You can also pass in a storage adapter with other options such as `ttl` and `nam
 
 ```js
 //sqlite
-import StorelySqlite from '@storely/sqlite';
+import StorelySqlite from '@ambicuity/sqlite';
 
 const storelySqlite = new StorelySqlite('sqlite://path/to/database.sqlite');
 const storely = new Storely({ store: storelySqlite, ttl: 5000, namespace: 'cache' });
@@ -178,8 +178,8 @@ storely.on('error', err => console.log('Connection Error', err));
 Now lets do an end-to-end example using `Storely` and the `Redis` storage adapter:
 
 ```js
-import Storely from 'storely';
-import StorelyRedis from '@storely/redis';
+import Storely from '@ambicuity/storely';
+import StorelyRedis from '@ambicuity/redis';
 
 const storelyRedis = new StorelyRedis('redis://user:pass@localhost:6379');
 const storely = new Storely({ store: storelyRedis });
@@ -275,7 +275,7 @@ POST_DELETE
 You can access this by importing `StorelyHooks` from the main Storely package.
 
 ```js
-import Storely, { StorelyHooks } from 'storely';
+import Storely, { StorelyHooks } from '@ambicuity/storely';
 ```
 
 ## Get Hooks
@@ -347,22 +347,22 @@ In addition to the built-in serializer, Storely offers two official serializatio
 
 ### SuperJSON
 
-[`@storely/serialize-superjson`](../../serialization/superjson) supports `Date`, `RegExp`, `Map`, `Set`, `BigInt`, `undefined`, `Error`, and `URL` types.
+[`@ambicuity/serialize-superjson`](../../serialization/superjson) supports `Date`, `RegExp`, `Map`, `Set`, `BigInt`, `undefined`, `Error`, and `URL` types.
 
 ```js
-import Storely from 'storely';
-import { superJsonSerializer } from '@storely/serialize-superjson'; // using the helper function that does new StorelySuperJsonSerializer()
+import Storely from '@ambicuity/storely';
+import { superJsonSerializer } from '@ambicuity/serialize-superjson'; // using the helper function that does new StorelySuperJsonSerializer()
 
 const storely = new Storely({ serialization: superJsonSerializer });
 ```
 
 ### MessagePack (msgpackr)
 
-[`@storely/serialize-msgpackr`](../../serialization/msgpackr) is a binary serializer that supports `Date`, `RegExp`, `Map`, `Set`, `Error`, `undefined`, `NaN`, and `Infinity` types.
+[`@ambicuity/serialize-msgpackr`](../../serialization/msgpackr) is a binary serializer that supports `Date`, `RegExp`, `Map`, `Set`, `Error`, `undefined`, `NaN`, and `Infinity` types.
 
 ```js
-import Storely from 'storely';
-import { StorelyMsgpackrSerializer } from '@storely/serialize-msgpackr';
+import Storely from '@ambicuity/storely';
+import { StorelyMsgpackrSerializer } from '@ambicuity/serialize-msgpackr';
 
 const storely = new Storely({ serialization: new StorelyMsgpackrSerializer() });
 ```
@@ -402,15 +402,15 @@ The official storage adapters are covered by over 150 integration tests to guara
 
 Database | Adapter | Native TTL
 ---|---|---
-Redis | [@storely/redis](../../storage/redis) | Yes
-Valkey | [@storely/valkey](../../storage/valkey) | Yes
-MongoDB | [@storely/mongo](../../storage/mongo) | Yes
-SQLite | [@storely/sqlite](../../storage/sqlite) | No
-PostgreSQL | [@storely/postgres](../../storage/postgres) | No
-MySQL | [@storely/mysql](../../storage/mysql) | No
-Etcd | [@storely/etcd](../../storage/etcd) | Yes
-Memcache | [@storely/memcache](../../storage/memcache) | Yes
-DynamoDB | [@storely/dynamo](../../storage/dynamo) | Yes
+Redis | [@ambicuity/redis](../../storage/redis) | Yes
+Valkey | [@ambicuity/valkey](../../storage/valkey) | Yes
+MongoDB | [@ambicuity/mongo](../../storage/mongo) | Yes
+SQLite | [@ambicuity/sqlite](../../storage/sqlite) | No
+PostgreSQL | [@ambicuity/postgres](../../storage/postgres) | No
+MySQL | [@ambicuity/mysql](../../storage/mysql) | No
+Etcd | [@ambicuity/etcd](../../storage/etcd) | Yes
+Memcache | [@ambicuity/memcache](../../storage/memcache) | Yes
+DynamoDB | [@ambicuity/dynamo](../../storage/dynamo) | Yes
 
 # Third-party Storage Adapters
 
@@ -419,7 +419,7 @@ We love the community and the third-party storage adapters they have built. They
 You can also use third-party storage adapters or build your own. Storely will wrap these storage adapters in TTL functionality and handle complex types internally.
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 import myAdapter from 'my-adapter';
 
 const storely = new Storely({ store: myAdapter });
@@ -434,7 +434,7 @@ new Storely({ store: new Map() });
 For example, [`quick-lru`](https://github.com/sindresorhus/quick-lru) is a completely unrelated module that implements the Map API.
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 import QuickLRU from 'quick-lru';
 
 const lru = new QuickLRU({ maxSize: 1000 });
@@ -457,7 +457,7 @@ For applications that need to cache millions of entries in memory, this becomes 
 
 ## Why BigMap?
 
-`@storely/bigmap` solves this limitation by using a **distributed hash approach** with multiple internal Map instances. Instead of storing all entries in a single Map, BigMap distributes entries across multiple Maps using a hash function. This allows you to scale beyond the 16.7 million entry limit while maintaining the familiar Map API.
+`@ambicuity/bigmap` solves this limitation by using a **distributed hash approach** with multiple internal Map instances. Instead of storing all entries in a single Map, BigMap distributes entries across multiple Maps using a hash function. This allows you to scale beyond the 16.7 million entry limit while maintaining the familiar Map API.
 
 ### Key Benefits:
 - **Scales beyond Map limits**: Store 20+ million entries without issues
@@ -473,7 +473,7 @@ BigMap can be used directly with Storely as a storage adapter, providing scalabl
 ### Installation
 
 ```bash
-npm install --save storely @storely/bigmap
+npm install --save storely @ambicuity/bigmap
 ```
 
 ### Basic Usage
@@ -481,7 +481,7 @@ npm install --save storely @storely/bigmap
 The simplest way to use BigMap with Storely is through the `createStorely` helper function:
 
 ```js
-import { createStorely } from '@storely/bigmap';
+import { createStorely } from '@ambicuity/bigmap';
 
 const storely = createStorely();
 
@@ -499,31 +499,31 @@ await storely.delete('user:1');
 await storely.clear();
 ```
 
-For more details about BigMap, see the [@storely/bigmap documentation](../../core/bigmap).
+For more details about BigMap, see the [@ambicuity/bigmap documentation](../../core/bigmap).
 
 # Compression
 
 Storely supports `gzip`, `brotli` and `lz4` compression. To enable compression, pass the `compress` option to the constructor.
 
 ```js
-import Storely from 'storely';
-import StorelyGzip from '@storely/compress-gzip';
+import Storely from '@ambicuity/storely';
+import StorelyGzip from '@ambicuity/compress-gzip';
 
 const storelyGzip = new StorelyGzip();
 const storely = new Storely({ compression: storelyGzip });
 ```
 
 ```js
-import Storely from 'storely';
-import StorelyBrotli from '@storely/compress-brotli';
+import Storely from '@ambicuity/storely';
+import StorelyBrotli from '@ambicuity/compress-brotli';
 
 const storelyBrotli = new StorelyBrotli();
 const storely = new Storely({ compression: storelyBrotli });
 ```
 
 ```js
-import Storely from 'storely';
-import StorelyLz4 from '@storely/compress-lz4';
+import Storely from '@ambicuity/storely';
+import StorelyLz4 from '@ambicuity/compress-lz4';
 
 const storelyLz4 = new StorelyLz4();
 const storely = new Storely({ compression: storelyLz4 });
@@ -542,11 +542,11 @@ interface StorelyCompressionAdapter {
 }
 ```
 
-In addition to the interface, you can test it with our compression test suite using @storely/test-suite:
+In addition to the interface, you can test it with our compression test suite using @ambicuity/test-suite:
 
 ```js
-import { storelyCompressionTests } from '@storely/test-suite';
-import StorelyGzip from '@storely/compress-gzip';
+import { storelyCompressionTests } from '@ambicuity/test-suite';
+import StorelyGzip from '@ambicuity/compress-gzip';
 
 storelyCompressionTests(test, new StorelyGzip());
 ```
@@ -574,7 +574,7 @@ import {
   detectStorelySerialization,
   detectStorelyEncryption,
   detectCapabilities,
-} from 'storely';
+} from '@ambicuity/storely';
 ```
 
 ## detectStorely(obj)
@@ -582,7 +582,7 @@ import {
 Returns a `StorelyCapability` with a boolean for each Storely method/property. The `storely` flag is `true` only when **all** capabilities are present.
 
 ```ts
-import Storely, { detectStorely } from 'storely';
+import Storely, { detectStorely } from '@ambicuity/storely';
 
 detectStorely(new Storely());
 // { storely: true, get: true, set: true, delete: true, clear: true, has: true,
@@ -603,7 +603,7 @@ The result also includes:
 - **`methodTypes`** — a record mapping each method name to `"sync"`, `"async"`, or `"none"` (not present)
 
 ```ts
-import { detectStorelyStorage } from 'storely';
+import { detectStorelyStorage } from '@ambicuity/storely';
 
 // Map-like object
 const result = detectStorelyStorage(new Map());
@@ -628,7 +628,7 @@ adapterResult.methodTypes.get; // "async"
 Returns a `StorelyCompressionCapability`. The `storelyCompression` flag is `true` when both `compress` and `decompress` methods are present.
 
 ```ts
-import { detectStorelyCompression } from 'storely';
+import { detectStorelyCompression } from '@ambicuity/storely';
 
 detectStorelyCompression({ compress: (d) => d, decompress: (d) => d });
 // { storelyCompression: true, compress: true, decompress: true }
@@ -639,7 +639,7 @@ detectStorelyCompression({ compress: (d) => d, decompress: (d) => d });
 Returns a `StorelySerializationCapability`. The `storelySerialization` flag is `true` when both `stringify` and `parse` methods are present.
 
 ```ts
-import { detectStorelySerialization } from 'storely';
+import { detectStorelySerialization } from '@ambicuity/storely';
 
 detectStorelySerialization(JSON);
 // { storelySerialization: true, stringify: true, parse: true }
@@ -650,7 +650,7 @@ detectStorelySerialization(JSON);
 Returns a `StorelyEncryptionCapability`. The `storelyEncryption` flag is `true` when both `encrypt` and `decrypt` methods are present.
 
 ```ts
-import { detectStorelyEncryption } from 'storely';
+import { detectStorelyEncryption } from '@ambicuity/storely';
 
 detectStorelyEncryption({ encrypt: (d) => d, decrypt: (d) => d });
 // { storelyEncryption: true, encrypt: true, decrypt: true }
@@ -661,7 +661,7 @@ detectStorelyEncryption({ encrypt: (d) => d, decrypt: (d) => d });
 A generic helper for building your own capability checks. Accepts a `CapabilitySpec` describing which methods and properties to look for, which are required, and the name of the composite boolean key.
 
 ```ts
-import { detectCapabilities } from 'storely';
+import { detectCapabilities } from '@ambicuity/storely';
 
 const result = detectCapabilities(myObject, {
   methods: ['read', 'write'],
@@ -821,7 +821,7 @@ await storely.set('c', 3);
 await storely.deleteMany(['a', 'b', 'c']); // [true, false, true]
 ```
 
-**Performance note.** Byte-store adapters (`@storely/redis`, `@storely/mysql`, `@storely/postgres`, `@storely/mongo`, `@storely/sqlite`) implement `deleteMany` as a `SELECT` of existing keys followed by a batched `DELETE`, so the per-key boolean is accurate. That costs roughly 2× the wall-clock of a bulk `DELETE … WHERE id IN (?)` that returns only "how many rows were affected." If you don't need the per-key signal and you're deleting large batches, consider using `clear()` (when scoped via namespace), or calling the underlying adapter's wire-level delete directly. Storely chose this trade because silently returning a single boolean for a batch makes existence-sensitive callers (e.g. cache invalidation pipelines) hard to reason about.
+**Performance note.** Byte-store adapters (`@ambicuity/redis`, `@ambicuity/mysql`, `@ambicuity/postgres`, `@ambicuity/mongo`, `@ambicuity/sqlite`) implement `deleteMany` as a `SELECT` of existing keys followed by a batched `DELETE`, so the per-key boolean is accurate. That costs roughly 2× the wall-clock of a bulk `DELETE … WHERE id IN (?)` that returns only "how many rows were affected." If you don't need the per-key signal and you're deleting large batches, consider using `clear()` (when scoped via namespace), or calling the underlying adapter's wire-level delete directly. Storely chose this trade because silently returning a single boolean for a batch makes existence-sensitive callers (e.g. cache invalidation pipelines) hard to reason about.
 
 ## .clear()
 
@@ -923,7 +923,7 @@ Default: `new Map()`
 The storage adapter instance to be used by Storely. This will wire up the iterator, events, and more when a set happens. If it is not a valid Map or Storage Adapter it will throw an error. 
 
 ```js
-import StorelySqlite from '@storely/sqlite';
+import StorelySqlite from '@ambicuity/sqlite';
 const storely = new Storely();
 console.log(storely.store instanceof Map); // true
 storely.store = new StorelySqlite('sqlite://path/to/database.sqlite');
@@ -952,7 +952,7 @@ Default: `undefined`
 This is the compression package to use. See [Compression](#compression) for more details. If it is undefined it will not compress (default).
 
 ```js
-import StorelyGzip from '@storely/compress-gzip';
+import StorelyGzip from '@ambicuity/compress-gzip';
 
 const storely = new Storely();
 console.log(storely.compression); // undefined
@@ -977,8 +977,8 @@ console.log(storely.useKeyPrefix); // true
 With many of the storage adapters you will also need to set the `namespace` option to `undefined` to have it work correctly. This is because in `v5` we started the transition to having the storage adapter handle the namespacing and `Storely` will no longer handle it internally via KeyPrefixing. Here is an example of doing it with `StorelySqlite`:
 
 ```js
-import Storely from 'storely';
-import StorelySqlite from '@storely/sqlite';
+import Storely from '@ambicuity/storely';
+import StorelySqlite from '@ambicuity/sqlite';
 
 const store = new StorelySqlite('sqlite://path/to/database.sqlite');
 const storely = new Storely({ store });
@@ -1018,11 +1018,11 @@ storely.throwOnErrors = false;
 console.log(storely.throwOnErrors); // false
 ```
 
-A good example of this is with the `@storely/redis` storage adapter. If you want to handle connection errors, retries, and timeouts more gracefully, you can use the `throwOnErrors` option. This will throw an error if any operation fails, allowing you to catch it and handle it accordingly:
+A good example of this is with the `@ambicuity/redis` storage adapter. If you want to handle connection errors, retries, and timeouts more gracefully, you can use the `throwOnErrors` option. This will throw an error if any operation fails, allowing you to catch it and handle it accordingly:
 
 ```js
-import Storely from 'storely';
-import StorelyRedis from '@storely/redis';
+import Storely from '@ambicuity/storely';
+import StorelyRedis from '@ambicuity/redis';
 
 // create redis instance that will throw on connection error
 const storelyRedis = new StorelyRedis('redis://user:pass@localhost:6379', { throwOnConnectErrors: true });
@@ -1098,7 +1098,7 @@ storely.stats.enabled = false; // Disable stats tracking and unsubscribe
 ### Standalone Usage:
 You can create a `StorelyStats` instance independently and subscribe it to a Storely instance:
 ```js
-import { StorelyStats } from 'storely';
+import { StorelyStats } from '@ambicuity/storely';
 
 const stats = new StorelyStats({ enabled: true, maxEntries: 500, emitter: storely });
 ```

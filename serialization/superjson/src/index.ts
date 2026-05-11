@@ -1,4 +1,4 @@
-import type { StorelySerializationAdapter } from "storely";
+import type { StorelySerializationAdapter } from "@ambicuity/storely";
 import superjson from "superjson";
 
 export class StorelySuperJsonSerializer implements StorelySerializationAdapter {

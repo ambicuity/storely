@@ -13,30 +13,30 @@ Initial stable release. See [`README.md`](./README.md) for installation and a qu
 #### Core
 
 - [`storely`](./core/storely) — main key-value interface with hooks, events, stats, namespaces, TTL, and pluggable serialization/compression/encryption.
-- [`@storely/test-suite`](./core/test-suite) — shared compliance test suite for storage adapters.
-- [`@storely/bigmap`](./core/bigmap) — sharded in-memory `Map` implementation.
+- [`@ambicuity/test-suite`](./core/test-suite) — shared compliance test suite for storage adapters.
+- [`@ambicuity/bigmap`](./core/bigmap) — sharded in-memory `Map` implementation.
 
 #### Storage adapters
 
-- Production-ready: [`@storely/redis`](./storage/redis), [`@storely/sqlite`](./storage/sqlite), [`@storely/postgres`](./storage/postgres).
-- Beta: [`@storely/mysql`](./storage/mysql), [`@storely/mongo`](./storage/mongo), [`@storely/valkey`](./storage/valkey), [`@storely/rocksdb`](./storage/rocksdb).
-- Experimental: [`@storely/keydb`](./storage/keydb), [`@storely/memcache`](./storage/memcache), [`@storely/etcd`](./storage/etcd), [`@storely/dynamo`](./storage/dynamo).
+- Production-ready: [`@ambicuity/redis`](./storage/redis), [`@ambicuity/sqlite`](./storage/sqlite), [`@ambicuity/postgres`](./storage/postgres).
+- Beta: [`@ambicuity/mysql`](./storage/mysql), [`@ambicuity/mongo`](./storage/mongo), [`@ambicuity/valkey`](./storage/valkey), [`@ambicuity/rocksdb`](./storage/rocksdb).
+- Experimental: [`@ambicuity/keydb`](./storage/keydb), [`@ambicuity/memcache`](./storage/memcache), [`@ambicuity/etcd`](./storage/etcd), [`@ambicuity/dynamo`](./storage/dynamo).
 
 #### Serialization
 
-- [`@storely/serialize-superjson`](./serialization/superjson), [`@storely/serialize-msgpackr`](./serialization/msgpackr). The built-in JSON serializer (with binary/BigInt round-trip and a `*`-sentinel optimization for envelopes without an expiry) ships inside `storely`.
+- [`@ambicuity/serialize-superjson`](./serialization/superjson), [`@ambicuity/serialize-msgpackr`](./serialization/msgpackr). The built-in JSON serializer (with binary/BigInt round-trip and a `*`-sentinel optimization for envelopes without an expiry) ships inside `storely`.
 
 #### Compression
 
-- [`@storely/compress-gzip`](./compression/compress-gzip) (RFC 1952), [`@storely/compress-brotli`](./compression/compress-brotli), [`@storely/compress-lz4`](./compression/compress-lz4) (requires Node ≥ 20).
+- [`@ambicuity/compress-gzip`](./compression/compress-gzip) (RFC 1952), [`@ambicuity/compress-brotli`](./compression/compress-brotli), [`@ambicuity/compress-lz4`](./compression/compress-lz4) (requires Node ≥ 20).
 
 #### Encryption
 
-- [`@storely/encrypt-node`](./encryption/encrypt-node) (Node `crypto`) and [`@storely/encrypt-web`](./encryption/encrypt-web) (Web Crypto). AES-GCM and ChaCha20-Poly1305 AEAD; PBKDF2 `deriveKey()` defaults to 600,000 iterations (OWASP 2024). Ciphertext carries a 4-byte `STv0` magic prefix.
+- [`@ambicuity/encrypt-node`](./encryption/encrypt-node) (Node `crypto`) and [`@ambicuity/encrypt-web`](./encryption/encrypt-web) (Web Crypto). AES-GCM and ChaCha20-Poly1305 AEAD; PBKDF2 `deriveKey()` defaults to 600,000 iterations (OWASP 2024). Ciphertext carries a 4-byte `STv0` magic prefix.
 
 #### Observability
 
-- [`@storely/otel`](./observability/otel) — first-party OpenTelemetry adapter (peer-dep only). Emits counters for hit/miss/set/delete/error, histograms for `get`/`set` durations, and spans around the hook lifecycle.
+- [`@ambicuity/otel`](./observability/otel) — first-party OpenTelemetry adapter (peer-dep only). Emits counters for hit/miss/set/delete/error, histograms for `get`/`set` durations, and spans around the hook lifecycle.
 
 ### API surface
 

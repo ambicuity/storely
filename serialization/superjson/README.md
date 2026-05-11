@@ -1,8 +1,8 @@
-# @storely/serialize-superjson
+# @ambicuity/serialize-superjson
 
 > SuperJSON-based serializer for Storely with support for Date, Map, Set, BigInt, RegExp, and more
 
-`@storely/serialize-superjson` is a serialization adapter for Storely powered by [SuperJSON](https://github.com/flightcontrolhq/superjson). It preserves JavaScript types that standard JSON does not support.
+`@ambicuity/serialize-superjson` is a serialization adapter for Storely powered by [SuperJSON](https://github.com/flightcontrolhq/superjson). It preserves JavaScript types that standard JSON does not support.
 
 ## Supported Types
 
@@ -20,7 +20,7 @@ In addition to all standard JSON types, SuperJSON supports:
 ## Installation
 
 ```bash
-npm install @storely/serialize-superjson
+npm install @ambicuity/serialize-superjson
 ```
 
 > **Note:** `storely` is a peer dependency and must be installed alongside this package.
@@ -28,8 +28,8 @@ npm install @storely/serialize-superjson
 ## Usage
 
 ```js
-import Storely from 'storely';
-import { superJsonSerializer } from '@storely/serialize-superjson';
+import Storely from '@ambicuity/storely';
+import { superJsonSerializer } from '@ambicuity/serialize-superjson';
 
 const storely = new Storely({ serialization: superJsonSerializer });
 
@@ -57,7 +57,7 @@ console.log(set instanceof Set); // true
 A class that implements the `StorelySerializationAdapter` interface from `storely`.
 
 ```js
-import { StorelySuperJsonSerializer } from '@storely/serialize-superjson';
+import { StorelySuperJsonSerializer } from '@ambicuity/serialize-superjson';
 
 const serializer = new StorelySuperJsonSerializer();
 ```
@@ -75,7 +75,7 @@ Deserializes a SuperJSON string back to its original value with all types restor
 A default `StorelySuperJsonSerializer` instance, ready to use.
 
 ```js
-import { superJsonSerializer } from '@storely/serialize-superjson';
+import { superJsonSerializer } from '@ambicuity/serialize-superjson';
 ```
 
 ## License

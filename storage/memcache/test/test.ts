@@ -1,7 +1,7 @@
 import { EventEmitter } from "node:events";
+import Storely from "@ambicuity/storely";
+import { storageTestSuite, storelyApiTests, storelyValueTests } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
-import { storageTestSuite, storelyApiTests, storelyValueTests } from "@storely/test-suite";
-import Storely from "storely";
 import { beforeEach, expect, it } from "vitest";
 import StorelyMemcache, { createStorely } from "../src/index.js";
 

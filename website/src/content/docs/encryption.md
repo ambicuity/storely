@@ -19,7 +19,7 @@ npm install --save storely @ambicuity/encrypt-node
 ## Usage
 
 ```javascript
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 import StorelyEncryptNode from '@ambicuity/encrypt-node';
 
 const encryption = new StorelyEncryptNode({ key: 'your-secret-key' });

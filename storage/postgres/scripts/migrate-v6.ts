@@ -1,5 +1,5 @@
 /**
- * Migration script for @storely/postgres v6.
+ * Migration script for @ambicuity/postgres v6.
  *
  * In pre-v6, namespaces were stored as key prefixes (e.g. key="myns:mykey", namespace=NULL).
  * In v6, the namespace is stored in a dedicated column (key="mykey", namespace="myns").

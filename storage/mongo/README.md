@@ -1,8 +1,8 @@
 
 > MongoDB storage adapter for Storely
 
-[![npm](https://img.shields.io/npm/v/@storely/mongo.svg)](https://www.npmjs.com/package/@storely/mongo)
-[![npm](https://img.shields.io/npm/dm/@storely/mongo)](https://npmjs.com/package/@storely/mongo)
+[![npm](https://img.shields.io/npm/v/@ambicuity/mongo.svg)](https://www.npmjs.com/package/@ambicuity/mongo)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/mongo)](https://npmjs.com/package/@ambicuity/mongo)
 
 MongoDB storage adapter for Storely.
 
@@ -40,14 +40,14 @@ Uses TTL indexes to automatically remove expired documents. However [MongoDB doe
 ## Install
 
 ```shell
-npm install --save storely @storely/mongo
+npm install --save storely @ambicuity/mongo
 ```
 
 ## Usage
 
 ```js
-import Storely from 'storely';
-import StorelyMongo from '@storely/mongo';
+import Storely from '@ambicuity/storely';
+import StorelyMongo from '@ambicuity/mongo';
 
 const storely = new Storely(new StorelyMongo('mongodb://user:pass@localhost:27017/dbname'));
 storely.on('error', handleConnectionError);
@@ -64,7 +64,7 @@ const storely = new Storely('mongodb://user:pass@localhost:27017/dbname', { coll
 You can also use the `createStorely` helper function to create a `Storely` instance with `StorelyMongo` as the store:
 
 ```js
-import { createStorely } from '@storely/mongo';
+import { createStorely } from '@ambicuity/mongo';
 
 const storely = createStorely('mongodb://user:pass@localhost:27017/dbname');
 ```
@@ -423,7 +423,7 @@ await store.clearUnusedFor(3600);
 
 ## Migration from v3 to v6
 
-`@storely/mongo` is jumping from v3 to v6 because the entire Storely monorepo is now unified under a single version number. This approach, similar to what other popular open source projects do, keeps all `@storely/*` packages in sync and makes it easier to reason about compatibility across the ecosystem.
+`@ambicuity/mongo` is jumping from v3 to v6 because the entire Storely monorepo is now unified under a single version number. This approach, similar to what other popular open source projects do, keeps all `@ambicuity/*` packages in sync and makes it easier to reason about compatibility across the ecosystem.
 
 ### Breaking Changes
 
@@ -488,7 +488,7 @@ const store = new StorelyMongo({ url: 'mongodb://...', collection: 'cache' }); /
 A new `createStorely` helper simplifies creating a Storely instance with the MongoDB adapter.
 
 ```js
-import { createStorely } from '@storely/mongo';
+import { createStorely } from '@ambicuity/mongo';
 
 // Before
 const store = new StorelyMongo('mongodb://localhost:27017');

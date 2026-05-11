@@ -1,5 +1,5 @@
 {
-	"name": "@storely/rocksdb",
+	"name": "@ambicuity/rocksdb",
 	"version": "1.0.0",
 	"description": "RocksDB storage adapter for Storely",
 	"type": "module",
@@ -46,10 +46,10 @@
 		"hookified": "^2.0.0"
 	},
 	"peerDependencies": {
-		"storely": "workspace:^"
+		"@ambicuity/storely": "workspace:^"
 	},
 	"devDependencies": {
-		"@storely/test-suite": "workspace:^"
+		"@ambicuity/test-suite": "workspace:^"
 	},
 	"tsd": {
 		"directory": "test"

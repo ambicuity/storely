@@ -1,5 +1,5 @@
-import { compressionTestSuite } from "@storely/test-suite";
-import { Storely } from "storely";
+import { Storely } from "@ambicuity/storely";
+import { compressionTestSuite } from "@ambicuity/test-suite";
 import { it } from "vitest";
 import StorelyLz4 from "../src/index.js";
 

@@ -1,5 +1,5 @@
+import { Storely } from "@ambicuity/storely";
 import { Hookified, type HookifiedOptions } from "hookified";
-import { Storely } from "storely";
 
 export type MapInterface<K, V> = {
 	readonly size: number;
@@ -377,5 +377,5 @@ export function createStorely<K = string, V = unknown>(options?: BigMapOptions):
 	return storely;
 }
 
+export { Storely } from "@ambicuity/storely";
 export { Hashery } from "hashery";
-export { Storely } from "storely";

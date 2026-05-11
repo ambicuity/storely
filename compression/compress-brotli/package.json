@@ -1,5 +1,5 @@
 {
-	"name": "@storely/compress-brotli",
+	"name": "@ambicuity/compress-brotli",
 	"version": "1.0.0",
 	"description": "brotli compression for Storely",
 	"type": "module",
@@ -43,11 +43,11 @@
 	"license": "MIT",
 	"dependencies": {},
 	"peerDependencies": {
-		"storely": "workspace:^"
+		"@ambicuity/storely": "workspace:^"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.13",
-		"@storely/test-suite": "workspace:^",
+		"@ambicuity/test-suite": "workspace:^",
 		"@vitest/coverage-v8": "^4.0.18",
 		"rimraf": "^6.1.2",
 		"vitest": "^4.0.18"

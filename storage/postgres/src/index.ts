@@ -1,7 +1,7 @@
 import type { ConnectionOptions } from "node:tls";
+import Storely, { type StorelyEntry, type StorelyStorageAdapter } from "@ambicuity/storely";
 import { Hookified } from "hookified";
 import type { DatabaseError, PoolConfig } from "pg";
-import Storely, { type StorelyEntry, type StorelyStorageAdapter } from "storely";
 import { endPool, pool } from "./pool.js";
 import type { Query, StorelyPostgresOptions } from "./types.js";
 

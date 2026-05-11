@@ -1,4 +1,4 @@
-# @storely/encrypt-web
+# @ambicuity/encrypt-web
 
 > Web Crypto API encryption for Storely
 
@@ -7,14 +7,14 @@ Encrypt and decrypt values stored in Storely using the Web Crypto API (`crypto.s
 ## Install
 
 ```shell
-npm install --save storely @storely/encrypt-web
+npm install --save storely @ambicuity/encrypt-web
 ```
 
 ## Usage
 
 ```javascript
-import Storely from 'storely';
-import StorelyEncryptWeb from '@storely/encrypt-web';
+import Storely from '@ambicuity/storely';
+import StorelyEncryptWeb from '@ambicuity/encrypt-web';
 
 const encryption = new StorelyEncryptWeb({ key: 'your-secret-key' });
 const storely = new Storely({ encryption });
@@ -46,7 +46,7 @@ The cipher algorithm to use. Supported values:
 
 ## Cross-Compatibility
 
-Data encrypted with `@storely/encrypt-web` using AES-GCM or AES-CBC can be decrypted by `@storely/encrypt-node` (and vice versa) when using the same key and algorithm. Both packages use the same wire format:
+Data encrypted with `@ambicuity/encrypt-web` using AES-GCM or AES-CBC can be decrypted by `@ambicuity/encrypt-node` (and vice versa) when using the same key and algorithm. Both packages use the same wire format:
 
 - **AES-GCM**: `base64([IV (12 bytes) || AuthTag (16 bytes) || Ciphertext])`
 - **AES-CBC**: `base64([IV (16 bytes) || Ciphertext])`

@@ -59,7 +59,7 @@ export function shouldApplyWal(filename: string, wal?: boolean): boolean {
 
 	if (filename === ":memory:") {
 		console.warn(
-			"@storely/sqlite: WAL mode is not supported for in-memory databases. The wal option will be ignored.",
+			"@ambicuity/sqlite: WAL mode is not supported for in-memory databases. The wal option will be ignored.",
 		);
 		return false;
 	}

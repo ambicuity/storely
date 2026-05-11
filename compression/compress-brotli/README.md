@@ -1,4 +1,4 @@
-# @storely/compress-brotli
+# @ambicuity/compress-brotli
 
 > Brotli compression for Storely
 
@@ -9,14 +9,14 @@ Brotli is a data compression algorithm that is designed to be fast and efficient
 ## Install
 
 ```shell
-npm install --save storely @storely/compress-brotli
+npm install --save storely @ambicuity/compress-brotli
 ```
 
 ## Usage
 
 ```javascript
-import Storely from 'storely';
-import StorelyBrotli from '@storely/compress-brotli';
+import Storely from '@ambicuity/storely';
+import StorelyBrotli from '@ambicuity/compress-brotli';
 
 const storely = new Storely({store: new Map(), compression: new StorelyBrotli()});
 
@@ -24,11 +24,11 @@ const storely = new Storely({store: new Map(), compression: new StorelyBrotli()}
 
 ## API
 
-### @storely/compress-brotli(\[options])
+### @ambicuity/compress-brotli(\[options])
 
 #### options
 
-All options for `@storely/compress-brotli` are based on the package [compress-brotli](https://github.com/Kikobeats/compress-brotli)
+All options for `@ambicuity/compress-brotli` are based on the package [compress-brotli](https://github.com/Kikobeats/compress-brotli)
 
 The default brotli quality is `4`, chosen as the standard cache-storage tradeoff. Node's underlying default is `11` (maximum), which is ~5–10× slower with marginal additional compression ratio on typical small payloads. Override via `compressOptions.params`.
 

@@ -7,8 +7,8 @@
 > `apk add g++ make python3`) or distroless. Prebuilt binaries are not
 > distributed.
 
-[![npm](https://img.shields.io/npm/v/@storely/rocksdb.svg)](https://www.npmjs.com/package/@storely/rocksdb)
-[![npm](https://img.shields.io/npm/dm/@storely/rocksdb)](https://npmjs.com/package/@storely/rocksdb)
+[![npm](https://img.shields.io/npm/v/@ambicuity/rocksdb.svg)](https://www.npmjs.com/package/@ambicuity/rocksdb)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/rocksdb)](https://npmjs.com/package/@ambicuity/rocksdb)
 
 RocksDB storage adapter for Storely.
 
@@ -50,14 +50,14 @@ RocksDB storage adapter for Storely.
 # Install
 
 ```shell
-npm install --save storely @storely/rocksdb
+npm install --save storely @ambicuity/rocksdb
 ```
 
 # Usage
 
 ```js
-import Storely from 'storely';
-import StorelyRocksDB from '@storely/rocksdb';
+import Storely from '@ambicuity/storely';
+import StorelyRocksDB from '@ambicuity/rocksdb';
 
 const storely = new Storely({ store: new StorelyRocksDB('rocksdb:///tmp/mydb') });
 storely.on('error', err => console.error(err));
@@ -85,7 +85,7 @@ const storelyRocksDB = new StorelyRocksDB('rocksdb://:memory:');
 The `createStorelyRocksDB` helper creates a `Storely` instance with `StorelyRocksDB` as the store in one call:
 
 ```js
-import { createStorelyRocksDB } from '@storely/rocksdb';
+import { createStorelyRocksDB } from '@ambicuity/rocksdb';
 
 // With a URI string
 const storely = createStorelyRocksDB('rocksdb:///tmp/mydb');
@@ -102,7 +102,7 @@ const storely = createStorelyRocksDB({
 The `createStorelyRocksDBNonBlocking` helper creates a `Storely` instance with `StorelyRocksDB` as the store in non-blocking mode. This disables `throwOnErrors` and does not await the database connection promise:
 
 ```js
-import { createStorelyRocksDBNonBlocking } from '@storely/rocksdb';
+import { createStorelyRocksDBNonBlocking } from '@ambicuity/rocksdb';
 
 const storely = createStorelyRocksDBNonBlocking('rocksdb://:memory:');
 ```

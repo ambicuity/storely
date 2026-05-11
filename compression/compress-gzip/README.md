@@ -1,4 +1,4 @@
-# @storely/compress-gzip
+# @ambicuity/compress-gzip
 
 > Gzip compression for Storely
 
@@ -7,14 +7,14 @@ Gzip compression for Storely.
 ## Install
 
 ```shell
-npm install --save storely @storely/compress-gzip
+npm install --save storely @ambicuity/compress-gzip
 ```
 
 ## Usage
 
 ```javascript
-import Storely from 'storely';
-import StorelyGzip from '@storely/compress-gzip';
+import Storely from '@ambicuity/storely';
+import StorelyGzip from '@ambicuity/compress-gzip';
 
 const storely = new Storely({store: new Map(), compression: new StorelyGzip()});
 
@@ -22,11 +22,11 @@ const storely = new Storely({store: new Map(), compression: new StorelyGzip()});
 
 ## API
 
-### @storely/compress-gzip(\[options])
+### @ambicuity/compress-gzip(\[options])
 
 #### options
 
-All options for `@storely/compress-gzip` are based on the package [compress-gzip](https://github.com/nodeca/pako#readme)
+All options for `@ambicuity/compress-gzip` are based on the package [compress-gzip](https://github.com/nodeca/pako#readme)
 
 ## Limitations
 

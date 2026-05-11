@@ -1,5 +1,5 @@
 {
-	"name": "@storely/sqlite",
+	"name": "@ambicuity/sqlite",
 	"version": "1.0.0",
 	"description": "SQLite storage adapter for Storely",
 	"type": "module",
@@ -48,10 +48,10 @@
 		"hookified": "^2.0.0"
 	},
 	"peerDependencies": {
-		"storely": "workspace:^"
+		"@ambicuity/storely": "workspace:^"
 	},
 	"devDependencies": {
-		"@storely/test-suite": "workspace:^",
+		"@ambicuity/test-suite": "workspace:^",
 		"@monstermann/tinybench-pretty-printer": "^0.3.0",
 		"@types/better-sqlite3": "^7.6.0",
 		"sqlite3": "^5.1.7",

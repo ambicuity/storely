@@ -1,5 +1,5 @@
 {
-  "name": "@storely/dynamo",
+  "name": "@ambicuity/dynamo",
   "version": "1.0.0",
   "description": "DynamoDB storage adapter for Storely",
   "type": "module",
@@ -47,10 +47,10 @@
     "hookified": "^2.0.0"
   },
   "devDependencies": {
-    "@storely/test-suite": "workspace:^"
+    "@ambicuity/test-suite": "workspace:^"
   },
   "peerDependencies": {
-    "storely": "workspace:^"
+    "@ambicuity/storely": "workspace:^"
   },
   "tsd": {
     "directory": "test"

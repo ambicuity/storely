@@ -8,8 +8,8 @@
 
 > Etcd storage adapter for Storely using the [etcd3](https://github.com/microsoft/etcd3) client
 
-[![npm](https://img.shields.io/npm/v/@storely/etcd.svg)](https://www.npmjs.com/package/@storely/etcd)
-[![npm](https://img.shields.io/npm/dm/@storely/etcd)](https://npmjs.com/package/@storely/etcd)
+[![npm](https://img.shields.io/npm/v/@ambicuity/etcd.svg)](https://www.npmjs.com/package/@ambicuity/etcd)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/etcd)](https://npmjs.com/package/@ambicuity/etcd)
 
 ## Features
 
@@ -54,13 +54,13 @@
 ## Install
 
 ```shell
-npm install --save storely @storely/etcd
+npm install --save storely @ambicuity/etcd
 ```
 
 ## Quick Start with createStorely
 
 ```js
-import { createStorely } from '@storely/etcd';
+import { createStorely } from '@ambicuity/etcd';
 
 const storely = createStorely('etcd://localhost:2379');
 
@@ -80,7 +80,7 @@ await storely.delete('foo');
 You can also pass options:
 
 ```js
-import { createStorely } from '@storely/etcd';
+import { createStorely } from '@ambicuity/etcd';
 
 const storely = createStorely('etcd://localhost:2379', { ttl: 5000 });
 
@@ -91,8 +91,8 @@ const storely2 = createStorely({ url: '127.0.0.1:2379', ttl: 5000 });
 ## Usage
 
 ```js
-import Storely from 'storely';
-import StorelyEtcd from '@storely/etcd';
+import Storely from '@ambicuity/storely';
+import StorelyEtcd from '@ambicuity/etcd';
 
 const store = new StorelyEtcd('etcd://localhost:2379');
 const storely = new Storely({ store });
@@ -119,8 +119,8 @@ await store.disconnect();
 ## Usage with Namespaces
 
 ```js
-import Storely from 'storely';
-import StorelyEtcd from '@storely/etcd';
+import Storely from '@ambicuity/storely';
+import StorelyEtcd from '@ambicuity/etcd';
 
 const store = new StorelyEtcd('etcd://localhost:2379');
 const storely1 = new Storely({ store, namespace: 'namespace1' });
@@ -145,7 +145,7 @@ const value2 = await storely2.get('foo'); // 'bar2'
 | `namespace` | `string` | `undefined` | Key prefix for namespace isolation |
 
 ```js
-import StorelyEtcd from '@storely/etcd';
+import StorelyEtcd from '@ambicuity/etcd';
 
 // Using a URI string
 const store = new StorelyEtcd('etcd://localhost:2379');
@@ -225,7 +225,7 @@ Creates a new `StorelyEtcd` instance.
 - `options` — Optional `StorelyEtcdOptions` object. When both `url` and `options` are objects, they are merged together.
 
 ```js
-import StorelyEtcd from '@storely/etcd';
+import StorelyEtcd from '@ambicuity/etcd';
 
 // Using a URI string
 const store = new StorelyEtcd('etcd://localhost:2379');

@@ -65,7 +65,7 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 	switch (name) {
 		case "redis": {
 			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
-			const mod = (await import("@storely/redis")) as any;
+			const mod = (await import("@ambicuity/redis")) as any;
 			const adapter = new mod.default({
 				uri: process.env.REDIS_URL ?? "redis://localhost:6379",
 				namespace: `perfbase-${Date.now()}`,
@@ -75,7 +75,7 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 		}
 		case "postgres": {
 			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
-			const mod = (await import("@storely/postgres")) as any;
+			const mod = (await import("@ambicuity/postgres")) as any;
 			const adapter = new mod.default({
 				uri: process.env.POSTGRES_URL ?? "postgresql://postgres:postgres@localhost:5432/storely_test",
 				namespace: `perfbase-${Date.now()}`,
@@ -84,7 +84,7 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 		}
 		case "mysql": {
 			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
-			const mod = (await import("@storely/mysql")) as any;
+			const mod = (await import("@ambicuity/mysql")) as any;
 			const adapter = new mod.default({
 				uri: process.env.MYSQL_URL ?? "mysql://root@localhost:3306/storely_test",
 				namespace: `perfbase-${Date.now()}`,
@@ -93,7 +93,7 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 		}
 		case "mongo": {
 			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
-			const mod = (await import("@storely/mongo")) as any;
+			const mod = (await import("@ambicuity/mongo")) as any;
 			const adapter = new mod.default({
 				url: process.env.MONGO_URL ?? "mongodb://localhost:27017/storely_test",
 				namespace: `perfbase-${Date.now()}`,
@@ -102,7 +102,7 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 		}
 		case "sqlite": {
 			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
-			const mod = (await import("@storely/sqlite")) as any;
+			const mod = (await import("@ambicuity/sqlite")) as any;
 			const tmpFile = path.join(ROOT, `tmp-perfbase-${Date.now()}.sqlite`);
 			const adapter = new mod.default({ uri: `sqlite://${tmpFile}` });
 			return {
@@ -115,7 +115,7 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 		}
 		case "valkey": {
 			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
-			const mod = (await import("@storely/valkey")) as any;
+			const mod = (await import("@ambicuity/valkey")) as any;
 			const adapter = new mod.default({
 				uri: process.env.VALKEY_URL ?? "redis://localhost:6380",
 				namespace: `perfbase-${Date.now()}`,
@@ -125,7 +125,7 @@ async function makeAdapter(name: string): Promise<{ adapter: any; cleanup: () =>
 		}
 		case "rocksdb": {
 			// biome-ignore lint/suspicious/noExplicitAny: dynamic adapter construction
-			const mod = (await import("@storely/rocksdb")) as any;
+			const mod = (await import("@ambicuity/rocksdb")) as any;
 			const tmpDir = path.join(ROOT, `tmp-perfbase-rocks-${Date.now()}`);
 			const adapter = new mod.default({ path: tmpDir });
 			return {

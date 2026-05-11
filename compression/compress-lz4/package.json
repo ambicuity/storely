@@ -1,5 +1,5 @@
 {
-	"name": "@storely/compress-lz4",
+	"name": "@ambicuity/compress-lz4",
 	"version": "1.0.0",
 	"description": "lz4 compression for Storely",
 	"type": "module",
@@ -47,11 +47,11 @@
 		"lz4-napi": "^2.9.0"
 	},
 	"peerDependencies": {
-		"storely": "workspace:^"
+		"@ambicuity/storely": "workspace:^"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.8",
-		"@storely/test-suite": "workspace:^",
+		"@ambicuity/test-suite": "workspace:^",
 		"@vitest/coverage-v8": "^4.0.14",
 		"rimraf": "^6.1.2",
 		"vitest": "^4.0.14"

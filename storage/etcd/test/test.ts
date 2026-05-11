@@ -1,6 +1,6 @@
+import { Storely } from "@ambicuity/storely";
+import { storageTestSuite, storelyIteratorTests, storelyTestSuite } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
-import { storageTestSuite, storelyIteratorTests, storelyTestSuite } from "@storely/test-suite";
-import { Storely } from "storely";
 import { it } from "vitest";
 import StorelyEtcd, { createStorely } from "../src/index.js";
 

@@ -3,10 +3,14 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import type {
+	StorelyEntry,
+	StorelyStorageAdapter,
+	StorelyStorageGetResult,
+} from "@ambicuity/storely";
 // @ts-expect-error - @nxtedition/rocksdb ships no type declarations
 import { RocksLevel } from "@nxtedition/rocksdb";
 import { Hookified } from "hookified";
-import type { StorelyEntry, StorelyStorageAdapter, StorelyStorageGetResult } from "storely";
 import { RocksDBErrorMessages, type StorelyRocksDBOptions } from "./types.js";
 
 export type { RocksDBCompression, RocksDBLogLevel, StorelyRocksDBOptions } from "./types.js";
@@ -22,8 +26,8 @@ export { RocksDBErrorMessages } from "./types.js";
  *
  * @example
  * ```ts
- * import StorelyRocksDB from '@storely/rocksdb';
- * import Storely from 'storely';
+ * import StorelyRocksDB from '@ambicuity/rocksdb';
+ * import Storely from '@ambicuity/storely';
  *
  * const store = new StorelyRocksDB('rocksdb:///tmp/mydb');
  * const storely = new Storely({ store });

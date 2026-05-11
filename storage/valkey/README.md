@@ -1,8 +1,8 @@
 
 > Valkey storage adapter for Storely
 
-[![npm](https://img.shields.io/npm/v/@storely/valkey.svg)](https://www.npmjs.com/package/@storely/valkey)
-[![npm](https://img.shields.io/npm/dm/@storely/valkey)](https://npmjs.com/package/@storely/valkey)
+[![npm](https://img.shields.io/npm/v/@ambicuity/valkey.svg)](https://www.npmjs.com/package/@ambicuity/valkey)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/valkey)](https://npmjs.com/package/@ambicuity/valkey)
 
 [Valkey](https://valkey.io) storage adapter for Storely.
 
@@ -39,7 +39,7 @@ We are using the [iovalkey](https://www.npmjs.com/package/iovalkey) which is a N
 # Install
 
 ```shell
-npm install --save storely @storely/valkey
+npm install --save storely @ambicuity/valkey
 ```
 
 # Usage
@@ -47,7 +47,7 @@ npm install --save storely @storely/valkey
 This is using the helper `createStorely` function to create a Storely instance with the Valkey storage adapter:
 
 ```js
-import {createStorely} from '@storely/valkey';
+import {createStorely} from '@ambicuity/valkey';
 
 const storely = createStorely('redis://localhost:6379');
 storely.on('error', handleConnectionError);
@@ -58,8 +58,8 @@ console.log(await storely.get('foo')); // 'bar'
 If you want to specify the `StorelyValkey` class directly, you can do so:
 
 ```js
-import Storely from 'storely';
-import StorelyValkey from '@storely/valkey';
+import Storely from '@ambicuity/storely';
+import StorelyValkey from '@ambicuity/valkey';
 
 const storely = new Storely(new StorelyValkey('redis://user:pass@localhost:6379', { disable_resubscribing: true }));
 ```
@@ -67,8 +67,8 @@ const storely = new Storely(new StorelyValkey('redis://user:pass@localhost:6379'
 Or you can manually create a storage adapter instance and pass it to Storely:
 
 ```js
-import Storely from 'storely';
-import StorelyValkey from '@storely/valkey';
+import Storely from '@ambicuity/storely';
+import StorelyValkey from '@ambicuity/valkey';
 
 const StorelyValkey = new StorelyValkey('redis://user:pass@localhost:6379');
 const storely = new Storely({ store: StorelyValkey });
@@ -77,9 +77,9 @@ const storely = new Storely({ store: StorelyValkey });
 Or reuse a previous Redis instance:
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 import Redis from 'iovalkey';
-import StorelyValkey from '@storely/valkey';
+import StorelyValkey from '@ambicuity/valkey';
 
 const redis = new Redis('redis://user:pass@localhost:6379');
 const StorelyValkey = new StorelyValkey(redis);
@@ -89,9 +89,9 @@ const storely = new Storely({ store: StorelyValkey });
 Or reuse a previous Redis cluster:
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 import Redis from 'iovalkey';
-import StorelyValkey from '@storely/valkey';
+import StorelyValkey from '@ambicuity/valkey';
 
 const redis = new Redis.Cluster('redis://user:pass@localhost:6379');
 const StorelyValkey = new StorelyValkey(redis);
@@ -312,7 +312,7 @@ await store.disconnect();
 The adapter supports Valkey and Redis clusters via iovalkey's `Cluster` class. Pass a `Redis.Cluster` instance directly to the constructor:
 
 ```js
-import StorelyValkey from '@storely/valkey';
+import StorelyValkey from '@ambicuity/valkey';
 import Redis from 'iovalkey';
 
 const cluster = new Redis.Cluster([

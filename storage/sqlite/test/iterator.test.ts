@@ -1,5 +1,5 @@
+import Storely from "@ambicuity/storely";
 import { faker } from "@faker-js/faker";
-import Storely from "storely";
 import { it } from "vitest";
 import StorelySqlite from "../src/index.js";
 

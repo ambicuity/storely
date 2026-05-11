@@ -1,5 +1,5 @@
-import { serializationTestSuite } from "@storely/test-suite";
-import Storely from "storely";
+import Storely from "@ambicuity/storely";
+import { serializationTestSuite } from "@ambicuity/test-suite";
 import { describe, expect, it } from "vitest";
 import { msgpackrSerializer, StorelyMsgpackrSerializer } from "../src/index.js";
 

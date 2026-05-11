@@ -1,5 +1,5 @@
+import type StorelyModule from "@ambicuity/storely";
 import { faker } from "@faker-js/faker";
-import type StorelyModule from "storely";
 import type { StorelyStoreFn, TestFunction } from "./types.js";
 
 const delay = async (ms: number) =>

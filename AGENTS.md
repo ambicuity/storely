@@ -35,9 +35,9 @@ Individual package tests:
 ### Monorepo Structure
 - **Root**: Workspace configuration with pnpm
 - **core/storely**: Core Storely library - the main key-value storage interface
-- **core/test-suite**: Shared test suite (@storely/test-suite) for API compliance testing
-- **serialization/superjson**: SuperJSON serializer (@storely/serialize-superjson) - optional
-- **serialization/msgpackr**: MessagePack serializer (@storely/serialize-msgpackr) - optional
+- **core/test-suite**: Shared test suite (@ambicuity/test-suite) for API compliance testing
+- **serialization/superjson**: SuperJSON serializer (@ambicuity/serialize-superjson) - optional
+- **serialization/msgpackr**: MessagePack serializer (@ambicuity/serialize-msgpackr) - optional
 - **core/bigmap**: BigMap - scalable in-memory Map implementation
 - **storage/**: Storage adapters - Redis, MySQL, PostgreSQL, MongoDB, SQLite, Etcd, Memcache, Valkey, DynamoDB
 - **compression/**: Compression adapters - Brotli, Gzip, LZ4
@@ -70,7 +70,7 @@ Individual package tests:
 - Docker is required for integration tests with databases/services
 - Enable "host networking" in Docker settings for Redis cluster tests
 - Test services are managed via scripts in `/scripts/` directory
-- Each storage adapter should use `@storely/test-suite` for compliance testing
+- Each storage adapter should use `@ambicuity/test-suite` for compliance testing
 - Tests use Vitest with coverage reporting
 
 ### Code Style

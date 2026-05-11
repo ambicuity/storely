@@ -1,7 +1,11 @@
+import type {
+	StorelyEntry,
+	StorelyStorageAdapter,
+	StorelyStorageGetResult,
+} from "@ambicuity/storely";
+import { Storely } from "@ambicuity/storely";
 import { Hookified } from "hookified";
 import { Memcache, type MemcacheOptions } from "memcache";
-import type { StorelyEntry, StorelyStorageAdapter, StorelyStorageGetResult } from "storely";
-import { Storely } from "storely";
 
 /**
  * Configuration options for the StorelyMemcache adapter.
@@ -324,7 +328,7 @@ export class StorelyMemcache extends Hookified implements StorelyStorageAdapter 
 	async clear(options: { destructive?: boolean } = {}): Promise<void> {
 		if (this.namespace && !options.destructive) {
 			const err = new Error(
-				"@storely/memcache: clear() flushes the entire Memcached server, not just the namespace. Pass { destructive: true } to acknowledge.",
+				"@ambicuity/memcache: clear() flushes the entire Memcached server, not just the namespace. Pass { destructive: true } to acknowledge.",
 			);
 			this.emit("error", err);
 			throw err;

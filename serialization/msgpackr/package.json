@@ -1,5 +1,5 @@
 {
-  "name": "@storely/serialize-msgpackr",
+  "name": "@ambicuity/serialize-msgpackr",
   "version": "1.0.0",
   "description": "MessagePack serialization adapter for Storely using msgpackr",
   "type": "module",
@@ -42,10 +42,10 @@
     "msgpackr": "^1.11.9"
   },
   "peerDependencies": {
-    "storely": "workspace:^"
+    "@ambicuity/storely": "workspace:^"
   },
   "devDependencies": {
-    "@storely/test-suite": "workspace:^",
+    "@ambicuity/test-suite": "workspace:^",
     "@biomejs/biome": "^2.3.13",
     "@vitest/coverage-v8": "^4.0.18",
     "rimraf": "^6.1.2",

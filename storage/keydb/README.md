@@ -1,4 +1,4 @@
-# @storely/keydb
+# @ambicuity/keydb
 
 > ⚠️ **Experimental.** Batch operations (`getMany` / `setMany` / `deleteMany`)
 > can hang indefinitely if the server becomes unreachable mid-pipeline; the
@@ -47,16 +47,16 @@
 # Installation
 
 ```bash
-npm install --save storely @storely/keydb
+npm install --save storely @ambicuity/keydb
 ```
 
 # Usage
 
-Here is a standard use case where we implement `Storely` and `@storely/keydb`:
+Here is a standard use case where we implement `Storely` and `@ambicuity/keydb`:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB from '@ambicuity/keydb';
 
 const storely = new Storely(new StorelyKeyDB('keydb://user:pass@localhost:6378'));
 storely.on('error', handleConnectionError);
@@ -65,18 +65,18 @@ storely.on('error', handleConnectionError);
 Here is the same example but with the `Storely` instance created with the `createStorelyKeyDB` function:
 
 ```js
-import { createStorelyKeyDB } from '@storely/keydb';
+import { createStorelyKeyDB } from '@ambicuity/keydb';
 
 const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378');
 ```
 
-You only have to import the `@storely/keydb` library if you are using the `createStorelyKeyDB` function. 🎉 Otherwise, you can import `Storely` and `@storely/keydb` independently.
+You only have to import the `@ambicuity/keydb` library if you are using the `createStorelyKeyDB` function. 🎉 Otherwise, you can import `Storely` and `@ambicuity/keydb` independently.
 
 Here you can pass in the KeyDB options directly:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB from '@ambicuity/keydb';
 
 const uri = "keydb://localhost:6378";
 
@@ -97,8 +97,8 @@ const storely = new Storely(storelyKeyDB);
 Or you can create a new KeyDB instance and pass it in with `StorelyOptions` such as setting the `store`:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB, { createClient } from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB, { createClient } from '@ambicuity/keydb';
 
 const keydb = createClient('keydb://user:pass@localhost:6378');
 const storelyKeyDB = new StorelyKeyDB(keydb);
@@ -161,8 +161,8 @@ export type StorelyKeyDBOptions = {
 You can pass these options when creating a new `StorelyKeyDB` instance:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB from '@ambicuity/keydb';
 
 const storelyKeyDB = new StorelyKeyDB('keydb://user:pass@localhost:6378', {
   namespace: 'my-namespace',
@@ -179,7 +179,7 @@ const storely = new Storely({ store: storelyKeyDB });
 You can also set these options after the fact by using the `StorelyKeyDB` instance properties:
 
 ```js
-import {createStorelyKeyDB} from '@storely/keydb';
+import {createStorelyKeyDB} from '@ambicuity/keydb';
 
 const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378');
 storely.store.namespace = 'my-namespace';
@@ -187,26 +187,26 @@ storely.store.namespace = 'my-namespace';
 
 # Using the `createStorelyKeyDB` function
 
-The `createStorelyKeyDB` function is a convenience function that creates a new `Storely` instance with the `@storely/keydb` store. It automatically sets the `useKeyPrefix` option to `false`. Here is an example of how to use it:
+The `createStorelyKeyDB` function is a convenience function that creates a new `Storely` instance with the `@ambicuity/keydb` store. It automatically sets the `useKeyPrefix` option to `false`. Here is an example of how to use it:
 
 ```js
-import { createStorelyKeyDB } from '@storely/keydb';
+import { createStorelyKeyDB } from '@ambicuity/keydb';
 const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378');
 ```
 
 To use a namespace you can do it here and this will set Storely up correctly to avoid the double namespace issue:
 
 ```js
-import { createStorelyKeyDB } from '@storely/keydb';
+import { createStorelyKeyDB } from '@ambicuity/keydb';
 const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378', {namespace: 'my-namespace'});
 ```
 
 # Using the `createStorelyKeyDBNonBlocking` function
 
-The `createStorelyKeyDBNonBlocking` function is a convenience function that creates a new `Storely` instance with the `@storely/keydb` store does what `createStorelyKeyDB` does but also disables throwing errors, removes the offline queue redis functionality, and reconnect strategy so that when used as a secondary cache in libraries such as [cacheable](https://npmjs.org/package/cacheable) it does not block the primary cache. This is useful when you want to use KeyDB as a secondary cache and do not want to block the primary cache on connection errors or timeouts when using `nonBlocking`. Here is an example of how to use it:
+The `createStorelyKeyDBNonBlocking` function is a convenience function that creates a new `Storely` instance with the `@ambicuity/keydb` store does what `createStorelyKeyDB` does but also disables throwing errors, removes the offline queue redis functionality, and reconnect strategy so that when used as a secondary cache in libraries such as [cacheable](https://npmjs.org/package/cacheable) it does not block the primary cache. This is useful when you want to use KeyDB as a secondary cache and do not want to block the primary cache on connection errors or timeouts when using `nonBlocking`. Here is an example of how to use it:
 
 ```js
-import { createStorelyKeyDBNonBlocking } from '@storely/keydb';
+import { createStorelyKeyDBNonBlocking } from '@ambicuity/keydb';
 const storely = createStorelyKeyDBNonBlocking('keydb://user:pass@localhost:6378');
 ```
 
@@ -223,8 +223,8 @@ This means the colon is not the issue—**the extra characters are.** A key that
 You can set a namespace for your keys. This is useful if you want to manage your keys in a more organized way. Here is an example of how to set a `namespace` with the `store` option:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB, { createClient } from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB, { createClient } from '@ambicuity/keydb';
 
 const keydb = createClient('keydb://user:pass@localhost:6378');
 const storelyKeyDB = new StorelyKeyDB(keydb);
@@ -234,7 +234,7 @@ const storely = new Storely({ store: storelyKeyDB, namespace: 'my-namespace', us
 To make this easier, you can use the `createStorelyKeyDB` function which will automatically set the `namespace` option to the `StorelyKeyDB` instance:
 
 ```js
-import { createStorelyKeyDB } from '@storely/keydb';
+import { createStorelyKeyDB } from '@ambicuity/keydb';
 const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378', { namespace: 'my-namespace' });
 ```
 
@@ -248,11 +248,11 @@ NOTE: If you plan to do many clears or deletes, it is recommended to read the [P
 
 # Fixing Double Prefixing of Keys
 
-If you are using `Storely` with `@storely/keydb` as the storage adapter, you may notice that keys are being prefixed twice. This is because `Storely` has a default prefixing behavior that is applied to all keys. To fix this, you can set the `useKeyPrefix` option to `false` when creating the `Storely` instance:
+If you are using `Storely` with `@ambicuity/keydb` as the storage adapter, you may notice that keys are being prefixed twice. This is because `Storely` has a default prefixing behavior that is applied to all keys. To fix this, you can set the `useKeyPrefix` option to `false` when creating the `Storely` instance:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB from '@ambicuity/keydb';
 
 const storely = new Storely(new StorelyKeyDB('keydb://user:pass@localhost:6378'), { useKeyPrefix: false });
 ```
@@ -260,7 +260,7 @@ const storely = new Storely(new StorelyKeyDB('keydb://user:pass@localhost:6378')
 To make this easier, you can use the `createStorelyKeyDB` function which will automatically set the `useKeyPrefix` option to `false`:
 
 ```js
-import { createStorelyKeyDB } from '@storely/keydb';
+import { createStorelyKeyDB } from '@ambicuity/keydb';
 const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378');
 ```
 
@@ -269,8 +269,8 @@ const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378');
 When initializing `StorelyKeyDB`, you can specify the type of the values you are storing and you can also specify types when calling methods:
 
 ```typescript
-import Storely from 'storely';
-import StorelyKeyDB, { createClient } from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB, { createClient } from '@ambicuity/keydb';
 
 
 type User {
@@ -321,11 +321,11 @@ storely.useUnlink = false;
 
 # Gracefully Handling Errors and Timeouts
 
-When using `@storely/keydb`, it is important to handle connection errors gracefully. You can do this by listening to the `error` event on the `StorelyKeyDB` instance. Here is an example of how to do that:
+When using `@ambicuity/keydb`, it is important to handle connection errors gracefully. You can do this by listening to the `error` event on the `StorelyKeyDB` instance. Here is an example of how to do that:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB from '@ambicuity/keydb';
 const storely = new Storely(new StorelyKeyDB('keydb://user:pass@localhost:6378'));
 storely.on('error', (error) => {
   console.error('error', error);
@@ -335,8 +335,8 @@ storely.on('error', (error) => {
 By default, the `StorelyKeyDB` instance will `throw an error` if the connection fails to connect. You can disable this behavior by setting the `throwOnConnectError` option to `false` when creating the `StorelyKeyDB` instance. If you want this to throw you will need to also set the Storely instance to `throwOnErrors: true`:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB from '@ambicuity/keydb';
 
 const storely = new Storely(new StorelyKeyDB('keydb://bad-uri:1111', { throwOnConnectError: false }));
 storely.throwOnErrors = true; // This will throw an error if the connection fails
@@ -368,7 +368,7 @@ export const defaultReconnectStrategy = (attempts: number): number | Error => {
 If you are wanting to see even better performance with KeyDB, you can use [Cacheable](https://npmjs.org/package/cacheable) which is a multi-layered cache library that has in-memory primary caching and non-blocking secondary caching. Here is an example of how to use it with KeyDB:
 
 ```js
-import StorelyKeyDB from '@storely/keydb';
+import StorelyKeyDB from '@ambicuity/keydb';
 import Cacheable from 'cacheable';
 
 const secondary = new StorelyKeyDB('keydb://user:pass@localhost:6378');
@@ -389,8 +389,8 @@ This will make it so that the secondary does not block the primary cache and wil
 If you are using a KeyDB Cluster, you can pass in the `redisOptions` directly. Here is an example of how to do that:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB, { createCluster } from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB, { createCluster } from '@ambicuity/keydb';
 
 const cluster = createCluster({
     rootNodes: [
@@ -416,8 +416,8 @@ You can learn more about the `createCluster` function in the [documentation](htt
 If you are using Sentinel to provide high availability for your KeyDB instances, you can pass in the sentinel options directly to the `StorelyKeyDB` constructor:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB from '@ambicuity/keydb';
 
 const storely = new Storely({
   store: new StorelyKeyDB({
@@ -434,7 +434,7 @@ const storely = new Storely({
 For TypeScript users, the `RedisSentinelOptions` type is exported from the package:
 
 ```typescript
-import StorelyKeyDB, { type RedisSentinelOptions } from '@storely/keydb';
+import StorelyKeyDB, { type RedisSentinelOptions } from '@ambicuity/keydb';
 
 const sentinelOptions: RedisSentinelOptions = {
   name: 'mymaster',
@@ -455,8 +455,8 @@ You can learn more about Sentinel configuration in the [documentation](https://g
 Here is an example of how to use TLS using the `redisOptions`:
 
 ```js
-import Storely from 'storely';
-import StorelyKeyDB from '@storely/keydb';
+import Storely from '@ambicuity/storely';
+import StorelyKeyDB from '@ambicuity/keydb';
 
 const tlsOptions = {
     socket: {
@@ -554,7 +554,7 @@ export type StorelyKeyDBOptions = {
 Storely by default supports the `error` event across all storage adapters. If you want to listen to other events you can do so by accessing the `client` property of the `StorelyKeyDB` instance. Here is an example of how to do that:
 
 ```js
-import {createStorelyKeyDB} from '@storely/keydb';
+import {createStorelyKeyDB} from '@ambicuity/keydb';
 
 const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378');
 const keydbClient = storely.store.client;
@@ -576,12 +576,12 @@ Here are some of the events you can listen to: https://www.npmjs.com/package/red
 
 # Using with NestJS
 
-> You can integrate `@storely/keydb` with NestJS by creating a custom `CacheModule`. This allows you to use Storely as a cache store in your application.
+> You can integrate `@ambicuity/keydb` with NestJS by creating a custom `CacheModule`. This allows you to use Storely as a cache store in your application.
 
 ### 1. Install Dependencies
 
 ```bash
-npm install @storely/keydb storely @nestjs/cache-manager cache-manager cacheable
+npm install @ambicuity/keydb storely @nestjs/cache-manager cache-manager cacheable
 ```
 
 ### 2. Create a Cache Module
@@ -591,7 +591,7 @@ Create a file `cache.module.ts`:
 ```ts
 import { Module } from '@nestjs/common';
 import { CacheModule as NestCacheModule } from '@nestjs/cache-manager';
-import { createStorelyKeyDB } from '@storely/keydb';
+import { createStorelyKeyDB } from '@ambicuity/keydb';
 
 @Module({
   imports: [
@@ -656,7 +656,7 @@ Update `cache.module.ts`:
 ```ts
 import { Module } from '@nestjs/common';
 import { CacheModule as NestCacheModule } from '@nestjs/cache-manager';
-import { createStorelyKeyDB } from '@storely/keydb';
+import { createStorelyKeyDB } from '@ambicuity/keydb';
 import { CacheService } from './services/cache.service';
 
 @Module({

@@ -9,7 +9,7 @@
 > risk remains. Do not put live traffic on this adapter.
 
 > Memcache storage adapter for Storely using the [memcache](https://www.npmjs.com/package/memcache) client
-[![npm](https://img.shields.io/npm/dm/@storely/memcache)](https://npmjs.com/package/@storely/memcache)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/memcache)](https://npmjs.com/package/@ambicuity/memcache)
 
 ## Features
 
@@ -61,19 +61,19 @@
 ## Install
 
 ```shell
-npm install --save @storely/memcache
+npm install --save @ambicuity/memcache
 ```
 
 ## Storely Compression is not Supported
 
-This package does not support compression. If you need compression, please use the `@storely/redis` or another service package instead.
+This package does not support compression. If you need compression, please use the `@ambicuity/redis` or another service package instead.
 
 ## Quick Start with createStorely
 
 The `createStorely` helper creates a `Storely` instance with a Memcache store in a single call:
 
 ```js
-import { createStorely } from '@storely/memcache';
+import { createStorely } from '@ambicuity/memcache';
 
 const storely = createStorely('localhost:11211');
 
@@ -90,7 +90,7 @@ await storely.delete('foo');
 You can also pass an options object:
 
 ```js
-import { createStorely } from '@storely/memcache';
+import { createStorely } from '@ambicuity/memcache';
 
 const storely = createStorely({ nodes: ['localhost:11211'] });
 ```
@@ -98,8 +98,8 @@ const storely = createStorely({ nodes: ['localhost:11211'] });
 ## Usage
 
 ```js
-import Storely from 'storely';
-import StorelyMemcache from '@storely/memcache';
+import Storely from '@ambicuity/storely';
+import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache('localhost:11211');
 const storely = new Storely({ store: memcache });
@@ -123,8 +123,8 @@ await memcache.disconnect();
 ## Usage with Namespaces
 
 ```js
-import Storely from 'storely';
-import StorelyMemcache from '@storely/memcache';
+import Storely from '@ambicuity/storely';
+import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache('localhost:11211');
 const storely1 = new Storely({ store: memcache, namespace: "namespace1" });
@@ -159,7 +159,7 @@ The `StorelyMemcacheOptions` type extends `MemcacheOptions` from the `memcache` 
 | `autoDiscover` | `AutoDiscoverOptions` | `undefined` | AWS ElastiCache Auto Discovery configuration |
 
 ```js
-import StorelyMemcache from '@storely/memcache';
+import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache({
   nodes: ['server1:11211', 'server2:11211'],
@@ -174,8 +174,8 @@ const memcache = new StorelyMemcache({
 The adapter supports connecting to multiple memcache servers. Keys are distributed across nodes using consistent hashing (KetamaHash):
 
 ```js
-import Storely from 'storely';
-import StorelyMemcache from '@storely/memcache';
+import Storely from '@ambicuity/storely';
+import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache({
   nodes: ['server1:11211', 'server2:11211', 'server3:11211'],
@@ -193,8 +193,8 @@ Node URIs support multiple formats:
 To connect to a memcache server that requires SASL authentication:
 
 ```js
-import Storely from 'storely';
-import StorelyMemcache from '@storely/memcache';
+import Storely from '@ambicuity/storely';
+import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache({
   nodes: ['localhost:11211'],
@@ -211,8 +211,8 @@ const storely = new Storely({ store: memcache });
 When using AWS ElastiCache, you can enable auto discovery to automatically detect cluster topology changes:
 
 ```js
-import Storely from 'storely';
-import StorelyMemcache from '@storely/memcache';
+import Storely from '@ambicuity/storely';
+import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache({
   nodes: ['my-cluster.cfg.use1.cache.amazonaws.com:11211'],
@@ -243,7 +243,7 @@ Creates a new `StorelyMemcache` instance.
 The `namespace` property is extracted from the resolved options and used for key prefixing. All remaining options are passed directly to the underlying `Memcache` client.
 
 ```js
-import StorelyMemcache from '@storely/memcache';
+import StorelyMemcache from '@ambicuity/memcache';
 
 // Using a URI string
 const memcache = new StorelyMemcache('localhost:11211');
@@ -383,8 +383,8 @@ memcache.formatKey('foo'); // 'myapp:foo'
 
 1. Install Memcached and start an instance
 ```js
-import Storely from 'storely';
-import StorelyMemcache from '@storely/memcache';
+import Storely from '@ambicuity/storely';
+import StorelyMemcache from '@ambicuity/memcache';
 
 //set the server to the correct address and port
 const memcache = new StorelyMemcache("localhost:11211");
@@ -402,8 +402,8 @@ const storely = new Storely({ store: memcache});
 7. Google provides further documentation for connecting to and managing your Memcached instance [here](https://cloud.google.com/memorystore/docs/memcached).
 
 ```js
-import Storely from 'storely';
-import StorelyMemcache from '@storely/memcache';
+import Storely from '@ambicuity/storely';
+import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache("insert the internal google memcached discovery endpoint");
 const storely = new Storely({ store: memcache});

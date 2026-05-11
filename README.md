@@ -19,19 +19,19 @@ Storely provides a consistent interface for key-value storage across multiple ba
 Install Storely:
 
 ```
-npm install storely
+npm install @ambicuity/storely
 ```
 
 By default everything is stored in memory. You can optionally install a storage adapter for persistent backends:
 
 ```
-npm install @storely/redis
+npm install @ambicuity/redis
 ```
 
 Use it:
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 
 const store = new Storely();
 await store.set('foo', 'bar');
@@ -48,11 +48,11 @@ core/             Core packages
   test-suite/       Shared test suite for API compliance
   bigmap/           Scalable in-memory Map
 serialization/    Serialization packages
-  superjson/        SuperJSON serializer (@storely/serialize-superjson)
-  msgpackr/         MessagePack serializer (@storely/serialize-msgpackr)
+  superjson/        SuperJSON serializer (@ambicuity/serialize-superjson)
+  msgpackr/         MessagePack serializer (@ambicuity/serialize-msgpackr)
 encryption/       Encryption adapters
-  encrypt-node/     Node.js crypto encryption (@storely/encrypt-node)
-  encrypt-web/      Web Crypto API encryption (@storely/encrypt-web)
+  encrypt-node/     Node.js crypto encryption (@ambicuity/encrypt-node)
+  encrypt-web/      Web Crypto API encryption (@ambicuity/encrypt-web)
 compression/      Compression adapters
   compress-brotli/
   compress-gzip/
@@ -84,8 +84,8 @@ website/          Documentation website
 
 ## Encryption Adapters
 
-* [encrypt-node](encryption/encrypt-node) - Node.js crypto encryption adapter (@storely/encrypt-node)
-* [encrypt-web](encryption/encrypt-web) - Web Crypto API encryption adapter (@storely/encrypt-web)
+* [encrypt-node](encryption/encrypt-node) - Node.js crypto encryption adapter (@ambicuity/encrypt-node)
+* [encrypt-web](encryption/encrypt-web) - Web Crypto API encryption adapter (@ambicuity/encrypt-web)
 
 ## Compression Adapters
 
@@ -97,8 +97,8 @@ website/          Documentation website
 
 The default serializer (`StorelyJsonSerializer`) is built into the core `storely` package. Alternative serializers are available as separate packages:
 
-* [serialize-superjson](serialization/superjson) - SuperJSON serializer with Date, Map, Set, BigInt support (@storely/serialize-superjson)
-* [serialize-msgpackr](serialization/msgpackr) - High-performance MessagePack serializer (@storely/serialize-msgpackr)
+* [serialize-superjson](serialization/superjson) - SuperJSON serializer with Date, Map, Set, BigInt support (@ambicuity/serialize-superjson)
+* [serialize-msgpackr](serialization/msgpackr) - High-performance MessagePack serializer (@ambicuity/serialize-msgpackr)
 
 ## Third-party Storage Adapters
 

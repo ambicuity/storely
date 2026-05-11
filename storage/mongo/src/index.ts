@@ -1,4 +1,9 @@
 import { Buffer } from "node:buffer";
+import Storely, {
+	type StorelyEntry,
+	type StorelyStorageAdapter,
+	type StorelyStorageGetResult,
+} from "@ambicuity/storely";
 import { Hookified } from "hookified";
 import {
 	GridFSBucket,
@@ -7,11 +12,6 @@ import {
 	MongoClient as mongoClient,
 	type ReadPreference,
 } from "mongodb";
-import Storely, {
-	type StorelyEntry,
-	type StorelyStorageAdapter,
-	type StorelyStorageGetResult,
-} from "storely";
 import type { Options, StorelyMongoConnect, StorelyMongoOptions } from "./types.js";
 
 /**

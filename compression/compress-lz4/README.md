@@ -1,4 +1,4 @@
-# @storely/compress-lz4
+# @ambicuity/compress-lz4
 
 > lz4 compression for Storely
 
@@ -9,14 +9,14 @@ lz4 compression for Storely.
 ## Install
 
 ```shell
-npm install --save storely @storely/compress-lz4
+npm install --save storely @ambicuity/compress-lz4
 ```
 
 ## Usage
 
 ```javascript
-import Storely from 'storely';
-import StorelyLz4 from '@storely/compress-lz4';
+import Storely from '@ambicuity/storely';
+import StorelyLz4 from '@ambicuity/compress-lz4';
 
 const storely = new Storely({store: new Map(), compression: new StorelyLz4()});
 
@@ -24,11 +24,11 @@ const storely = new Storely({store: new Map(), compression: new StorelyLz4()});
 
 ## API
 
-### @storely/compress-lz4(\[options])
+### @ambicuity/compress-lz4(\[options])
 
 #### options
 
-All options for `@storely/compress-lz4` are based on the package [lz4-napi](https://npmjs.com/package/lz4-napi).
+All options for `@ambicuity/compress-lz4` are based on the package [lz4-napi](https://npmjs.com/package/lz4-napi).
 
 ## Limitations
 

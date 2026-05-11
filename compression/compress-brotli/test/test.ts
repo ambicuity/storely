@@ -1,5 +1,5 @@
 import { constants as zlibConstants } from "node:zlib";
-import { compressionTestSuite } from "@storely/test-suite";
+import { compressionTestSuite } from "@ambicuity/test-suite";
 import { it } from "vitest";
 import StorelyBrotli from "../src/index.js";
 

@@ -1,7 +1,7 @@
+import Storely from "@ambicuity/storely";
+import { storageTestSuite, storelyIteratorTests, storelyTestSuite } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
-import { storageTestSuite, storelyIteratorTests, storelyTestSuite } from "@storely/test-suite";
 import Redis, { type Cluster } from "iovalkey";
-import Storely from "storely";
 import { it } from "vitest";
 import StorelyValkey, { createStorely } from "../src/index.js";
 

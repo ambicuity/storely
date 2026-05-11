@@ -1,5 +1,5 @@
 {
-	"name": "@storely/keydb",
+	"name": "@ambicuity/keydb",
 	"version": "1.0.0",
 	"description": "KeyDB storage adapter for Storely",
 	"type": "module",
@@ -46,10 +46,10 @@
 		"hookified": "^2.0.0"
 	},
 	"peerDependencies": {
-		"storely": "workspace:^"
+		"@ambicuity/storely": "workspace:^"
 	},
 	"devDependencies": {
-		"@storely/test-suite": "workspace:^",
+		"@ambicuity/test-suite": "workspace:^",
 		"timekeeper": "^2.3.1"
 	},
 	"tsd": {

@@ -1,8 +1,8 @@
 
 > PostgreSQL storage adapter for Storely
 
-[![npm](https://img.shields.io/npm/v/@storely/postgres.svg)](https://www.npmjs.com/package/@storely/postgres)
-[![npm](https://img.shields.io/npm/dm/@storely/postgres)](https://npmjs.com/package/@storely/postgres)
+[![npm](https://img.shields.io/npm/v/@ambicuity/postgres.svg)](https://www.npmjs.com/package/@ambicuity/postgres)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/postgres)](https://npmjs.com/package/@ambicuity/postgres)
 
 PostgreSQL storage adapter for Storely.
 
@@ -47,14 +47,14 @@ Requires Postgres 9.5 or newer for `ON CONFLICT` support to allow performant ups
 # Install
 
 ```shell
-npm install --save storely @storely/postgres
+npm install --save storely @ambicuity/postgres
 ```
 
 # Usage
 
 ```js
-import Storely from 'storely';
-import StorelyPostgres from '@storely/postgres';
+import Storely from '@ambicuity/storely';
+import StorelyPostgres from '@ambicuity/postgres';
 
 const storely = new Storely({ store: new StorelyPostgres('postgresql://user:pass@localhost:5432/dbname') });
 storely.on('error', handleConnectionError);
@@ -70,7 +70,7 @@ const storely = new Storely({ store: storelyPostgres });
 You can also use the `createStorely` helper function to create `Storely` with `StorelyPostgres` store:
 
 ```js
-import { createStorely } from '@storely/postgres';
+import { createStorely } from '@ambicuity/postgres';
 
 const storely = createStorely({ uri: 'postgresql://user:pass@localhost:5432/dbname', table: 'cache', schema: 'storely' });
 ```
@@ -131,7 +131,7 @@ New methods for efficient multi-key operations:
 A convenience function to create a `Storely` instance with `StorelyPostgres` as the store in one call:
 
 ```js
-import { createStorely } from '@storely/postgres';
+import { createStorely } from '@ambicuity/postgres';
 
 const storely = createStorely({ uri: 'postgresql://user:pass@localhost:5432/dbname' });
 ```
@@ -142,7 +142,7 @@ The iterator now uses cursor-based (keyset) pagination instead of `OFFSET`. This
 
 ## Running the migration script
 
-If you have existing data from v5, you need to run the migration script to move namespace prefixes from keys into the new `namespace` column. The script is located at `scripts/migrate-v6.ts` in the `@storely/postgres` package.
+If you have existing data from v5, you need to run the migration script to move namespace prefixes from keys into the new `namespace` column. The script is located at `scripts/migrate-v6.ts` in the `@ambicuity/postgres` package.
 
 Preview the changes first with `--dry-run`:
 

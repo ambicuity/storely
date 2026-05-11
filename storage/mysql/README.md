@@ -1,8 +1,8 @@
 
 > MySQL/MariaDB storage adapter for Storely
 
-[![npm](https://img.shields.io/npm/v/@storely/mysql.svg)](https://www.npmjs.com/package/@storely/mysql)
-[![npm](https://img.shields.io/npm/dm/@storely/mysql)](https://npmjs.com/package/@storely/mysql)
+[![npm](https://img.shields.io/npm/v/@ambicuity/mysql.svg)](https://www.npmjs.com/package/@ambicuity/mysql)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/mysql)](https://npmjs.com/package/@ambicuity/mysql)
 
 MySQL/MariaDB storage adapter for Storely.
 
@@ -40,14 +40,14 @@ MySQL/MariaDB storage adapter for Storely.
 ## Install
 
 ```shell
-npm install --save storely @storely/mysql
+npm install --save storely @ambicuity/mysql
 ```
 
 ## Usage
 
 ```js
-import Storely from 'storely';
-import StorelyMysql from '@storely/mysql';
+import Storely from '@ambicuity/storely';
+import StorelyMysql from '@ambicuity/mysql';
 
 const storely = new Storely(new StorelyMysql('mysql://user:pass@localhost:3306/dbname'));
 storely.on('error', handleConnectionError);
@@ -56,7 +56,7 @@ storely.on('error', handleConnectionError);
 You can also use the `createStorely` helper function to create a `Storely` instance with `StorelyMysql` as the store:
 
 ```js
-import { createStorely } from '@storely/mysql';
+import { createStorely } from '@ambicuity/mysql';
 
 const storely = createStorely('mysql://user:pass@localhost:3306/dbname');
 ```
@@ -64,7 +64,7 @@ const storely = createStorely('mysql://user:pass@localhost:3306/dbname');
 Or with an options object:
 
 ```js
-import { createStorely } from '@storely/mysql';
+import { createStorely } from '@ambicuity/mysql';
 
 const storely = createStorely({ uri: 'mysql://user:pass@localhost:3306/dbname', table: 'cache', keyLength: 512 });
 ```
@@ -75,8 +75,8 @@ If you want to use native MySQL scheduler to delete expired keys, you can specif
 e.g:
 
 ```js
-import Storely from 'storely';
-import StorelyMysql from '@storely/mysql';
+import Storely from '@ambicuity/storely';
+import StorelyMysql from '@ambicuity/mysql';
 
 const storely = new Storely(new StorelyMysql({
   uri: 'mysql://user:pass@localhost:3306/dbname',
@@ -136,7 +136,7 @@ v6 adds new methods for efficient multi-key operations:
 
 ### Running the migration script
 
-If you have existing data from v5, you need to run the migration script to move namespace prefixes from keys into the new `namespace` column. The script is located at `scripts/migrate-v6.ts` in the `@storely/mysql` package.
+If you have existing data from v5, you need to run the migration script to move namespace prefixes from keys into the new `namespace` column. The script is located at `scripts/migrate-v6.ts` in the `@ambicuity/mysql` package.
 
 Preview the changes first with `--dry-run`:
 
@@ -274,8 +274,8 @@ console.log(store.namespace); // 'my-namespace'
 The MySQL adapter supports native namespace scoping. When a namespace is set, keys are stored in a dedicated `namespace` column rather than being embedded in the key name. This provides efficient filtering and proper isolation between namespaces.
 
 ```js
-import Storely from 'storely';
-import StorelyMysql from '@storely/mysql';
+import Storely from '@ambicuity/storely';
+import StorelyMysql from '@ambicuity/mysql';
 
 const storelyA = new Storely({ store: new StorelyMysql(uri), namespace: 'cache-a' });
 const storelyB = new Storely({ store: new StorelyMysql(uri), namespace: 'cache-b' });
@@ -403,8 +403,8 @@ await storelyMysql.disconnect();
 ## SSL
 
 ```js
-import Storely from 'storely';
-import StorelyMysql from '@storely/mysql';
+import Storely from '@ambicuity/storely';
+import StorelyMysql from '@ambicuity/mysql';
 import fs from 'fs';
 
 const options = {

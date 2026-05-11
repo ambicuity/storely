@@ -8,7 +8,7 @@ import {
 	pbkdf2Sync,
 	randomBytes,
 } from "node:crypto";
-import type { StorelyEncryptionAdapter } from "storely";
+import type { StorelyEncryptionAdapter } from "@ambicuity/storely";
 
 /**
  * Set of cipher modes recognized as AEAD via Node's `getCipherInfo().mode`.
@@ -117,8 +117,8 @@ export function deriveKey(
  *
  * @example
  * ```ts
- * import Storely from "storely";
- * import StorelyEncryptNode, { deriveKey } from "@storely/encrypt-node";
+ * import Storely from "@ambicuity/storely";
+ * import StorelyEncryptNode, { deriveKey } from "@ambicuity/encrypt-node";
  *
  * // Direct key (32 random bytes from a key management system):
  * const encryption = new StorelyEncryptNode({ key: keyBuffer });

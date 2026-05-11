@@ -1,8 +1,8 @@
-# @storely/serialize-msgpackr
+# @ambicuity/serialize-msgpackr
 
 > High-performance MessagePack serializer for Storely using [msgpackr](https://github.com/kriszyp/msgpackr)
 
-`@storely/serialize-msgpackr` is a serialization adapter for Storely powered by [msgpackr](https://github.com/kriszyp/msgpackr). It uses the MessagePack binary format for high-performance serialization with rich type support.
+`@ambicuity/serialize-msgpackr` is a serialization adapter for Storely powered by [msgpackr](https://github.com/kriszyp/msgpackr). It uses the MessagePack binary format for high-performance serialization with rich type support.
 
 ## Supported Types
 
@@ -21,7 +21,7 @@ Binary data is base64-encoded for compatibility with string-based storage adapte
 ## Installation
 
 ```bash
-npm install @storely/serialize-msgpackr
+npm install @ambicuity/serialize-msgpackr
 ```
 
 > **Note:** `storely` is a peer dependency and must be installed alongside this package.
@@ -29,8 +29,8 @@ npm install @storely/serialize-msgpackr
 ## Usage
 
 ```js
-import Storely from 'storely';
-import { msgpackrSerializer } from '@storely/serialize-msgpackr';
+import Storely from '@ambicuity/storely';
+import { msgpackrSerializer } from '@ambicuity/serialize-msgpackr';
 
 const storely = new Storely({ serialization: msgpackrSerializer });
 
@@ -58,7 +58,7 @@ console.log(set instanceof Set); // true
 A class that implements the `StorelySerializationAdapter` interface from `storely`.
 
 ```js
-import { StorelyMsgpackrSerializer } from '@storely/serialize-msgpackr';
+import { StorelyMsgpackrSerializer } from '@ambicuity/serialize-msgpackr';
 
 const serializer = new StorelyMsgpackrSerializer();
 ```
@@ -76,7 +76,7 @@ Deserializes a base64-encoded MessagePack string back to its original value with
 A default `StorelyMsgpackrSerializer` instance, ready to use.
 
 ```js
-import { msgpackrSerializer } from '@storely/serialize-msgpackr';
+import { msgpackrSerializer } from '@ambicuity/serialize-msgpackr';
 ```
 
 ## License

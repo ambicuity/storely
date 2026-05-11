@@ -1,6 +1,6 @@
 import process from "node:process";
+import { delay } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
-import { delay } from "@storely/test-suite";
 import { describe, expect, test, vi } from "vitest";
 import StorelyRedis from "../src/index.js";
 

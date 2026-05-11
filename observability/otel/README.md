@@ -1,4 +1,4 @@
-# @storely/otel
+# @ambicuity/otel
 
 > OpenTelemetry instrumentation for Storely
 
@@ -7,7 +7,7 @@ A parallel subscriber to Storely's event stream that records OTel counters and h
 ## Install
 
 ```shell
-npm install --save storely @storely/otel @opentelemetry/api
+npm install --save storely @ambicuity/otel @opentelemetry/api
 ```
 
 `@opentelemetry/api` is a peer dependency — bring your own version aligned with the rest of your observability stack.
@@ -15,8 +15,8 @@ npm install --save storely @storely/otel @opentelemetry/api
 ## Usage
 
 ```ts
-import Storely from "storely";
-import { instrumentWithOtel } from "@storely/otel";
+import Storely from "@ambicuity/storely";
+import { instrumentWithOtel } from "@ambicuity/otel";
 import { trace, metrics } from "@opentelemetry/api";
 
 const storely = new Storely({ store });

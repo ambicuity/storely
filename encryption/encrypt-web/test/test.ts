@@ -1,6 +1,6 @@
+import { Storely } from "@ambicuity/storely";
+import { encryptionTestSuite } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
-import { encryptionTestSuite } from "@storely/test-suite";
-import { Storely } from "storely";
 import { describe, expect, it } from "vitest";
 import StorelyEncryptWeb from "../src/index.js";
 

@@ -34,7 +34,7 @@ npm install @ambicuity/serialize-superjson
 ## Usage
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 import { superJsonSerializer } from '@ambicuity/serialize-superjson';
 
 const storely = new Storely({ serialization: superJsonSerializer });

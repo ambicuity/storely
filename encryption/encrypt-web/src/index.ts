@@ -1,4 +1,4 @@
-import type { StorelyEncryptionAdapter } from "storely";
+import type { StorelyEncryptionAdapter } from "@ambicuity/storely";
 
 /** Length of the GCM authentication tag in bytes. */
 const AUTH_TAG_LENGTH = 16;
@@ -40,7 +40,7 @@ const DEFAULT_PBKDF2_ITERATIONS = 600_000;
 
 /**
  * 4-byte ASCII magic ("STv0") prefixed to every new ciphertext envelope.
- * Shares the wire format with `@storely/encrypt-node`. Absent magic on
+ * Shares the wire format with `@ambicuity/encrypt-node`. Absent magic on
  * decrypt is treated as legacy (pre-Cluster-8) format.
  */
 const ENVELOPE_MAGIC_V0 = new Uint8Array([0x53, 0x54, 0x76, 0x30]);
@@ -172,7 +172,7 @@ function concat(...arrays: Uint8Array[]): Uint8Array<ArrayBuffer> {
  * (`crypto.subtle`). Works in browsers, Deno, Cloudflare Workers, and
  * Node.js 18+. Defaults to AES-256-GCM with authenticated encryption.
  *
- * The encrypted output uses the same wire format as `@storely/encrypt-node`,
+ * The encrypted output uses the same wire format as `@ambicuity/encrypt-node`,
  * enabling cross-compatibility between the two packages.
  *
  * Wire format (v0, AEAD): `["STv0" (4 bytes) || IV (12 bytes) || AuthTag (16 bytes) || Ciphertext]`
@@ -193,8 +193,8 @@ function concat(...arrays: Uint8Array[]): Uint8Array<ArrayBuffer> {
  *
  * @example
  * ```ts
- * import Storely from "storely";
- * import StorelyEncryptWeb, { deriveKey } from "@storely/encrypt-web";
+ * import Storely from "@ambicuity/storely";
+ * import StorelyEncryptWeb, { deriveKey } from "@ambicuity/encrypt-web";
  *
  * // Direct key (32 random bytes from a key management system):
  * const encryption = new StorelyEncryptWeb({ key: keyBytes });

@@ -1,6 +1,6 @@
+import { delay } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
 import type { RedisClientType } from "@redis/client";
-import { delay } from "@storely/test-suite";
 import { beforeEach, describe, expect, test } from "vitest";
 import StorelyKeyDB from "../src/index.js";
 

@@ -200,7 +200,7 @@ describe("better-sqlite3 driver operations", () => {
 		});
 		await store.set(faker.string.uuid(), faker.lorem.word());
 		expect(warnSpy).toHaveBeenCalledWith(
-			"@storely/sqlite: WAL mode is not supported for in-memory databases. The wal option will be ignored.",
+			"@ambicuity/sqlite: WAL mode is not supported for in-memory databases. The wal option will be ignored.",
 		);
 		warnSpy.mockRestore();
 		await store.disconnect();
@@ -344,7 +344,7 @@ describe("sqlite3 helper driver", () => {
 		});
 		await store.set(faker.string.uuid(), faker.lorem.word());
 		expect(warnSpy).toHaveBeenCalledWith(
-			"@storely/sqlite: WAL mode is not supported for in-memory databases. The wal option will be ignored.",
+			"@ambicuity/sqlite: WAL mode is not supported for in-memory databases. The wal option will be ignored.",
 		);
 		warnSpy.mockRestore();
 		await store.disconnect();

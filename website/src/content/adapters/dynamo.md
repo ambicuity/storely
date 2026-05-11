@@ -103,7 +103,7 @@ const storely = createStorely({
 ## Usage
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 import StorelyDynamo from '@ambicuity/dynamo';
 
 const store = new StorelyDynamo({ endpoint: 'http://localhost:8000' });
@@ -128,7 +128,7 @@ await storely.clear();
 ## Usage with Namespaces
 
 ```js
-import Storely from 'storely';
+import Storely from '@ambicuity/storely';
 import StorelyDynamo from '@ambicuity/dynamo';
 
 const store1 = new StorelyDynamo({ endpoint: 'http://localhost:8000' });
@@ -154,7 +154,7 @@ Since DynamoDB has a 400KB limit per item, compressing data can help in some cas
 ### With a payload less than or equal to 400KB
 
 ```js
-import { Storely } from 'storely'
+import { Storely } from '@ambicuity/storely'
 import { StorelyDynamo } from '@ambicuity/dynamo'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
@@ -183,7 +183,7 @@ export class InfrastructureModule {}
 ### With a payload greater than 400KB
 
 ```js
-import { Storely } from 'storely'
+import { Storely } from '@ambicuity/storely'
 import StorelyBrotli from '@ambicuity/compress-brotli'
 import { StorelyDynamo } from '@ambicuity/dynamo'
 import { CacheModule } from '@nestjs/cache-manager'

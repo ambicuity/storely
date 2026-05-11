@@ -1,8 +1,8 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { storageTestSuite, storelyTestSuite } from "@storely/test-suite";
-import Storely from "storely";
+import Storely from "@ambicuity/storely";
+import { storageTestSuite, storelyTestSuite } from "@ambicuity/test-suite";
 import { afterEach, beforeEach, it } from "vitest";
 import StorelyRocksDB from "../src/index.js";
 

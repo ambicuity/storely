@@ -1,5 +1,5 @@
 {
-	"name": "storely",
+	"name": "@ambicuity/storely",
 	"version": "1.0.0",
 	"description": "Simple key-value storage with support for multiple backends (Storely)",
 	"type": "module",

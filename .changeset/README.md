@@ -25,4 +25,4 @@ Storely packages are **linked** — bumping any one package bumps all linked pac
 ## Skip when
 
 - A PR is docs-only with no shipping change (you can omit the changeset; the CI gate will allow doc-only PRs through a label).
-- A PR only touches `@storely/website` (it's in the `ignore` list — Changesets won't pick it up).
+- A PR only touches `@ambicuity/website` (it's in the `ignore` list — Changesets won't pick it up).

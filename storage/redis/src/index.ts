@@ -1,4 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: redis
+
+import type { StorelyEntry, StorelyStorageAdapter } from "@ambicuity/storely";
 import {
 	createClient,
 	createCluster,
@@ -17,7 +19,6 @@ import {
 } from "@redis/client";
 import calculateSlot from "cluster-key-slot";
 import { Hookified } from "hookified";
-import type { StorelyEntry, StorelyStorageAdapter } from "storely";
 import {
 	defaultReconnectStrategy,
 	type RedisClientConnectionType,
@@ -1023,6 +1024,7 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 	}
 }
 
+export { Storely } from "@ambicuity/storely";
 export {
 	createClient,
 	createCluster,
@@ -1034,5 +1036,4 @@ export {
 	type RedisSentinelOptions,
 	type RedisSentinelType,
 } from "@redis/client";
-export { Storely } from "storely";
 export { createStorely, createStorelyNonBlocking } from "./create.js";

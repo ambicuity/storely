@@ -13,7 +13,7 @@ Use GitHub's private security advisory flow:
    *(replace `jaredwray/storely` with the appropriate fork if reporting against one).*
 3. Fill out the advisory form with:
    - **Vulnerability type** (e.g. injection, auth bypass, cryptographic weakness).
-   - **Affected packages and versions** — which `@storely/*` package(s), and which version(s) you observed the issue on.
+   - **Affected packages and versions** — which `@ambicuity/*` package(s), and which version(s) you observed the issue on.
    - **Reproduction** — the smallest input that demonstrates the issue. A failing
      test or a code snippet is ideal.
    - **Impact** — what an attacker can do with this, and under what conditions.
@@ -31,7 +31,7 @@ fixes only for high-severity issues at the maintainers' discretion.
 ## Scope
 
 In scope: all packages published from this repository (`storely`,
-`@storely/*`). The website at `website/` is documentation; security issues with
+`@ambicuity/*`). The website at `website/` is documentation; security issues with
 the rendered docs site infrastructure should be reported to the hosting
 provider.
 

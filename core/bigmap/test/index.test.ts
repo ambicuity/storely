@@ -1,5 +1,5 @@
+import type { StorelyMemoryAdapter } from "@ambicuity/storely";
 import { faker } from "@faker-js/faker";
-import type { StorelyMemoryAdapter } from "storely";
 import { describe, expect, it } from "vitest";
 import { BigMap, createStorely, defaultHashFunction } from "../src/index.js";
 

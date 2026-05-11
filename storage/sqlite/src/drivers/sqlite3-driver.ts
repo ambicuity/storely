@@ -27,7 +27,7 @@ export type Sqlite3DatabaseLike = {
  * @example
  * ```ts
  * import sqlite3 from "sqlite3";
- * import StorelySqlite, { createSqlite3Driver } from "@storely/sqlite";
+ * import StorelySqlite, { createSqlite3Driver } from "@ambicuity/sqlite";
  *
  * const store = new StorelySqlite({
  *   uri: "sqlite://path/to/database.sqlite",

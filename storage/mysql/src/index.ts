@@ -1,10 +1,10 @@
-import { Hookified } from "hookified";
-import mysql, { type ConnectionOptions, type Pool } from "mysql2";
 import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
-} from "storely";
+} from "@ambicuity/storely";
+import { Hookified } from "hookified";
+import mysql, { type ConnectionOptions, type Pool } from "mysql2";
 import { createPool, endPool } from "./pool.js";
 import type { StorelyMysqlOptions } from "./types.js";
 

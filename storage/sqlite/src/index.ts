@@ -1,9 +1,9 @@
-import { Hookified } from "hookified";
 import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
-} from "storely";
+} from "@ambicuity/storely";
+import { Hookified } from "hookified";
 import { resolveDriver } from "./drivers/index.js";
 import type { SqliteDriver, SqliteDriverName } from "./drivers/types.js";
 import type { Db, DbClose, DbQuery, StorelySqliteOptions } from "./types.js";
@@ -44,8 +44,8 @@ function escapeIdentifier(identifier: string): string {
  *
  * @example
  * ```ts
- * import StorelySqlite from '@storely/sqlite';
- * import Storely from 'storely';
+ * import StorelySqlite from '@ambicuity/sqlite';
+ * import Storely from '@ambicuity/storely';
  *
  * const store = new StorelySqlite('sqlite://path/to/db.sqlite');
  * const storely = new Storely({ store });

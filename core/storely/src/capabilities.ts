@@ -164,7 +164,7 @@ function buildMethods<T extends Record<string, StorelyStorageMethod>>(
  * @returns A {@link StorelyCapability} where `compatible` is `true` only when all required capabilities are present
  * @example
  * ```typescript
- * import Storely, { detectStorely } from 'storely';
+ * import Storely, { detectStorely } from '@ambicuity/storely';
  *
  * const result = detectStorely(new Storely());
  * result.compatible;              // true — all capabilities present
@@ -210,7 +210,7 @@ export function detectStorely(obj: unknown): StorelyCapability {
  * - `methods` maps each method name to `{ exists, methodType }`
  * @example
  * ```typescript
- * import { detectStorelyStorage } from 'storely';
+ * import { detectStorelyStorage } from '@ambicuity/storely';
  *
  * const map = detectStorelyStorage(new Map());
  * map.compatible;               // true
@@ -287,7 +287,7 @@ export function detectStorelyStorage(obj: unknown): StorelyStorageCapability {
  * @returns A {@link StorelyCompressionCapability} where `compatible` is `true` when both `compress` and `decompress` methods are present
  * @example
  * ```typescript
- * import { detectStorelyCompression } from 'storely';
+ * import { detectStorelyCompression } from '@ambicuity/storely';
  *
  * detectStorelyCompression({ compress: (d) => d, decompress: (d) => d });
  * // { compatible: true, methods: { compress: { exists: true, methodType: "sync" }, decompress: { exists: true, methodType: "sync" } } }
@@ -312,7 +312,7 @@ export function detectStorelyCompression(obj: unknown): StorelyCompressionCapabi
  * @returns A {@link StorelySerializationCapability} where `compatible` is `true` when both `stringify` and `parse` methods are present
  * @example
  * ```typescript
- * import { detectStorelySerialization } from 'storely';
+ * import { detectStorelySerialization } from '@ambicuity/storely';
  *
  * detectStorelySerialization(JSON);
  * // { compatible: true, methods: { stringify: { exists: true, methodType: "sync" }, parse: { exists: true, methodType: "sync" } } }
@@ -337,7 +337,7 @@ export function detectStorelySerialization(obj: unknown): StorelySerializationCa
  * @returns A {@link StorelyEncryptionCapability} where `compatible` is `true` when both `encrypt` and `decrypt` methods are present
  * @example
  * ```typescript
- * import { detectStorelyEncryption } from 'storely';
+ * import { detectStorelyEncryption } from '@ambicuity/storely';
  *
  * detectStorelyEncryption({ encrypt: (d) => d, decrypt: (d) => d });
  * // { compatible: true, methods: { encrypt: { exists: true, methodType: "sync" }, decrypt: { exists: true, methodType: "sync" } } }

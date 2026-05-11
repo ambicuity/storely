@@ -1,8 +1,8 @@
 
 > SQLite storage adapter for Storely with multi-driver support for `nodejs`, `bun`, and custom drivers.
 
-[![npm](https://img.shields.io/npm/v/@storely/sqlite.svg)](https://www.npmjs.com/package/@storely/sqlite)
-[![npm](https://img.shields.io/npm/dm/@storely/sqlite)](https://npmjs.com/package/@storely/sqlite)
+[![npm](https://img.shields.io/npm/v/@ambicuity/sqlite.svg)](https://www.npmjs.com/package/@ambicuity/sqlite)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/sqlite)](https://npmjs.com/package/@ambicuity/sqlite)
 
 SQLite storage adapter for Storely.
 
@@ -52,14 +52,14 @@ SQLite storage adapter for Storely.
 # Install
 
 ```shell
-npm install --save storely @storely/sqlite
+npm install --save storely @ambicuity/sqlite
 ```
 
 # Usage
 
 ```js
-import Storely from 'storely';
-import StorelySqlite from '@storely/sqlite';
+import Storely from '@ambicuity/storely';
+import StorelySqlite from '@ambicuity/sqlite';
 
 const storely = new Storely({ store: new StorelySqlite('sqlite://path/to/database.sqlite') });
 storely.on('error', err => console.error(err));
@@ -82,7 +82,7 @@ const storely = new Storely({ store: storelySqlite });
 The `createStorely` helper creates a `Storely` instance with `StorelySqlite` as the store in one call:
 
 ```js
-import { createStorely } from '@storely/sqlite';
+import { createStorely } from '@ambicuity/sqlite';
 
 // With a URI string
 const storely = createStorely('sqlite://path/to/database.sqlite');
@@ -97,7 +97,7 @@ const storely = createStorely({
 
 # Multi-Driver Support
 
-`@storely/sqlite` supports multiple SQLite drivers and automatically selects the best one available for your runtime:
+`@ambicuity/sqlite` supports multiple SQLite drivers and automatically selects the best one available for your runtime:
 
 | Driver | Package | Runtime | Type |
 | --- | --- | --- | --- |
@@ -130,8 +130,8 @@ When no `driver` is specified, the adapter tries drivers in this order:
 You can pass a custom driver object that implements the `SqliteDriver` interface. A custom driver must provide a `name` and a `connect()` method that returns `{ query, close }`:
 
 ```ts
-import StorelySqlite from '@storely/sqlite';
-import type { SqliteDriver } from '@storely/sqlite';
+import StorelySqlite from '@ambicuity/sqlite';
+import type { SqliteDriver } from '@ambicuity/sqlite';
 
 const customDriver: SqliteDriver = {
   name: 'custom',
@@ -167,21 +167,21 @@ import type {
   StorelySqliteOptions,   // Constructor options
   Sqlite3ModuleLike,   // Structural type for the sqlite3 module
   Sqlite3DatabaseLike, // Structural type for a sqlite3.Database instance
-} from '@storely/sqlite';
+} from '@ambicuity/sqlite';
 ```
 
 The `createSqlite3Driver` export is a real-world example of a custom driver — see [Using sqlite3](#using-sqlite3).
 
 # Using sqlite3
 
-The callback-based [`sqlite3`](https://www.npmjs.com/package/sqlite3) package is not auto-detected or bundled with `@storely/sqlite`. If you need to use it, install it in your project and pass it via the `createSqlite3Driver` helper:
+The callback-based [`sqlite3`](https://www.npmjs.com/package/sqlite3) package is not auto-detected or bundled with `@ambicuity/sqlite`. If you need to use it, install it in your project and pass it via the `createSqlite3Driver` helper:
 
 ```bash
 npm install sqlite3
 ```
 
 ```ts
-import StorelySqlite, { createSqlite3Driver } from '@storely/sqlite';
+import StorelySqlite, { createSqlite3Driver } from '@ambicuity/sqlite';
 import sqlite3 from 'sqlite3';
 
 const store = new StorelySqlite({
@@ -265,7 +265,7 @@ New methods for efficient multi-key operations:
 A convenience function to create a `Storely` instance with `StorelySqlite` as the store in one call:
 
 ```js
-import { createStorely } from '@storely/sqlite';
+import { createStorely } from '@ambicuity/sqlite';
 
 const storely = createStorely('sqlite://path/to/database.sqlite');
 ```

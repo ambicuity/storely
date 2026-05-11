@@ -1,4 +1,10 @@
 import {
+	Storely,
+	type StorelyEntry,
+	type StorelyStorageAdapter,
+	type StorelyStorageGetResult,
+} from "@ambicuity/storely";
+import {
 	CreateTableCommand,
 	DescribeTableCommand,
 	DynamoDB,
@@ -19,12 +25,6 @@ import {
 	type ScanCommandOutput,
 } from "@aws-sdk/lib-dynamodb";
 import { Hookified } from "hookified";
-import {
-	Storely,
-	type StorelyEntry,
-	type StorelyStorageAdapter,
-	type StorelyStorageGetResult,
-} from "storely";
 
 export class StorelyDynamo extends Hookified implements StorelyStorageAdapter {
 	/**
@@ -807,4 +807,4 @@ export function createStorely(options?: StorelyDynamoOptions | string): Storely 
 	return storely;
 }
 
-export { Storely } from "storely";
+export { Storely } from "@ambicuity/storely";

@@ -1,5 +1,5 @@
 /**
- * Migration script for @storely/mysql v6.
+ * Migration script for @ambicuity/mysql v6.
  *
  * In pre-v6, namespaces were stored as key prefixes (e.g. id="myns:mykey", namespace='').
  * In v6, the namespace is stored in a dedicated column (id="mykey", namespace="myns").

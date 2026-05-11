@@ -1,4 +1,4 @@
-# @storely/encrypt-node
+# @ambicuity/encrypt-node
 
 > Node.js crypto encryption for Storely
 
@@ -7,14 +7,14 @@ Encrypt and decrypt values stored in Storely using the Node.js `crypto` module. 
 ## Install
 
 ```shell
-npm install --save storely @storely/encrypt-node
+npm install --save storely @ambicuity/encrypt-node
 ```
 
 ## Usage
 
 ```javascript
-import Storely from 'storely';
-import StorelyEncryptNode from '@storely/encrypt-node';
+import Storely from '@ambicuity/storely';
+import StorelyEncryptNode from '@ambicuity/encrypt-node';
 
 const encryption = new StorelyEncryptNode({ key: 'your-secret-key' });
 const storely = new Storely({ encryption });
@@ -55,7 +55,7 @@ The encoding used for the encrypted output string. Common options: `'base64'`, `
 
 ## Cross-Compatibility
 
-Data encrypted with `@storely/encrypt-node` using AES-GCM or AES-CBC can be decrypted by `@storely/encrypt-web` (and vice versa) when using the same key and algorithm. Both packages use the same wire format:
+Data encrypted with `@ambicuity/encrypt-node` using AES-GCM or AES-CBC can be decrypted by `@ambicuity/encrypt-web` (and vice versa) when using the same key and algorithm. Both packages use the same wire format:
 
 - **AES-GCM**: `base64([IV (12 bytes) || AuthTag (16 bytes) || Ciphertext])`
 - **AES-CBC**: `base64([IV (16 bytes) || Ciphertext])`

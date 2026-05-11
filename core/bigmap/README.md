@@ -1,4 +1,4 @@
-# @storely/bigmap
+# @ambicuity/bigmap
 
 > Bigmap for Storely
 
@@ -57,7 +57,7 @@
 # Installation
 
 ```bash
-npm install --save storely @storely/bigmap
+npm install --save storely @ambicuity/bigmap
 ```
 
 # Overview
@@ -67,7 +67,7 @@ BigMap is a scalable Map implementation that overcomes JavaScript's built-in Map
 # Basic Usage
 
 ```typescript
-import { BigMap } from '@storely/bigmap';
+import { BigMap } from '@ambicuity/bigmap';
 
 // Create a new BigMap
 const bigMap = new BigMap<string, number>();
@@ -121,7 +121,7 @@ const bigMap = new BigMap<string, string>({
 [Hashery](https://www.npmjs.com/package/hashery) is a powerful hashing library that provides multiple hash algorithms. You can use it for better key distribution and it is available as an export:
 
 ```typescript
-import { BigMap, Hashery } from '@storely/bigmap';
+import { BigMap, Hashery } from '@ambicuity/bigmap';
 
 const hashery = new Hashery();
 
@@ -244,7 +244,7 @@ The `createStorely` function creates a Storely instance with BigMap as the stora
 **Example:**
 
 ```typescript
-import { createStorely } from '@storely/bigmap';
+import { createStorely } from '@ambicuity/bigmap';
 
 // Basic usage
 const storely = createStorely();
@@ -269,7 +269,7 @@ await storely.clear();
 ## With Custom Options
 
 ```typescript
-import { createStorely } from '@storely/bigmap';
+import { createStorely } from '@ambicuity/bigmap';
 
 // Create with custom store size for better performance with millions of keys
 const storely = createStorely({ storeSize: 16 });
@@ -287,7 +287,7 @@ const storely = createStorely({
 ## Type Safety
 
 ```typescript
-import { createStorely } from '@storely/bigmap';
+import { createStorely } from '@ambicuity/bigmap';
 
 interface Product {
   id: string;
@@ -311,7 +311,7 @@ const product = await storely.get<Product>('product:1');
 BigMap works seamlessly with the Storely ecosystem:
 
 ```typescript
-import { createStorely } from '@storely/bigmap';
+import { createStorely } from '@ambicuity/bigmap';
 
 const cache = createStorely({ storeSize: 16 });
 
@@ -587,7 +587,7 @@ The built-in hash function used for distributing keys across stores. It uses a f
 
 **Example:**
 ```typescript
-import { defaultHashFunction } from '@storely/bigmap';
+import { defaultHashFunction } from '@ambicuity/bigmap';
 
 const index = defaultHashFunction('myKey', 2);
 ```

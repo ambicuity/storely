@@ -9,8 +9,8 @@
 
 > DynamoDB storage adapter for Storely
 
-[![npm](https://img.shields.io/npm/v/@storely/dynamo.svg)](https://www.npmjs.com/package/@storely/dynamo)
-[![npm](https://img.shields.io/npm/dm/@storely/dynamo)](https://npmjs.com/package/@storely/dynamo)
+[![npm](https://img.shields.io/npm/v/@ambicuity/dynamo.svg)](https://www.npmjs.com/package/@ambicuity/dynamo)
+[![npm](https://img.shields.io/npm/dm/@ambicuity/dynamo)](https://npmjs.com/package/@ambicuity/dynamo)
 
 ## Features
 
@@ -57,13 +57,13 @@
 ## Install
 
 ```shell
-npm install --save storely @storely/dynamo
+npm install --save storely @ambicuity/dynamo
 ```
 
 ## Quick Start with createStorely
 
 ```js
-import { createStorely } from '@storely/dynamo';
+import { createStorely } from '@ambicuity/dynamo';
 
 const storely = createStorely({ endpoint: 'http://localhost:8000' });
 
@@ -83,7 +83,7 @@ await storely.delete('foo');
 You can also pass options:
 
 ```js
-import { createStorely } from '@storely/dynamo';
+import { createStorely } from '@ambicuity/dynamo';
 
 const storely = createStorely({
   endpoint: 'http://localhost:8000',
@@ -95,8 +95,8 @@ const storely = createStorely({
 ## Usage
 
 ```js
-import Storely from 'storely';
-import StorelyDynamo from '@storely/dynamo';
+import Storely from '@ambicuity/storely';
+import StorelyDynamo from '@ambicuity/dynamo';
 
 const store = new StorelyDynamo({ endpoint: 'http://localhost:8000' });
 const storely = new Storely(store, { useKeyPrefix: false });
@@ -120,8 +120,8 @@ await storely.clear();
 ## Usage with Namespaces
 
 ```js
-import Storely from 'storely';
-import StorelyDynamo from '@storely/dynamo';
+import Storely from '@ambicuity/storely';
+import StorelyDynamo from '@ambicuity/dynamo';
 
 const store1 = new StorelyDynamo({ endpoint: 'http://localhost:8000' });
 store1.namespace = 'namespace1';
@@ -146,8 +146,8 @@ Since DynamoDB has a 400KB limit per item, compressing data can help in some cas
 ### With a payload less than or equal to 400KB
 
 ```js
-import { Storely } from 'storely'
-import { StorelyDynamo } from '@storely/dynamo'
+import { Storely } from '@ambicuity/storely'
+import { StorelyDynamo } from '@ambicuity/dynamo'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 
@@ -175,9 +175,9 @@ export class InfrastructureModule {}
 ### With a payload greater than 400KB
 
 ```js
-import { Storely } from 'storely'
-import StorelyBrotli from '@storely/compress-brotli'
-import { StorelyDynamo } from '@storely/dynamo'
+import { Storely } from '@ambicuity/storely'
+import StorelyBrotli from '@ambicuity/compress-brotli'
+import { StorelyDynamo } from '@ambicuity/dynamo'
 import { CacheModule } from '@nestjs/cache-manager'
 import { Module } from '@nestjs/common'
 
@@ -215,7 +215,7 @@ Options extend [`DynamoDBClientConfig`](https://docs.aws.amazon.com/AWSJavaScrip
 | `region` | `string` | — | The AWS region (e.g., `'us-east-1'`) |
 
 ```js
-import StorelyDynamo from '@storely/dynamo';
+import StorelyDynamo from '@ambicuity/dynamo';
 
 // Using an endpoint string
 const store = new StorelyDynamo('http://localhost:8000');
@@ -267,7 +267,7 @@ Creates a new `StorelyDynamo` instance. Automatically creates the DynamoDB table
 - `options` — A `StorelyDynamoOptions` object or an endpoint string. Defaults to `{ tableName: 'storely' }`.
 
 ```js
-import StorelyDynamo from '@storely/dynamo';
+import StorelyDynamo from '@ambicuity/dynamo';
 
 // Using an endpoint string
 const store = new StorelyDynamo('http://localhost:8000');

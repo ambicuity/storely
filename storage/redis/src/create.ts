@@ -1,6 +1,7 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: redis
+
+import { Storely } from "@ambicuity/storely";
 import type { RedisClientOptions, RedisClientType } from "@redis/client";
-import { Storely } from "storely";
 import StorelyRedis from "./index.js";
 import type { StorelyRedisOptions } from "./types.js";
 

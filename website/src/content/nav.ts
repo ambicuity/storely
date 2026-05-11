@@ -61,9 +61,7 @@ export const docsNav: NavGroup[] = [
 	},
 	{
 		title: "Project",
-		items: [
-			{ label: "Third-party adapters", href: "/third-party/" },
-		],
+		items: [{ label: "Third-party adapters", href: "/third-party/" }],
 	},
 ];
 
@@ -176,8 +174,7 @@ export const tierLabel: Record<AdapterEntry["tier"], string> = {
 export const tierBlurb: Record<AdapterEntry["tier"], string> = {
 	production:
 		"Hardened in real deployments. Stable API, complete test coverage, recommended for new projects.",
-	beta:
-		"Feature-complete but awaiting load testing. Use with caution in production; report issues.",
+	beta: "Feature-complete but awaiting load testing. Use with caution in production; report issues.",
 	experimental:
 		"Functional but not load-tested. Ship for early integration; do not put live traffic on these yet.",
 };

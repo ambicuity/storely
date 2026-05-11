@@ -1,5 +1,5 @@
 {
-	"name": "@storely/encrypt-web",
+	"name": "@ambicuity/encrypt-web",
 	"version": "1.0.0",
 	"description": "Web Crypto API encryption adapter for Storely",
 	"type": "module",
@@ -51,10 +51,10 @@
 	"license": "MIT",
 	"dependencies": {},
 	"peerDependencies": {
-		"storely": "workspace:^"
+		"@ambicuity/storely": "workspace:^"
 	},
 	"devDependencies": {
-		"@storely/test-suite": "workspace:^",
+		"@ambicuity/test-suite": "workspace:^",
 		"@biomejs/biome": "^2.3.13",
 		"@faker-js/faker": "^9.8.0",
 		"@vitest/coverage-v8": "^4.0.18",
