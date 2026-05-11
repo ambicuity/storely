@@ -1,6 +1,6 @@
 {
   "name": "@ambicuity/mono-repo",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "Storely Mono Repo",
   "author": "Ritesh Rana <contact@riteshrana.engineer>",
@@ -11,9 +11,9 @@
     "node": ">= 20"
   },
   "scripts": {
-    "build:storely": "pnpm recursive --filter=@ambicuity/storely-core run build",
-    "build": "pnpm build:storely && pnpm recursive --filter '!@ambicuity/storely-core' run build",
-    "build:list": "pnpm build:storely && pnpm --filter '!@ambicuity/storely-core' --workspace-concurrency 1 -r build",
+    "build:storely": "pnpm recursive --filter=@ambicuity/core run build",
+    "build": "pnpm build:storely && pnpm recursive --filter '!@ambicuity/core' run build",
+    "build:list": "pnpm build:storely && pnpm --filter '!@ambicuity/core' --workspace-concurrency 1 -r build",
     "test": "pnpm -r test",
     "test:list": "pnpm -r --workspace-concurrency 1 test",
     "test:ci": "pnpm -r test:ci",
@@ -40,7 +40,7 @@
     "@ambicuity/rocksdb": "workspace:*",
     "@ambicuity/sqlite": "workspace:*",
     "@ambicuity/valkey": "workspace:*",
-    "@ambicuity/storely-core": "workspace:*",
+    "@ambicuity/core": "workspace:*",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^24.10.1",
     "@vitest/coverage-v8": "^4.0.18",

@@ -1,9 +1,5 @@
-import type {
-	StorelyEntry,
-	StorelyStorageAdapter,
-	StorelyStorageGetResult,
-} from "@ambicuity/storely-core";
-import { Storely } from "@ambicuity/storely-core";
+import type { StorelyEntry, StorelyStorageAdapter, StorelyStorageGetResult } from "@ambicuity/core";
+import { Storely } from "@ambicuity/core";
 import { Hookified } from "hookified";
 import { Memcache, type MemcacheOptions } from "memcache";
 

@@ -1,4 +1,4 @@
-import Storely from "@ambicuity/storely-core";
+import Storely from "@ambicuity/core";
 import { serializationTestSuite } from "@ambicuity/test-suite";
 import { describe, expect, it } from "vitest";
 import { msgpackrSerializer, StorelyMsgpackrSerializer } from "../src/index.js";

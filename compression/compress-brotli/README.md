@@ -15,7 +15,7 @@ npm install --save storely @ambicuity/compress-brotli
 ## Usage
 
 ```javascript
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyBrotli from '@ambicuity/compress-brotli';
 
 const storely = new Storely({store: new Map(), compression: new StorelyBrotli()});

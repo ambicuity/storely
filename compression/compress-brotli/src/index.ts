@@ -1,6 +1,6 @@
 import { promisify } from "node:util";
 import { type BrotliOptions, brotliCompress, brotliDecompress, constants } from "node:zlib";
-import type { StorelyCompressionAdapter } from "@ambicuity/storely-core";
+import type { StorelyCompressionAdapter } from "@ambicuity/core";
 
 const brotliCompressAsync = promisify(brotliCompress);
 const brotliDecompressAsync = promisify(brotliDecompress);

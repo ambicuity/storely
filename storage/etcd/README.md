@@ -91,7 +91,7 @@ const storely2 = createStorely({ url: '127.0.0.1:2379', ttl: 5000 });
 ## Usage
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyEtcd from '@ambicuity/etcd';
 
 const store = new StorelyEtcd('etcd://localhost:2379');
@@ -119,7 +119,7 @@ await store.disconnect();
 ## Usage with Namespaces
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyEtcd from '@ambicuity/etcd';
 
 const store = new StorelyEtcd('etcd://localhost:2379');

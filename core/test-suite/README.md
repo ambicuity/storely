@@ -23,7 +23,7 @@ Then update `storely` and `@ambicuity/test-suite` versions to `*` in `package.js
 ```js
 import test from 'vitest';
 import storelyTestSuite from '@ambicuity/test-suite';
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyStore from './';
 
 const store = () => new StorelyStore();
@@ -50,7 +50,7 @@ If you're testing a compression adapter, you can use the `storelyCompressionTest
 ```js
 import test from 'vitest';
 import { storelyCompressionTests, StorelyGzip } from '@ambicuity/test-suite';
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 
 storelyCompressionTests(test, new StorelyGzip());
 ```

@@ -1,4 +1,4 @@
-import Storely from "@ambicuity/storely-core";
+import Storely from "@ambicuity/core";
 import {
 	delay,
 	storageTestSuite,

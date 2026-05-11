@@ -1,6 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: redis
 
-import type { StorelyEntry, StorelyStorageAdapter } from "@ambicuity/storely-core";
+import type { StorelyEntry, StorelyStorageAdapter } from "@ambicuity/core";
 import {
 	createClient,
 	createCluster,
@@ -1024,7 +1024,7 @@ export default class StorelyRedis<T> extends Hookified implements StorelyStorage
 	}
 }
 
-export { Storely } from "@ambicuity/storely-core";
+export { Storely } from "@ambicuity/core";
 export {
 	createClient,
 	createCluster,

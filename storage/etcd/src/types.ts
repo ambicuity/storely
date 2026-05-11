@@ -1,4 +1,4 @@
-import type { StorelyStorageGetResult } from "@ambicuity/storely-core";
+import type { StorelyStorageGetResult } from "@ambicuity/core";
 
 /** Resolves to the stored value, or `undefined` if the key does not exist. */
 export type GetOutput<Value> = Promise<Value | undefined>;

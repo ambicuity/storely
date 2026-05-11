@@ -1,5 +1,5 @@
 import { Buffer } from "node:buffer";
-import type StorelyModule from "@ambicuity/storely-core";
+import type StorelyModule from "@ambicuity/core";
 import { faker } from "@faker-js/faker";
 import BigNumber from "bignumber.js";
 import JSONbig from "json-bigint";

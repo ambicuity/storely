@@ -2,7 +2,7 @@ import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
-} from "@ambicuity/storely-core";
+} from "@ambicuity/core";
 import { Hookified } from "hookified";
 import { resolveDriver } from "./drivers/index.js";
 import type { SqliteDriver, SqliteDriverName } from "./drivers/types.js";
@@ -45,7 +45,7 @@ function escapeIdentifier(identifier: string): string {
  * @example
  * ```ts
  * import StorelySqlite from '@ambicuity/sqlite';
- * import Storely from '@ambicuity/storely-core';
+ * import Storely from '@ambicuity/core';
  *
  * const store = new StorelySqlite('sqlite://path/to/db.sqlite');
  * const storely = new Storely({ store });

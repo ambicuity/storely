@@ -11,6 +11,9 @@ importers:
 
   .:
     devDependencies:
+      '@ambicuity/core':
+        specifier: workspace:*
+        version: link:core/storely
       '@ambicuity/mongo':
         specifier: workspace:*
         version: link:storage/mongo
@@ -29,9 +32,6 @@ importers:
       '@ambicuity/sqlite':
         specifier: workspace:*
         version: link:storage/sqlite
-      '@ambicuity/storely-core':
-        specifier: workspace:*
-        version: link:core/storely
       '@ambicuity/valkey':
         specifier: workspace:*
         version: link:storage/valkey
@@ -77,7 +77,7 @@ importers:
 
   compression/compress-brotli:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
     devDependencies:
@@ -99,7 +99,7 @@ importers:
 
   compression/compress-gzip:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       '@types/pako':
@@ -130,7 +130,7 @@ importers:
 
   compression/compress-lz4:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       lz4-napi:
@@ -155,7 +155,7 @@ importers:
 
   core/bigmap:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../storely
       hashery:
@@ -232,7 +232,7 @@ importers:
 
   core/test-suite:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../storely
       '@faker-js/faker':
@@ -272,7 +272,7 @@ importers:
 
   encryption/encrypt-node:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
     devDependencies:
@@ -294,7 +294,7 @@ importers:
 
   encryption/encrypt-web:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
     devDependencies:
@@ -319,7 +319,7 @@ importers:
 
   observability/otel:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
     devDependencies:
@@ -347,7 +347,7 @@ importers:
 
   serialization/msgpackr:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       msgpackr:
@@ -378,7 +378,7 @@ importers:
 
   serialization/superjson:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       superjson:
@@ -409,7 +409,7 @@ importers:
 
   storage/dynamo:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       '@aws-sdk/client-dynamodb':
@@ -428,7 +428,7 @@ importers:
 
   storage/etcd:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       etcd3:
@@ -444,7 +444,7 @@ importers:
 
   storage/keydb:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       '@redis/client':
@@ -466,7 +466,7 @@ importers:
 
   storage/memcache:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       hookified:
@@ -485,7 +485,7 @@ importers:
 
   storage/mongo:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       hookified:
@@ -526,7 +526,7 @@ importers:
         specifier: ^3.16.1
         version: 3.22.3(@types/node@24.12.2)
     devDependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       '@ambicuity/test-suite':
@@ -556,7 +556,7 @@ importers:
 
   storage/postgres:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       hookified:
@@ -593,7 +593,7 @@ importers:
 
   storage/redis:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       '@redis/client':
@@ -615,7 +615,7 @@ importers:
 
   storage/rocksdb:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       '@nxtedition/rocksdb':
@@ -631,7 +631,7 @@ importers:
 
   storage/sqlite:
     dependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       better-sqlite3:
@@ -672,7 +672,7 @@ importers:
         specifier: ^0.3.3
         version: 0.3.3
     devDependencies:
-      '@ambicuity/storely-core':
+      '@ambicuity/core':
         specifier: workspace:^
         version: link:../../core/storely
       '@ambicuity/test-suite':

@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/mysql",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "MySQL/MariaDB storage adapter for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -51,7 +51,7 @@
 		"@faker-js/faker": "^9.8.0",
 		"@ambicuity/test-suite": "workspace:^",
 		"@vitest/coverage-v8": "^4.0.17",
-		"@ambicuity/storely-core": "workspace:^",
+		"@ambicuity/core": "workspace:^",
 		"rimraf": "^6.1.2",
 		"ts-node": "^10.9.2",
 		"tsd": "^0.33.0",

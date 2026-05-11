@@ -54,7 +54,7 @@ npm install --save storely @ambicuity/mongo
 ## Usage
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyMongo from '@ambicuity/mongo';
 
 const storely = new Storely(new StorelyMongo('mongodb://user:pass@localhost:27017/dbname'));

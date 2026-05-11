@@ -61,7 +61,7 @@ npm install --save storely @ambicuity/postgres
 # Usage
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyPostgres from '@ambicuity/postgres';
 
 const storely = new Storely({ store: new StorelyPostgres('postgresql://user:pass@localhost:5432/dbname') });

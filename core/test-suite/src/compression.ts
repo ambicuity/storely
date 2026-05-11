@@ -1,4 +1,4 @@
-import Storely, { type StorelyCompressionAdapter } from "@ambicuity/storely-core";
+import Storely, { type StorelyCompressionAdapter } from "@ambicuity/core";
 import { faker } from "@faker-js/faker";
 import type { TestFunction } from "./types.js";
 

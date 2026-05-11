@@ -1,4 +1,4 @@
-import Storely from "@ambicuity/storely-core";
+import Storely from "@ambicuity/core";
 import { faker } from "@faker-js/faker";
 import { it } from "vitest";
 import StorelySqlite from "../src/index.js";

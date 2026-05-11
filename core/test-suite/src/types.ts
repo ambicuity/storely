@@ -1,4 +1,4 @@
-import type { StorelyStorageAdapter } from "@ambicuity/storely-core";
+import type { StorelyStorageAdapter } from "@ambicuity/core";
 
 /** Factory function that returns a Storely-compatible store instance. Used by Storely-wrapper test suites. */
 // biome-ignore lint/suspicious/noExplicitAny: type format

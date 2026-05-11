@@ -19,7 +19,7 @@ Storely provides a consistent interface for key-value storage across multiple ba
 Install Storely:
 
 ```
-npm install @ambicuity/storely-core
+npm install @ambicuity/core
 ```
 
 By default everything is stored in memory. You can optionally install a storage adapter for persistent backends:
@@ -31,7 +31,7 @@ npm install @ambicuity/redis
 Use it:
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 
 const store = new Storely();
 await store.set('foo', 'bar');

@@ -1,4 +1,4 @@
-import type StorelyModule from "@ambicuity/storely-core";
+import type StorelyModule from "@ambicuity/core";
 import { faker } from "@faker-js/faker";
 import type { StorelyStoreFn, TestFunction } from "./types.js";
 

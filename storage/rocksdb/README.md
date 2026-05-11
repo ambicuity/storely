@@ -56,7 +56,7 @@ npm install --save storely @ambicuity/rocksdb
 # Usage
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyRocksDB from '@ambicuity/rocksdb';
 
 const storely = new Storely({ store: new StorelyRocksDB('rocksdb:///tmp/mydb') });

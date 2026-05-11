@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/sqlite",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "SQLite storage adapter for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -48,7 +48,7 @@
 		"hookified": "^2.0.0"
 	},
 	"peerDependencies": {
-		"@ambicuity/storely-core": "workspace:^"
+		"@ambicuity/core": "workspace:^"
 	},
 	"devDependencies": {
 		"@ambicuity/test-suite": "workspace:^",

@@ -106,7 +106,7 @@ const storely = createStorely({ nodes: ['localhost:11211'] });
 ## Usage
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache('localhost:11211');
@@ -131,7 +131,7 @@ await memcache.disconnect();
 ## Usage with Namespaces
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache('localhost:11211');
@@ -182,7 +182,7 @@ const memcache = new StorelyMemcache({
 The adapter supports connecting to multiple memcache servers. Keys are distributed across nodes using consistent hashing (KetamaHash):
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache({
@@ -201,7 +201,7 @@ Node URIs support multiple formats:
 To connect to a memcache server that requires SASL authentication:
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache({
@@ -219,7 +219,7 @@ const storely = new Storely({ store: memcache });
 When using AWS ElastiCache, you can enable auto discovery to automatically detect cluster topology changes:
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache({
@@ -391,7 +391,7 @@ memcache.formatKey('foo'); // 'myapp:foo'
 
 1. Install Memcached and start an instance
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyMemcache from '@ambicuity/memcache';
 
 //set the server to the correct address and port
@@ -410,7 +410,7 @@ const storely = new Storely({ store: memcache});
 7. Google provides further documentation for connecting to and managing your Memcached instance [here](https://cloud.google.com/memorystore/docs/memcached).
 
 ```js
-import Storely from '@ambicuity/storely-core';
+import Storely from '@ambicuity/core';
 import StorelyMemcache from '@ambicuity/memcache';
 
 const memcache = new StorelyMemcache("insert the internal google memcached discovery endpoint");

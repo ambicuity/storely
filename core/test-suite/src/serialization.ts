@@ -1,4 +1,4 @@
-import Storely, { type StorelySerializationAdapter } from "@ambicuity/storely-core";
+import Storely, { type StorelySerializationAdapter } from "@ambicuity/core";
 import { faker } from "@faker-js/faker";
 import type { TestFunction } from "./types.js";
 

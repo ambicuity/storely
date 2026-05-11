@@ -1,6 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: test file
 
-import Storely from "@ambicuity/storely-core";
+import Storely from "@ambicuity/core";
 import { storageTestSuite, storelyIteratorTests, storelyTestSuite } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
 import { afterAll, it } from "vitest";
