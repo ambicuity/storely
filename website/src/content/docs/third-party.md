@@ -82,7 +82,7 @@ type StorelyStoreAdapter = {
 
 ```ts
 import { EventEmitter } from "node:events";
-import type { StorelyStoreAdapter, StorelyStorageGetResult } from "@ambicuity/storely";
+import type { StorelyStoreAdapter, StorelyStorageGetResult } from "@ambicuity/storely-core";
 
 interface CacheItem {
 	value: unknown;
@@ -131,7 +131,7 @@ official ones:
 ```ts
 import { describe } from "vitest";
 import storelyTestSuite from "@ambicuity/test-suite";
-import Storely from "@ambicuity/storely";
+import Storely from "@ambicuity/storely-core";
 import MyCustomStore from "./my-custom-store";
 
 const store = () => new MyCustomStore();

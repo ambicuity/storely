@@ -1,6 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: this is a test file
 import process from "node:process";
-import Storely from "@ambicuity/storely";
+import Storely from "@ambicuity/storely-core";
 import { storageTestSuite, storelyTestSuite } from "@ambicuity/test-suite";
 import { ResourceInUseException } from "@aws-sdk/client-dynamodb";
 import { faker } from "@faker-js/faker";

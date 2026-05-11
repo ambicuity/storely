@@ -13,7 +13,7 @@ npm install --save storely @ambicuity/compress-gzip
 ## Usage
 
 ```javascript
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyGzip from '@ambicuity/compress-gzip';
 
 const storely = new Storely({store: new Map(), compression: new StorelyGzip()});

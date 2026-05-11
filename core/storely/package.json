@@ -1,6 +1,6 @@
 {
-	"name": "@ambicuity/storely",
-	"version": "1.0.0",
+	"name": "@ambicuity/storely-core",
+	"version": "1.0.1",
 	"description": "Simple key-value storage with support for multiple backends (Storely)",
 	"type": "module",
 	"main": "./dist/index.mjs",

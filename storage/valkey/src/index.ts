@@ -2,7 +2,7 @@ import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
-} from "@ambicuity/storely";
+} from "@ambicuity/storely-core";
 import calculateSlot from "cluster-key-slot";
 import { Hookified } from "hookified";
 import { type Cluster, Redis as IORedis, type Redis as RedisInstance } from "iovalkey";

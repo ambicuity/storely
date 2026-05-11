@@ -29,12 +29,12 @@ In addition to all standard JSON types, SuperJSON supports:
 npm install @ambicuity/serialize-superjson
 ```
 
-> **Note:** `@ambicuity/storely` is a peer dependency and must be installed alongside this package.
+> **Note:** `@ambicuity/storely-core` is a peer dependency and must be installed alongside this package.
 
 ## Usage
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import { superJsonSerializer } from '@ambicuity/serialize-superjson';
 
 const storely = new Storely({ serialization: superJsonSerializer });
@@ -60,7 +60,7 @@ console.log(set instanceof Set); // true
 
 ### `StorelySuperJsonSerializer`
 
-A class that implements the `StorelySerializationAdapter` interface from `@ambicuity/storely`.
+A class that implements the `StorelySerializationAdapter` interface from `@ambicuity/storely-core`.
 
 ```js
 import { StorelySuperJsonSerializer } from '@ambicuity/serialize-superjson';

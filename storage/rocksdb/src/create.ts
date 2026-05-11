@@ -1,4 +1,4 @@
-import Storely from "@ambicuity/storely";
+import Storely from "@ambicuity/storely-core";
 import StorelyRocksDB from "./index.js";
 import type { StorelyRocksDBOptions } from "./types.js";
 

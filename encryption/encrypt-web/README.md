@@ -13,7 +13,7 @@ npm install --save storely @ambicuity/encrypt-web
 ## Usage
 
 ```javascript
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyEncryptWeb from '@ambicuity/encrypt-web';
 
 const encryption = new StorelyEncryptWeb({ key: 'your-secret-key' });

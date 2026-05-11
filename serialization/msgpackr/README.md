@@ -29,7 +29,7 @@ npm install @ambicuity/serialize-msgpackr
 ## Usage
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import { msgpackrSerializer } from '@ambicuity/serialize-msgpackr';
 
 const storely = new Storely({ serialization: msgpackrSerializer });

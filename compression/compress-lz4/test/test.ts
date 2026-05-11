@@ -1,4 +1,4 @@
-import { Storely } from "@ambicuity/storely";
+import { Storely } from "@ambicuity/storely-core";
 import { compressionTestSuite } from "@ambicuity/test-suite";
 import { it } from "vitest";
 import StorelyLz4 from "../src/index.js";

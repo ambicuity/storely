@@ -63,7 +63,7 @@ npm install --save storely @ambicuity/keydb
 Here is a standard use case where we implement `Storely` and `@ambicuity/keydb`:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB from '@ambicuity/keydb';
 
 const storely = new Storely(new StorelyKeyDB('keydb://user:pass@localhost:6378'));
@@ -83,7 +83,7 @@ You only have to import the `@ambicuity/keydb` library if you are using the `cre
 Here you can pass in the KeyDB options directly:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB from '@ambicuity/keydb';
 
 const uri = "keydb://localhost:6378";
@@ -105,7 +105,7 @@ const storely = new Storely(storelyKeyDB);
 Or you can create a new KeyDB instance and pass it in with `StorelyOptions` such as setting the `store`:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB, { createClient } from '@ambicuity/keydb';
 
 const keydb = createClient('keydb://user:pass@localhost:6378');
@@ -169,7 +169,7 @@ export type StorelyKeyDBOptions = {
 You can pass these options when creating a new `StorelyKeyDB` instance:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB from '@ambicuity/keydb';
 
 const storelyKeyDB = new StorelyKeyDB('keydb://user:pass@localhost:6378', {
@@ -231,7 +231,7 @@ This means the colon is not the issue—**the extra characters are.** A key that
 You can set a namespace for your keys. This is useful if you want to manage your keys in a more organized way. Here is an example of how to set a `namespace` with the `store` option:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB, { createClient } from '@ambicuity/keydb';
 
 const keydb = createClient('keydb://user:pass@localhost:6378');
@@ -259,7 +259,7 @@ NOTE: If you plan to do many clears or deletes, it is recommended to read the [P
 If you are using `Storely` with `@ambicuity/keydb` as the storage adapter, you may notice that keys are being prefixed twice. This is because `Storely` has a default prefixing behavior that is applied to all keys. To fix this, you can set the `useKeyPrefix` option to `false` when creating the `Storely` instance:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB from '@ambicuity/keydb';
 
 const storely = new Storely(new StorelyKeyDB('keydb://user:pass@localhost:6378'), { useKeyPrefix: false });
@@ -277,7 +277,7 @@ const storely = createStorelyKeyDB('keydb://user:pass@localhost:6378');
 When initializing `StorelyKeyDB`, you can specify the type of the values you are storing and you can also specify types when calling methods:
 
 ```typescript
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB, { createClient } from '@ambicuity/keydb';
 
 
@@ -332,7 +332,7 @@ storely.useUnlink = false;
 When using `@ambicuity/keydb`, it is important to handle connection errors gracefully. You can do this by listening to the `error` event on the `StorelyKeyDB` instance. Here is an example of how to do that:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB from '@ambicuity/keydb';
 const storely = new Storely(new StorelyKeyDB('keydb://user:pass@localhost:6378'));
 storely.on('error', (error) => {
@@ -343,7 +343,7 @@ storely.on('error', (error) => {
 By default, the `StorelyKeyDB` instance will `throw an error` if the connection fails to connect. You can disable this behavior by setting the `throwOnConnectError` option to `false` when creating the `StorelyKeyDB` instance. If you want this to throw you will need to also set the Storely instance to `throwOnErrors: true`:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB from '@ambicuity/keydb';
 
 const storely = new Storely(new StorelyKeyDB('keydb://bad-uri:1111', { throwOnConnectError: false }));
@@ -397,7 +397,7 @@ This will make it so that the secondary does not block the primary cache and wil
 If you are using a KeyDB Cluster, you can pass in the `redisOptions` directly. Here is an example of how to do that:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB, { createCluster } from '@ambicuity/keydb';
 
 const cluster = createCluster({
@@ -424,7 +424,7 @@ You can learn more about the `createCluster` function in the [documentation](htt
 If you are using Sentinel to provide high availability for your KeyDB instances, you can pass in the sentinel options directly to the `StorelyKeyDB` constructor:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB from '@ambicuity/keydb';
 
 const storely = new Storely({
@@ -463,7 +463,7 @@ You can learn more about Sentinel configuration in the [documentation](https://g
 Here is an example of how to use TLS using the `redisOptions`:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyKeyDB from '@ambicuity/keydb';
 
 const tlsOptions = {

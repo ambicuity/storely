@@ -1,4 +1,4 @@
-import type { StorelySerializationAdapter } from "@ambicuity/storely";
+import type { StorelySerializationAdapter } from "@ambicuity/storely-core";
 import { Packr } from "msgpackr";
 
 /**

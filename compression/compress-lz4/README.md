@@ -15,7 +15,7 @@ npm install --save storely @ambicuity/compress-lz4
 ## Usage
 
 ```javascript
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyLz4 from '@ambicuity/compress-lz4';
 
 const storely = new Storely({store: new Map(), compression: new StorelyLz4()});

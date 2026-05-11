@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/valkey",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Valkey storage adapter for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -53,7 +53,7 @@
 		"@faker-js/faker": "^10.2.0",
 		"@ambicuity/test-suite": "workspace:^",
 		"@vitest/coverage-v8": "^4.0.15",
-		"@ambicuity/storely": "workspace:^",
+		"@ambicuity/storely-core": "workspace:^",
 		"rimraf": "^6.1.2",
 		"timekeeper": "^2.3.1",
 		"tsd": "^0.33.0",

@@ -1,6 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: keydb
 
-import { Storely } from "@ambicuity/storely";
+import { Storely } from "@ambicuity/storely-core";
 import type { RedisClientOptions, RedisClientType } from "@redis/client";
 import StorelyKeyDB from "./index.js";
 import type { StorelyKeyDBOptions } from "./types.js";

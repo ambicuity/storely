@@ -1,4 +1,4 @@
-import type { StorelyEncryptionAdapter } from "@ambicuity/storely";
+import type { StorelyEncryptionAdapter } from "@ambicuity/storely-core";
 
 /** Length of the GCM authentication tag in bytes. */
 const AUTH_TAG_LENGTH = 16;
@@ -193,7 +193,7 @@ function concat(...arrays: Uint8Array[]): Uint8Array<ArrayBuffer> {
  *
  * @example
  * ```ts
- * import Storely from "@ambicuity/storely";
+ * import Storely from "@ambicuity/storely-core";
  * import StorelyEncryptWeb, { deriveKey } from "@ambicuity/encrypt-web";
  *
  * // Direct key (32 random bytes from a key management system):

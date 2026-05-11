@@ -15,7 +15,7 @@ npm install --save storely @ambicuity/otel @opentelemetry/api
 ## Usage
 
 ```ts
-import Storely from "@ambicuity/storely";
+import Storely from "@ambicuity/storely-core";
 import { instrumentWithOtel } from "@ambicuity/otel";
 import { trace, metrics } from "@opentelemetry/api";
 

@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/memcache",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Memcache storage adapter for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -45,7 +45,7 @@
 		"memcache": "^1.4.0"
 	},
 	"peerDependencies": {
-		"@ambicuity/storely": "workspace:^"
+		"@ambicuity/storely-core": "workspace:^"
 	},
 	"devDependencies": {
 		"@ambicuity/compress-gzip": "workspace:^",

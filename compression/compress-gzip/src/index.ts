@@ -1,5 +1,5 @@
 import { Buffer } from "node:buffer";
-import type { StorelyCompressionAdapter } from "@ambicuity/storely";
+import type { StorelyCompressionAdapter } from "@ambicuity/storely-core";
 import { gzip, ungzip } from "pako";
 import type { Options } from "./types.js";
 

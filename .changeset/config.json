@@ -5,7 +5,7 @@
 	"fixed": [],
 	"linked": [
 		[
-			"@ambicuity/storely",
+			"@ambicuity/storely-core",
 			"@ambicuity/test-suite",
 			"@ambicuity/bigmap",
 			"@ambicuity/serialize-superjson",

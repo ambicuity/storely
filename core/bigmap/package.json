@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/bigmap",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Bigmap for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -55,7 +55,7 @@
 		"vitest": "^4.0.17"
 	},
 	"peerDependencies": {
-		"@ambicuity/storely": "workspace:^"
+		"@ambicuity/storely-core": "workspace:^"
 	},
 	"tsd": {
 		"directory": "test"

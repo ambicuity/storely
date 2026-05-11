@@ -58,7 +58,7 @@ npm install --save storely @ambicuity/sqlite
 # Usage
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelySqlite from '@ambicuity/sqlite';
 
 const storely = new Storely({ store: new StorelySqlite('sqlite://path/to/database.sqlite') });

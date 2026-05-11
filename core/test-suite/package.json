@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/test-suite",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Test suite for Storely API compliancy",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -53,7 +53,7 @@
 		"vitest": "^4.0.15"
 	},
 	"peerDependencies": {
-		"@ambicuity/storely": "workspace:^"
+		"@ambicuity/storely-core": "workspace:^"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.8",

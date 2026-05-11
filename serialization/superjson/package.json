@@ -1,6 +1,6 @@
 {
   "name": "@ambicuity/serialize-superjson",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "SuperJSON serialization adapter for Storely",
   "type": "module",
   "main": "./dist/index.mjs",
@@ -41,7 +41,7 @@
     "superjson": "^2.2.2"
   },
   "peerDependencies": {
-    "@ambicuity/storely": "workspace:^"
+    "@ambicuity/storely-core": "workspace:^"
   },
   "devDependencies": {
     "@ambicuity/test-suite": "workspace:^",

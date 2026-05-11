@@ -1,4 +1,4 @@
-import Storely from "@ambicuity/storely";
+import Storely from "@ambicuity/storely-core";
 import { describe, expect, test } from "vitest";
 import {
 	type Instrumentation,

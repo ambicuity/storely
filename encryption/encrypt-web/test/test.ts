@@ -1,4 +1,4 @@
-import { Storely } from "@ambicuity/storely";
+import { Storely } from "@ambicuity/storely-core";
 import { encryptionTestSuite } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
 import { describe, expect, it } from "vitest";

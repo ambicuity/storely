@@ -54,7 +54,7 @@ npm install --save storely @ambicuity/mysql
 ## Usage
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyMysql from '@ambicuity/mysql';
 
 const storely = new Storely(new StorelyMysql('mysql://user:pass@localhost:3306/dbname'));
@@ -83,7 +83,7 @@ If you want to use native MySQL scheduler to delete expired keys, you can specif
 e.g:
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyMysql from '@ambicuity/mysql';
 
 const storely = new Storely(new StorelyMysql({
@@ -282,7 +282,7 @@ console.log(store.namespace); // 'my-namespace'
 The MySQL adapter supports native namespace scoping. When a namespace is set, keys are stored in a dedicated `namespace` column rather than being embedded in the key name. This provides efficient filtering and proper isolation between namespaces.
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyMysql from '@ambicuity/mysql';
 
 const storelyA = new Storely({ store: new StorelyMysql(uri), namespace: 'cache-a' });
@@ -411,7 +411,7 @@ await storelyMysql.disconnect();
 ## SSL
 
 ```js
-import Storely from '@ambicuity/storely';
+import Storely from '@ambicuity/storely-core';
 import StorelyMysql from '@ambicuity/mysql';
 import fs from 'fs';
 

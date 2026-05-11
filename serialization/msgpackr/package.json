@@ -1,6 +1,6 @@
 {
   "name": "@ambicuity/serialize-msgpackr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "MessagePack serialization adapter for Storely using msgpackr",
   "type": "module",
   "main": "./dist/index.mjs",
@@ -42,7 +42,7 @@
     "msgpackr": "^1.11.9"
   },
   "peerDependencies": {
-    "@ambicuity/storely": "workspace:^"
+    "@ambicuity/storely-core": "workspace:^"
   },
   "devDependencies": {
     "@ambicuity/test-suite": "workspace:^",
