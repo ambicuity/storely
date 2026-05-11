@@ -3,7 +3,7 @@ import {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
-} from "@ambicuity/core";
+} from "@ambicuity/ambicore";
 import {
 	CreateTableCommand,
 	DescribeTableCommand,
@@ -807,4 +807,4 @@ export function createStorely(options?: StorelyDynamoOptions | string): Storely 
 	return storely;
 }
 
-export { Storely } from "@ambicuity/core";
+export { Storely } from "@ambicuity/ambicore";

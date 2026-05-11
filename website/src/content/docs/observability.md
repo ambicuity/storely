@@ -21,7 +21,7 @@ npm install --save storely @ambicuity/otel @opentelemetry/api
 ## Usage
 
 ```ts
-import Storely from "@ambicuity/core";
+import Storely from "@ambicuity/ambicore";
 import { instrumentWithOtel } from "@ambicuity/otel";
 import { trace, metrics } from "@opentelemetry/api";
 
@@ -39,7 +39,7 @@ otel.dispose();
 
 ## Emitted metrics
 
-With the default namespace `@ambicuity/core`:
+With the default namespace `@ambicuity/ambicore`:
 
 | Metric | Kind | Notes |
 |---|---|---|

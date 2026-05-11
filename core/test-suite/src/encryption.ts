@@ -1,4 +1,4 @@
-import Storely, { type StorelyEncryptionAdapter } from "@ambicuity/core";
+import Storely, { type StorelyEncryptionAdapter } from "@ambicuity/ambicore";
 import { faker } from "@faker-js/faker";
 import type { TestFunction } from "./types.js";
 

@@ -1,5 +1,5 @@
 import zlib from "node:zlib";
-import { Storely } from "@ambicuity/core";
+import { Storely } from "@ambicuity/ambicore";
 import { it } from "vitest";
 import StorelyBrotli from "../src/index.js";
 

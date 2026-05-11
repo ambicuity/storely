@@ -1,6 +1,6 @@
 // biome-ignore-all lint/suspicious/noExplicitAny: keydb
 
-import type { StorelyEntry, StorelyStorageAdapter } from "@ambicuity/core";
+import type { StorelyEntry, StorelyStorageAdapter } from "@ambicuity/ambicore";
 import {
 	createClient,
 	createCluster,
@@ -1023,7 +1023,7 @@ export default class StorelyKeyDB<T> extends Hookified implements StorelyStorage
 	}
 }
 
-export { Storely } from "@ambicuity/core";
+export { Storely } from "@ambicuity/ambicore";
 export {
 	createClient,
 	createCluster,

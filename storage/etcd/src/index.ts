@@ -1,4 +1,4 @@
-import { Storely, type StorelyEntry, type StorelyStorageGetResult } from "@ambicuity/core";
+import { Storely, type StorelyEntry, type StorelyStorageGetResult } from "@ambicuity/ambicore";
 import { Etcd3, type Lease } from "etcd3";
 import { Hookified } from "hookified";
 import type { ClearOutput, DeleteOutput, GetOutput, HasOutput } from "./types.js";

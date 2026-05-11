@@ -1,4 +1,4 @@
-import Storely from "@ambicuity/core";
+import Storely from "@ambicuity/ambicore";
 import { storageTestSuite, storelyTestSuite } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
 import { beforeEach, it, vi } from "vitest";

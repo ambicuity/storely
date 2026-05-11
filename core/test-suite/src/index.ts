@@ -1,4 +1,4 @@
-import type StorelyModule from "@ambicuity/core";
+import type StorelyModule from "@ambicuity/ambicore";
 import { storelyApiTests } from "./api.js";
 import { storelyNamespaceTests } from "./namespace.js";
 import { storageBasicTests } from "./storage-basic.js";

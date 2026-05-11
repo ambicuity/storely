@@ -1,4 +1,4 @@
-import { Storely } from "@ambicuity/core";
+import { Storely } from "@ambicuity/ambicore";
 import { storageTestSuite, storelyIteratorTests, storelyTestSuite } from "@ambicuity/test-suite";
 import { afterAll, it } from "vitest";
 import StorelyKeyDB, { type RedisClientType } from "../src/index.js";

@@ -11,8 +11,8 @@
  * to the public OTel interface, so any compatible implementation works.
  */
 
-import type Storely from "@ambicuity/core";
-import { StorelyEvents } from "@ambicuity/core";
+import type Storely from "@ambicuity/ambicore";
+import { StorelyEvents } from "@ambicuity/ambicore";
 
 /** Minimal OTel meter interface — duck-types to `@opentelemetry/api`'s `Meter`. */
 export type OtelMeter = {
@@ -62,7 +62,7 @@ export type Instrumentation = {
  *
  * @example
  * ```ts
- * import Storely from "@ambicuity/core";
+ * import Storely from "@ambicuity/ambicore";
  * import { instrumentWithOtel } from "@ambicuity/otel";
  * import { trace, metrics } from "@opentelemetry/api";
  *

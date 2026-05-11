@@ -1,5 +1,5 @@
 import { EventEmitter } from "node:events";
-import Storely from "@ambicuity/core";
+import Storely from "@ambicuity/ambicore";
 import { storageTestSuite, storelyApiTests, storelyValueTests } from "@ambicuity/test-suite";
 import { faker } from "@faker-js/faker";
 import { beforeEach, expect, it } from "vitest";

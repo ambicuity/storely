@@ -1,6 +1,6 @@
 {
-	"name": "@ambicuity/core",
-	"version": "1.0.2",
+	"name": "@ambicuity/ambicore",
+	"version": "1.0.3",
 	"description": "Simple key-value storage with support for multiple backends (Storely)",
 	"type": "module",
 	"main": "./dist/index.mjs",

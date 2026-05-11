@@ -1,6 +1,6 @@
 {
   "name": "@ambicuity/compress-gzip",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "gzip compression for Storely",
   "type": "module",
   "main": "./dist/index.mjs",
@@ -46,7 +46,7 @@
     "pako": "^2.1.0"
   },
   "peerDependencies": {
-    "@ambicuity/core": "workspace:^"
+    "@ambicuity/ambicore": "workspace:^"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.13",

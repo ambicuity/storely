@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/keydb",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "KeyDB storage adapter for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -46,7 +46,7 @@
 		"hookified": "^2.0.0"
 	},
 	"peerDependencies": {
-		"@ambicuity/core": "workspace:^"
+		"@ambicuity/ambicore": "workspace:^"
 	},
 	"devDependencies": {
 		"@ambicuity/test-suite": "workspace:^",

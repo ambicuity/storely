@@ -16,7 +16,7 @@ serialization, compression, and encryption.
 ## Install
 
 ```sh
-npm install @ambicuity/core
+npm install @ambicuity/ambicore
 ```
 
 By default, everything is stored in an in-memory `Map`. To persist beyond the
@@ -57,7 +57,7 @@ the `Map`-like contract.
 Pass a connection string and Storely loads the matching adapter for you:
 
 ```ts
-import Storely from "@ambicuity/core";
+import Storely from "@ambicuity/ambicore";
 
 const store = new Storely("sqlite://./data.sqlite");
 
@@ -86,7 +86,7 @@ await store.get("hello"); // "world"
 ## Connect with a URI
 
 ```ts
-import Storely from "@ambicuity/core";
+import Storely from "@ambicuity/ambicore";
 
 const store = new Storely("mongodb://user:pass@localhost:27017/dbname");
 
@@ -98,7 +98,7 @@ store.on("error", (err) => console.error("Connection error", err));
 `quick-lru` (or anything else that implements the `Map` API) plugs in directly:
 
 ```ts
-import Storely from "@ambicuity/core";
+import Storely from "@ambicuity/ambicore";
 import QuickLRU from "quick-lru";
 
 const lru = new QuickLRU({ maxSize: 1000 });
@@ -149,7 +149,7 @@ npm install @ambicuity/compress-gzip
 ```
 
 ```ts
-import Storely from "@ambicuity/core";
+import Storely from "@ambicuity/ambicore";
 import StorelyGzip from "@ambicuity/compress-gzip";
 
 const store = new Storely({ compression: new StorelyGzip() });

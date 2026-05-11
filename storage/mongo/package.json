@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/mongo",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "MongoDB storage adapter for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -55,7 +55,7 @@
 		"vitest": "^4.0.16"
 	},
 	"peerDependencies": {
-		"@ambicuity/core": "workspace:^"
+		"@ambicuity/ambicore": "workspace:^"
 	},
 	"tsd": {
 		"directory": "test"

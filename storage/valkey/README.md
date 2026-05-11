@@ -58,7 +58,7 @@ console.log(await storely.get('foo')); // 'bar'
 If you want to specify the `StorelyValkey` class directly, you can do so:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyValkey from '@ambicuity/valkey';
 
 const storely = new Storely(new StorelyValkey('redis://user:pass@localhost:6379', { disable_resubscribing: true }));
@@ -67,7 +67,7 @@ const storely = new Storely(new StorelyValkey('redis://user:pass@localhost:6379'
 Or you can manually create a storage adapter instance and pass it to Storely:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyValkey from '@ambicuity/valkey';
 
 const StorelyValkey = new StorelyValkey('redis://user:pass@localhost:6379');
@@ -77,7 +77,7 @@ const storely = new Storely({ store: StorelyValkey });
 Or reuse a previous Redis instance:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import Redis from 'iovalkey';
 import StorelyValkey from '@ambicuity/valkey';
 
@@ -89,7 +89,7 @@ const storely = new Storely({ store: StorelyValkey });
 Or reuse a previous Redis cluster:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import Redis from 'iovalkey';
 import StorelyValkey from '@ambicuity/valkey';
 

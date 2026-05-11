@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/otel",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "OpenTelemetry instrumentation for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -42,7 +42,7 @@
 	"dependencies": {},
 	"peerDependencies": {
 		"@opentelemetry/api": "^1.9.0",
-		"@ambicuity/core": "workspace:^"
+		"@ambicuity/ambicore": "workspace:^"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.13",

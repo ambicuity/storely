@@ -1,5 +1,5 @@
 import { Buffer } from "node:buffer";
-import type { StorelyCompressionAdapter } from "@ambicuity/core";
+import type { StorelyCompressionAdapter } from "@ambicuity/ambicore";
 import { compress, uncompress } from "lz4-napi";
 
 export class StorelyLz4 implements StorelyCompressionAdapter {

@@ -1,6 +1,6 @@
 {
 	"name": "@ambicuity/etcd",
-	"version": "1.0.2",
+	"version": "1.0.3",
 	"description": "Etcd storage adapter for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -48,7 +48,7 @@
 		"@ambicuity/test-suite": "workspace:^"
 	},
 	"peerDependencies": {
-		"@ambicuity/core": "workspace:^"
+		"@ambicuity/ambicore": "workspace:^"
 	},
 	"tsd": {
 		"directory": "test"

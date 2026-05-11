@@ -58,7 +58,7 @@ npm install --save storely storely/redis
 Here is a standard use case where we implement `Storely` and `storely/redis`:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 
 const storely = new Storely(new StorelyRedis('redis://user:pass@localhost:6379'));
@@ -78,7 +78,7 @@ You only have to import the `storely/redis` library if you are using the `create
 Here you can pass in the Redis options directly:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 
 const uri = "redis://localhost:6379";
@@ -100,7 +100,7 @@ const storely = new Storely(storelyRedis);
 Or you can create a new Redis instance and pass it in with `StorelyOptions` such as setting the `store`:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis, { createClient } from 'storely/redis';
 
 const redis = createClient('redis://user:pass@localhost:6379');
@@ -168,7 +168,7 @@ export type StorelyRedisOptions = {
 You can pass these options when creating a new `StorelyRedis` instance:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 
 const storelyRedis = new StorelyRedis('redis://user:pass@localhost:6379', {
@@ -230,7 +230,7 @@ This means the colon is not the issue—**the extra characters are.** A key that
 You can set a namespace for your keys. This is useful if you want to manage your keys in a more organized way. Here is an example of how to set a `namespace` with the `store` option:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis, { createClient } from 'storely/redis';
 
 const redis = createClient('redis://user:pass@localhost:6379');
@@ -258,7 +258,7 @@ NOTE: If you plan to do many clears or deletes, it is recommended to read the [P
 If you are using `Storely` with `storely/redis` as the storage adapter, you may notice that keys are being prefixed twice. This is because `Storely` has a default prefixing behavior that is applied to all keys. To fix this, you can set the `useKeyPrefix` option to `false` when creating the `Storely` instance:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 
 const storely = new Storely(new StorelyRedis('redis://user:pass@localhost:6379'), { useKeyPrefix: false });
@@ -276,7 +276,7 @@ const storely = createStorely('redis://user:pass@localhost:6379');
 When initializing `StorelyRedis`, you can specify the type of the values you are storing and you can also specify types when calling methods:
 
 ```typescript
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis, { createClient } from 'storely/redis';
 
 
@@ -331,7 +331,7 @@ storely.useUnlink = false;
 When using `storely/redis`, it is important to handle connection errors gracefully. You can do this by listening to the `error` event on the `StorelyRedis` instance. Here is an example of how to do that:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 const storely = new Storely(new StorelyRedis('redis://user:pass@localhost:6379'));
 storely.on('error', (error) => {
@@ -342,7 +342,7 @@ storely.on('error', (error) => {
 By default, the `StorelyRedis` instance will `throw an error` if the connection fails to connect. You can disable this behavior by setting the `throwOnConnectError` option to `false` when creating the `StorelyRedis` instance. If you want this to throw you will need to also set the Storely instance to `throwOnErrors: true`:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 
 const storely = new Storely(new StorelyRedis('redis://bad-uri:1111', { throwOnConnectError: false }));
@@ -396,7 +396,7 @@ This will make it so that the secondary does not block the primary cache and wil
 If you are using a Redis Cluster, you can pass in the `redisOptions` directly. Here is an example of how to do that:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis, { createCluster } from 'storely/redis';
 
 const cluster = createCluster({
@@ -423,7 +423,7 @@ You can learn more about the `createCluster` function in the [documentation](htt
 If you are using Sentinel to provide high availability for your Redis instances, you can pass in the sentinel options directly to the `StorelyRedis` constructor:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 
 const storely = new Storely({
@@ -462,7 +462,7 @@ You can learn more about Sentinel configuration in the [documentation](https://g
 Here is an example of how to use TLS using the `redisOptions`:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 
 const tlsOptions = {
@@ -589,17 +589,17 @@ Overall the API is the same as v3 with additional options and performance improv
 * The `clearBatchSize` option has been added to set the number of keys to delete in a single batch.
 * The `clear()` and `delete()` methods now use `UNLINK` instead of `DEL`. If you want to use `DEL` you can set the `useUnlink` option to `false`.
 * BREAKING: We no longer support redis sets. This is due to the fact that it caused significant performance issues and was not a good fit for the library.
-* BREAKING: YOUR PREVIOUS KEYS WILL NOT BE VALID. This is because of the fixe of the namespace support and how it is handled. Now, when using `@ambicuity/core` with `storely/redis` as the storage adapter you can do the following:
+* BREAKING: YOUR PREVIOUS KEYS WILL NOT BE VALID. This is because of the fixe of the namespace support and how it is handled. Now, when using `@ambicuity/ambicore` with `storely/redis` as the storage adapter you can do the following:
 
 ```js
-import Storely from '@ambicuity/core';
+import Storely from '@ambicuity/ambicore';
 import StorelyRedis from 'storely/redis';
 
 const redis = new StorelyRedis('redis://user:pass@localhost:6379');
 const storely = new Storely({ store: redis, namespace: 'my-namespace', useKeyPrefix: false });
 ```
 
-This will make it so the storage adapter `storely/redis` will handle the namespace and not the `@ambicuity/core` instance. If you leave it on it will just look duplicated like `my-namespace:my-namespace:key`.
+This will make it so the storage adapter `storely/redis` will handle the namespace and not the `@ambicuity/ambicore` instance. If you leave it on it will just look duplicated like `my-namespace:my-namespace:key`.
 
 # About Redis Sets and its Support in v4
 
@@ -612,7 +612,7 @@ We no longer support redis sets. This is due to the fact that it caused signific
 ### 1. Install Dependencies
 
 ```bash
-npm install @ambicuity/core/redis storely @nestjs/cache-manager cache-manager cacheable
+npm install @ambicuity/ambicore/redis storely @nestjs/cache-manager cache-manager cacheable
 ```
 
 ### 2. Create a Cache Module

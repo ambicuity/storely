@@ -2,7 +2,7 @@ import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
-} from "@ambicuity/core";
+} from "@ambicuity/ambicore";
 import { Hookified } from "hookified";
 import mysql, { type ConnectionOptions, type Pool } from "mysql2";
 import { createPool, endPool } from "./pool.js";

@@ -133,7 +133,7 @@ const pipeline: PackageSource[] = [
 		collection: "docs",
 		slug: "core",
 		title: "Core API",
-		npm: "@ambicuity/core",
+		npm: "@ambicuity/ambicore",
 		readme: "core/storely/README.md",
 		section: "Core",
 		order: 2,
@@ -192,8 +192,8 @@ const pipeline: PackageSource[] = [
 function rewriteContent(content: string): string {
 	return content
 		.replace(/@storely\//g, "@ambicuity/")
-		.replace(/`storely`/g, "`@ambicuity/core`")
-		.replace(/npm install storely\b/g, "npm install @ambicuity/core");
+		.replace(/`storely`/g, "`@ambicuity/ambicore`")
+		.replace(/npm install storely\b/g, "npm install @ambicuity/ambicore");
 }
 
 function frontmatter(src: PackageSource): string {

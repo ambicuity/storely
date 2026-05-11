@@ -1,4 +1,4 @@
-import Storely, { StorelyJsonSerializer, StorelyMemoryAdapter } from "@ambicuity/core";
+import Storely, { StorelyJsonSerializer, StorelyMemoryAdapter } from "@ambicuity/ambicore";
 import { it } from "vitest";
 import { StorelyLz4TestAdapter } from "../src/compression-adapter.js";
 import { StorelyAes256TestAdapter } from "../src/encryption-adapter.js";

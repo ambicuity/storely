@@ -3,7 +3,7 @@ import Storely, {
 	type StorelyEntry,
 	type StorelyStorageAdapter,
 	type StorelyStorageGetResult,
-} from "@ambicuity/core";
+} from "@ambicuity/ambicore";
 import { Hookified } from "hookified";
 import {
 	GridFSBucket,
