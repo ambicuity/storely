@@ -4,6 +4,7 @@ packages:
   - 'compression/*'
   - 'encryption/*'
   - 'storage/*'
+  - 'observability/*'
   - 'website'
 minimumReleaseAge: 2880
 minimumReleaseAgeExclude:

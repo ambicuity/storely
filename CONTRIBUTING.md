@@ -25,6 +25,24 @@ You can contribute changes to this repo by opening a pull request:
 
 If you need more information on the steps to create a pull request, you can find a detailed walkthrough in the [Github documentation](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request-from-a-fork)
 
+# Changesets
+
+Every PR with a behavior change (new feature, bug fix, breaking change) must include a [changeset](./.changeset/). To add one:
+
+```bash
+pnpm changeset
+```
+
+The CLI prompts you to pick the affected packages, the bump level (`patch` / `minor` / `major`), and to write a short description. Commit the resulting Markdown file alongside your changes.
+
+Doc-only or repo-hygiene PRs don't need a changeset. If unsure, run `pnpm changeset:status` to preview what releases your PR would trigger.
+
+See [`.changeset/README.md`](./.changeset/README.md) for the bump-level guide and linked-package behaviour.
+
+# Stability and deprecations
+
+The public API surface is tiered in [`docs/API_STABILITY.md`](./docs/API_STABILITY.md). Adding a new public export defaults to **Stable** — you commit to SemVer support for it. Marking an existing export `@deprecated` starts the clock described in [`docs/DEPRECATION_POLICY.md`](./docs/DEPRECATION_POLICY.md): at least one minor release of overlap, removal in the next major.
+
 # Updating Packages
 
 We use `pnpm outdated` to check for outdated dependencies across the monorepo. When updating packages, we follow a cautious approach to avoid potential issues with newly released versions.

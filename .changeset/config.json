@@ -1,0 +1,35 @@
+{
+	"$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
+	"changelog": "@changesets/cli/changelog",
+	"commit": false,
+	"fixed": [],
+	"linked": [
+		[
+			"storely",
+			"@storely/test-suite",
+			"@storely/bigmap",
+			"@storely/serialize-superjson",
+			"@storely/serialize-msgpackr",
+			"@storely/compress-brotli",
+			"@storely/compress-gzip",
+			"@storely/compress-lz4",
+			"@storely/encrypt-node",
+			"@storely/encrypt-web",
+			"@storely/redis",
+			"@storely/postgres",
+			"@storely/mysql",
+			"@storely/mongo",
+			"@storely/sqlite",
+			"@storely/valkey",
+			"@storely/rocksdb",
+			"@storely/keydb",
+			"@storely/memcache",
+			"@storely/etcd",
+			"@storely/dynamo"
+		]
+	],
+	"access": "public",
+	"baseBranch": "main",
+	"updateInternalDependencies": "patch",
+	"ignore": ["@storely/website"]
+}

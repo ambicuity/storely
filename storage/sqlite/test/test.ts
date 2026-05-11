@@ -7,7 +7,7 @@ import StorelySqlite, { createStorely } from "../src/index.js";
 const store = () => new StorelySqlite({ uri: "sqlite://test/testdb.sqlite", busyTimeout: 3000 });
 
 storelyTestSuite(it, Storely, store);
-storageTestSuite(it, store, { ttl: false });
+storageTestSuite(it, store, { ttl: false, concurrency: true });
 
 beforeEach(async () => {
 	const storely = new StorelySqlite({
