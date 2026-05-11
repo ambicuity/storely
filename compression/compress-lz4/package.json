@@ -1,6 +1,6 @@
 {
 	"name": "@storely/compress-lz4",
-	"version": "6.0.0-alpha.4",
+	"version": "6.0.0-rc.1",
 	"description": "lz4 compression for Storely",
 	"type": "module",
 	"main": "./dist/index.mjs",
@@ -60,7 +60,7 @@
 		"directory": "test"
 	},
 	"engines": {
-		"node": ">= 18"
+		"node": ">= 20"
 	},
 	"files": [
 		"dist",

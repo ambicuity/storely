@@ -36,4 +36,21 @@ export type StorageTestOptions = {
 	namespace?: boolean;
 	/** Enable disconnect test. Default: true */
 	disconnect?: boolean;
+	/**
+	 * Enable concurrency / interleaving tests. Default: false.
+	 * Opt-in because not every adapter is provisioned for heavy parallel
+	 * load in the standard test environment.
+	 */
+	concurrency?: boolean;
+	/**
+	 * Enable chaos / adapter-failure-mode tests. Default: false.
+	 * Requires the harness to control backend lifecycle (pause/kill/restart)
+	 * — opt in only when running under a chaos-enabled test runner.
+	 */
+	chaos?: boolean;
+	/**
+	 * Maximum time a single chaos-op may block before it's considered a hang.
+	 * Default: 10_000 ms. Tune to match the adapter's `commandTimeout`.
+	 */
+	chaosTimeoutMs?: number;
 };

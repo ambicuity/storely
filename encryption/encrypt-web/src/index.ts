@@ -31,7 +31,34 @@ export type StorelyEncryptWebOptions = {
 	algorithm?: WebAlgorithm;
 };
 
-const DEFAULT_PBKDF2_ITERATIONS = 100_000;
+/**
+ * PBKDF2 iteration count. 600k matches OWASP's 2024 Password Storage Cheat
+ * Sheet minimum for PBKDF2-SHA256. Callers that need to decrypt data derived
+ * at the previous default (100k) must pass `iterations: 100_000` explicitly.
+ */
+const DEFAULT_PBKDF2_ITERATIONS = 600_000;
+
+/**
+ * 4-byte ASCII magic ("STv0") prefixed to every new ciphertext envelope.
+ * Shares the wire format with `@storely/encrypt-node`. Absent magic on
+ * decrypt is treated as legacy (pre-Cluster-8) format.
+ */
+const ENVELOPE_MAGIC_V0 = new Uint8Array([0x53, 0x54, 0x76, 0x30]);
+
+/** Returns true if `bytes` starts with the v0 envelope magic. */
+function hasV0Magic(bytes: Uint8Array): boolean {
+	if (bytes.length < ENVELOPE_MAGIC_V0.length) {
+		return false;
+	}
+
+	for (let i = 0; i < ENVELOPE_MAGIC_V0.length; i++) {
+		if (bytes[i] !== ENVELOPE_MAGIC_V0[i]) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 /**
  * Derive a key from a password and salt using PBKDF2-SHA256 via the
@@ -47,7 +74,10 @@ const DEFAULT_PBKDF2_ITERATIONS = 100_000;
  * @param salt - A salt value. Must be unique per key; store alongside the
  *   ciphertext or in a separate config so you can re-derive on decrypt.
  *   At least 16 bytes recommended.
- * @param iterations - PBKDF2 iteration count. Defaults to 100,000.
+ * @param iterations - PBKDF2 iteration count. Defaults to 600,000 (OWASP
+ *   2024 minimum for PBKDF2-SHA256). Callers that need to decrypt data
+ *   produced with the previous default (100,000) must pass `iterations:
+ *   100_000` explicitly.
  * @param length - Output key length in bytes. Defaults to 32 (AES-256).
  * @returns A `Uint8Array` of `length` bytes suitable for use as `options.key`.
  */
@@ -145,17 +175,21 @@ function concat(...arrays: Uint8Array[]): Uint8Array<ArrayBuffer> {
  * The encrypted output uses the same wire format as `@storely/encrypt-node`,
  * enabling cross-compatibility between the two packages.
  *
- * Wire format (AEAD): `[IV (12 bytes) || AuthTag (16 bytes) || Ciphertext]`
- * Wire format (non-AEAD): `[IV (16 bytes) || Ciphertext]`
+ * Wire format (v0, AEAD): `["STv0" (4 bytes) || IV (12 bytes) || AuthTag (16 bytes) || Ciphertext]`
+ * Wire format (v0, non-AEAD): `["STv0" (4 bytes) || IV (16 bytes) || Ciphertext]`
+ *
+ * The 4-byte ASCII magic `STv0` identifies the envelope version. Ciphertexts
+ * written by older releases (no magic) are accepted on decrypt for backward
+ * compatibility. New writes always include the magic so future versions can
+ * dispatch on it.
  *
  * **Authentication:** AES-CBC does **not** verify integrity. An attacker
  * who can modify ciphertext can flip plaintext bits without detection.
  * Prefer AES-GCM unless you have a specific reason to use CBC.
  *
- * **Key rotation:** there is no built-in ciphertext versioning. To
- * rotate the encryption key, decrypt all stored values with the old key
- * and re-encrypt them with the new key. Plan this into your operational
- * procedures before relying on encryption at rest.
+ * **Key rotation:** the magic prefix carries a version, but key material is
+ * not embedded. To rotate keys, decrypt all stored values with the old key
+ * and re-encrypt with the new key. Plan this into operational procedures.
  *
  * @example
  * ```ts
@@ -233,17 +267,17 @@ export class StorelyEncryptWeb implements StorelyEncryptionAdapter {
 				encoded,
 			);
 
-			// Web Crypto returns [ciphertext || authTag], rearrange to [IV || authTag || ciphertext]
+			// Web Crypto returns [ciphertext || authTag], rearrange to [magic || IV || authTag || ciphertext]
 			const combined = new Uint8Array(ciphertext);
 			const actualCiphertext = combined.slice(0, combined.length - AUTH_TAG_LENGTH);
 			const authTag = combined.slice(combined.length - AUTH_TAG_LENGTH);
-			const packed = concat(iv, authTag, actualCiphertext);
+			const packed = concat(ENVELOPE_MAGIC_V0, iv, authTag, actualCiphertext);
 			return uint8ArrayToBase64(packed);
 		}
 
 		const ciphertext = await crypto.subtle.encrypt({ name: "AES-CBC", iv }, cryptoKey, encoded);
 
-		const packed = concat(iv, new Uint8Array(ciphertext));
+		const packed = concat(ENVELOPE_MAGIC_V0, iv, new Uint8Array(ciphertext));
 		return uint8ArrayToBase64(packed);
 	}
 
@@ -256,7 +290,10 @@ export class StorelyEncryptWeb implements StorelyEncryptionAdapter {
 	 */
 	async decrypt(data: string): Promise<string> {
 		const cryptoKey = await this._keyPromise;
-		const packed = base64ToUint8Array(data);
+		const raw = base64ToUint8Array(data);
+		// Strip the v0 magic prefix if present. Absent magic means legacy
+		// (pre-Cluster-8) ciphertext, decoded with the original layout.
+		const packed = hasV0Magic(raw) ? raw.slice(ENVELOPE_MAGIC_V0.length) : raw;
 
 		if (this._config.isAead) {
 			const iv = packed.slice(0, this._config.ivLength);

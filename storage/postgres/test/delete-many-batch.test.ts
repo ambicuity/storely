@@ -1,7 +1,8 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import StorelyPostgres from "../src/index.js";
 
-const url = process.env.POSTGRES_URL ?? "postgresql://postgres:postgres@localhost:5432/storely_test";
+const url =
+	process.env.POSTGRES_URL ?? "postgresql://postgres:postgres@localhost:5432/storely_test";
 
 describe("postgres deleteMany batched", () => {
 	let s: StorelyPostgres;

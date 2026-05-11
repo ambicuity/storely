@@ -22,7 +22,24 @@ const CCM_MODES = new Set(["ccm"]);
 const KNOWN_AEAD_ALGORITHMS = new Set(["chacha20-poly1305"]);
 
 const AUTH_TAG_LENGTH = 16;
-const DEFAULT_PBKDF2_ITERATIONS = 100_000;
+
+/**
+ * PBKDF2 iteration count. 600k matches OWASP's 2024 Password Storage Cheat
+ * Sheet minimum for PBKDF2-SHA256. Older callers that need to decrypt data
+ * derived at the previous default (100k) must pass `iterations: 100_000`
+ * explicitly to {@link deriveKey} — derived keys are stored as raw bytes,
+ * so the caller is responsible for tracking which iteration count produced
+ * each key.
+ */
+const DEFAULT_PBKDF2_ITERATIONS = 600_000;
+
+/**
+ * 4-byte ASCII magic ("STv0") prefixed to every new ciphertext envelope.
+ * Provides a forward-compatibility marker so future wire-format changes
+ * can dispatch on a version. Absent prefix is treated as legacy (pre-Cluster-8)
+ * format during decryption — see {@link StorelyEncryptNode.decrypt}.
+ */
+const ENVELOPE_MAGIC_V0 = Buffer.from("STv0", "ascii");
 
 /**
  * Options for {@link StorelyEncryptNode}.
@@ -57,7 +74,11 @@ export type StorelyEncryptNodeOptions = {
  * @param salt - A salt value. Must be unique per key; store alongside the
  *   ciphertext or in a separate config so you can re-derive on decrypt.
  *   At least 16 bytes recommended.
- * @param iterations - PBKDF2 iteration count. Defaults to 100,000.
+ * @param iterations - PBKDF2 iteration count. Defaults to 600,000 (OWASP
+ *   2024 minimum for PBKDF2-SHA256). Callers that need to decrypt data
+ *   produced with the previous default (100,000) must pass `iterations:
+ *   100_000` explicitly — derived keys are stored as raw bytes, so the
+ *   caller must remember which iteration count produced each key.
  * @param length - Output key length in bytes. Defaults to 32 (AES-256).
  * @returns A Buffer of `length` bytes suitable for use as `options.key`.
  */
@@ -78,17 +99,21 @@ export function deriveKey(
  * encryption. The encrypted output is a base64 string containing the IV,
  * authentication tag (for AEAD ciphers), and ciphertext.
  *
- * Wire format (AEAD): `[IV || AuthTag (16 bytes) || Ciphertext]`
- * Wire format (non-AEAD): `[IV || Ciphertext]`
+ * Wire format (v0, AEAD): `["STv0" (4 bytes) || IV || AuthTag (16 bytes) || Ciphertext]`
+ * Wire format (v0, non-AEAD): `["STv0" (4 bytes) || IV || Ciphertext]`
+ *
+ * The 4-byte ASCII magic `STv0` identifies the envelope version. Ciphertexts
+ * written by older releases (no magic) are accepted on decrypt for backward
+ * compatibility. New writes always include the magic so future versions can
+ * dispatch on it.
  *
  * **Authentication:** AES-CBC and other non-AEAD ciphers do **not**
  * verify integrity. An attacker who can modify ciphertext can flip
  * plaintext bits without detection. Prefer AES-GCM or another AEAD mode.
  *
- * **Key rotation:** there is no built-in ciphertext versioning. To
- * rotate the encryption key, decrypt all stored values with the old key
- * and re-encrypt them with the new key. Plan this into your operational
- * procedures before relying on encryption at rest.
+ * **Key rotation:** the magic prefix carries a version, but key material is
+ * not embedded. To rotate keys, decrypt all stored values with the old key
+ * and re-encrypt with the new key. Plan this into operational procedures.
  *
  * @example
  * ```ts
@@ -171,11 +196,11 @@ export class StorelyEncryptNode implements StorelyEncryptionAdapter {
 
 		if (this._isAead) {
 			const authTag = (cipher as unknown as CipherGCM).getAuthTag();
-			const packed = Buffer.concat([iv, authTag, encrypted]);
+			const packed = Buffer.concat([ENVELOPE_MAGIC_V0, iv, authTag, encrypted]);
 			return packed.toString(this._encoding);
 		}
 
-		const packed = Buffer.concat([iv, encrypted]);
+		const packed = Buffer.concat([ENVELOPE_MAGIC_V0, iv, encrypted]);
 		return packed.toString(this._encoding);
 	}
 
@@ -187,7 +212,13 @@ export class StorelyEncryptNode implements StorelyEncryptionAdapter {
 	 * @throws If the wrong key is used for decryption.
 	 */
 	decrypt(data: string): string {
-		const packed = Buffer.from(data, this._encoding);
+		const raw = Buffer.from(data, this._encoding);
+		// Strip the v0 magic prefix if present. Absent magic means the
+		// ciphertext predates Cluster 8; decode using the legacy layout.
+		const hasMagic =
+			raw.length >= ENVELOPE_MAGIC_V0.length &&
+			raw.subarray(0, ENVELOPE_MAGIC_V0.length).equals(ENVELOPE_MAGIC_V0);
+		const packed = hasMagic ? raw.subarray(ENVELOPE_MAGIC_V0.length) : raw;
 
 		if (this._isAead) {
 			const iv = packed.subarray(0, this._ivLength);

@@ -457,13 +457,24 @@ export class StorelyEtcd<GenericValue = any> extends Hookified {
 	 */
 	public async *iterator() {
 		const prefix = this._namespace ? `${this._namespace}${this._keyPrefixSeparator}` : "";
-		const iterator = await this._client.getAll().prefix(prefix).keys();
 
-		for await (const key of iterator) {
+		// Fetch the entire prefix range in a single request, then iterate
+		// the resulting map locally. This avoids the N+1 round-trip pattern
+		// of fetching keys and then per-key gets. Memory footprint is bounded
+		// by the prefix size — keep namespaces small or use a bounded prefix.
+		let entries: Record<string, string>;
+		try {
+			entries = await this._client.getAll().prefix(prefix).strings();
+			/* v8 ignore start -- @preserve */
+		} catch (error) {
+			this.emit("error", error);
+			return;
+		}
+		/* v8 ignore stop -- @preserve */
+
+		for (const [key, raw] of Object.entries(entries)) {
 			try {
-				const raw = await this._client.get(key);
-				/* v8 ignore next -- @preserve */
-				if (raw === null) {
+				if (raw === null || raw === undefined) {
 					continue;
 				}
 

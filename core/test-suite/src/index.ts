@@ -3,6 +3,8 @@ import { storelyApiTests } from "./api.js";
 import { storelyNamespaceTests } from "./namespace.js";
 import { storageBasicTests } from "./storage-basic.js";
 import { storageBatchTests } from "./storage-batch.js";
+import { storageChaosTests } from "./storage-chaos.js";
+import { storageConcurrencyTests } from "./storage-concurrency.js";
 import { storageDisconnectTests } from "./storage-disconnect.js";
 import { storageIteratorTests } from "./storage-iterator.js";
 import { storageNamespaceTests } from "./storage-namespace.js";
@@ -40,6 +42,8 @@ const storageTestSuite = (test: TestFunction, store: StorageFn, options?: Storag
 	storageTtlTests(test, store, options);
 	storageNamespaceTests(test, store, options);
 	storageDisconnectTests(test, store, options);
+	storageConcurrencyTests(test, store, options);
+	storageChaosTests(test, store, options);
 };
 
 export { storelyApiTests } from "./api.js";
@@ -51,6 +55,8 @@ export { storelyNamespaceTests } from "./namespace.js";
 export { serializationTestSuite } from "./serialization.js";
 export { storageBasicTests } from "./storage-basic.js";
 export { storageBatchTests } from "./storage-batch.js";
+export { storageChaosTests } from "./storage-chaos.js";
+export { storageConcurrencyTests } from "./storage-concurrency.js";
 export { storageDisconnectTests } from "./storage-disconnect.js";
 export { storageIteratorTests } from "./storage-iterator.js";
 export { storageNamespaceTests } from "./storage-namespace.js";

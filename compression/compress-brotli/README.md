@@ -30,6 +30,12 @@ const storely = new Storely({store: new Map(), compression: new StorelyBrotli()}
 
 All options for `@storely/compress-brotli` are based on the package [compress-brotli](https://github.com/Kikobeats/compress-brotli)
 
+The default brotli quality is `4`, chosen as the standard cache-storage tradeoff. Node's underlying default is `11` (maximum), which is ~5–10× slower with marginal additional compression ratio on typical small payloads. Override via `compressOptions.params`.
+
+## Limitations
+
+This adapter buffers entire values in memory. There is no streaming API. For values larger than ~10 MB, consider chunking at the application layer or storing the data outside Storely and caching a reference.
+
 ## License
 
 [MIT © Ritesh Rana](LICENSE)

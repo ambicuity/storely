@@ -775,6 +775,32 @@ export class StorelyPostgres extends Hookified implements StorelyStorageAdapter 
 		} = options;
 
 		this._poolConfig = { ...this._poolConfig, ...poolConfigRest };
+		this.validatePoolConfig(this._poolConfig);
+	}
+
+	/**
+	 * Reject obviously-broken pool settings that would otherwise produce
+	 * cryptic runtime errors. Validates at config time so misconfiguration
+	 * surfaces immediately instead of on first query.
+	 *
+	 * @throws RangeError when `max <= 0`, or when any timeout field is negative.
+	 */
+	private validatePoolConfig(cfg: PoolConfig): void {
+		if (cfg.max != null && cfg.max <= 0) {
+			throw new RangeError(`StorelyPostgres pool.max must be > 0; received ${cfg.max}`);
+		}
+
+		if (cfg.connectionTimeoutMillis != null && cfg.connectionTimeoutMillis < 0) {
+			throw new RangeError(
+				`StorelyPostgres pool.connectionTimeoutMillis must be >= 0; received ${cfg.connectionTimeoutMillis}`,
+			);
+		}
+
+		if (cfg.idleTimeoutMillis != null && cfg.idleTimeoutMillis < 0) {
+			throw new RangeError(
+				`StorelyPostgres pool.idleTimeoutMillis must be >= 0; received ${cfg.idleTimeoutMillis}`,
+			);
+		}
 	}
 }
 

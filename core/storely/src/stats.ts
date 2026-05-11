@@ -147,6 +147,35 @@ export class StorelyStats {
 	}
 
 	/**
+	 * Returns a snapshot copy of the hit-keys map. Safe to mutate; does not
+	 * affect internal LRU state. Prefer {@link hitKeys} in hot paths where
+	 * allocation matters.
+	 */
+	public snapshotHitKeys(): Map<string, number> {
+		return new Map(this.hitKeysMap);
+	}
+
+	/** Snapshot copy of the miss-keys map. See {@link snapshotHitKeys}. */
+	public snapshotMissKeys(): Map<string, number> {
+		return new Map(this.missKeysMap);
+	}
+
+	/** Snapshot copy of the set-keys map. See {@link snapshotHitKeys}. */
+	public snapshotSetKeys(): Map<string, number> {
+		return new Map(this.setKeysMap);
+	}
+
+	/** Snapshot copy of the delete-keys map. See {@link snapshotHitKeys}. */
+	public snapshotDeleteKeys(): Map<string, number> {
+		return new Map(this.deleteKeysMap);
+	}
+
+	/** Snapshot copy of the error-keys map. See {@link snapshotHitKeys}. */
+	public snapshotErrorKeys(): Map<string, number> {
+		return new Map(this.errorKeysMap);
+	}
+
+	/**
 	 * Maximum number of entries per event-type LRU map.
 	 * @default 1000
 	 */

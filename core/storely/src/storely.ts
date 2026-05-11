@@ -386,7 +386,17 @@ export class Storely<GenericValue = any> extends Hookified {
 	}
 
 	/**
-	 * Get the Value of a Key
+	 * Get the Value of a Key.
+	 *
+	 * **Semantic gap:** `undefined` is returned in two distinct cases that
+	 * the API cannot distinguish:
+	 * - the key has never been set, or
+	 * - the key was set to the literal value `undefined`.
+	 *
+	 * Use {@link has} when the difference matters (e.g. cache-miss vs
+	 * cache-hit-with-empty-value). `has(key)` is unaffected by stored
+	 * `undefined` values and reflects key presence directly.
+	 *
 	 * @param {string | string[]} key passing in a single key or multiple as an array
 	 */
 	public async get<Value = GenericValue>(key: string): Promise<Value | undefined>;
